@@ -1,0 +1,17 @@
+
+Loading data...
+Fitting model...
+Evaluating model...
+The hard predictions were right 85.25% of the time
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 624, in <module>
+    run_rf(X_train, y_train, X_test, y_test, results, experiment, model)
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 343, in run_rf
+    calc_confusion_matrix(ytest, probs, 'save_directory')
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 153, in calc_confusion_matrix
+    CM = confusion_matrix(y_test, y_pred)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/metrics/_classification.py", line 317, in confusion_matrix
+    y_type, y_true, y_pred = _check_targets(y_true, y_pred)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/metrics/_classification.py", line 95, in _check_targets
+    raise ValueError(
+ValueError: Classification metrics can't handle a mix of binary and continuous-multioutput targets

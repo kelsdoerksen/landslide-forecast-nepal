@@ -1,0 +1,23 @@
+
+Loading data...
+Fitting model...
+Evaluating model...
+The hard predictions were right 81.32% of the time
+No Skill: ROC AUC=0.500
+RFC: ROC AUC=0.827
+No nan values in fscore
+The number of non-landslide events is: 11275
+The number of landslide events is: 2816
+Best Threshold=0.145000, F-Score=0.547
+Test set accuracy at threshold 0.145: 0.7551628699169682
+Test set F1 at threshold 0.145: 0.5471252297190863
+True Positive is 2084
+True Negative is 8557
+False Positive is 2718
+False Negative is 732
+False positive rate at best threshold is 0.24106430155210642
+True positive rate at best threshold is is 0.7400568181818182
+False negative rate at best threshold is is 0.2599431818181818
+True negative rate at best threshold is is 0.7589356984478935
+--------------------
+{'0': {'precision': 0.921197114867047, 'recall': 0.7589356984478935, 'f1-score': 0.8322310834468001, 'support': 11275}, '1': {'precision': 0.43398583923365264, 'recall': 0.7400568181818182, 'f1-score': 0.5471252297190863, 'support': 2816}, 'accuracy': 0.7551628699169682, 'macro avg': {'precision': 0.6775914770503498, 'recall': 0.7494962583148559, 'f1-score': 0.6896781565829432, 'support': 14091}, 'weighted avg': {'precision': 0.8238309270745809, 'recall': 0.7551628699169682, 'f1-score': 0.7752544257151102, 'support': 14091}}

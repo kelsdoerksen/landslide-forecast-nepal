@@ -1,0 +1,46 @@
+
+Loading data...
+> /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py(331)load_data()
+    330     # Split into label and features, preserve date and location
+--> 331     y_train = df_train['label']
+    332     X_train = df_train.drop(columns=['label', 'Unnamed: 0'])
+       Unnamed: 0  precip_rate_tminus_2  precip_rate_tminus_3  ...  label        date       district
+25191           0              1.813909             22.768646  ...      0  2021-10-05       Udayapur
+11088           0              0.000000              0.010358  ...      0  2018-05-19        Kailali
+12384           0              0.223468              0.982530  ...      0  2022-06-27      Mahottari
+18356           0             22.290057              6.002507  ...      0  2019-04-17          Palpa
+5431            0              2.998625              0.053057  ...      0  2022-04-21       Dhankuta
+...           ...                   ...                   ...  ...    ...         ...            ...
+1039            0              0.129229              0.000000  ...      0  2022-04-11        Baitadi
+16792           0             67.400700             29.026172  ...      0  2022-07-23          Parsa
+2332            0              0.000309              0.000000  ...      0  2017-05-23          Banke
+4854            0              0.952551              0.000000  ...      0  2022-06-09       Darchula
+23220           0              9.903042              1.884019  ...      1  2017-08-14  Sankhuwasabha
+[92169 rows x 59 columns]
+      Unnamed: 0  precip_rate_tminus_2  precip_rate_tminus_3  ...  label        date  district
+4854           0              0.000000              0.095966  ...      1  2018-04-20   Dailekh
+4854           0             52.467071              0.374316  ...      0  2020-05-02      Dang
+4854           0              5.525595             10.537303  ...      0  2019-04-20   Dailekh
+4854           0             59.345066              0.000000  ...      0  2017-04-20   Dailekh
+4854           0             14.854170              1.173323  ...      0  2021-10-04      Dang
+4854           0              0.952551              0.000000  ...      0  2022-06-09  Darchula
+[6 rows x 59 columns]
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 696, in <module>
+    X_train, y_train, X_test, y_test = load_data(test_year, '{}/LabelledData/{}/operational/ensemble_{}'.format(root_dir,
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 331, in load_data
+    y_train = df_train['label']
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 331, in load_data
+    y_train = df_train['label']
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/bdb.py", line 115, in dispatch_line
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit
+If you suspect this is an IPython 8.7.0 bug, please report it at:
+    https://github.com/ipython/ipython/issues
+or send an email to the mailing list at ipython-dev@python.org
+You can print a more detailed traceback right now with "%tb", or use "%debug"
+to interactively debug it.
+Extra-detailed tracebacks for bug-reporting purposes can be enabled via:
+    %config Application.verbose_crash=True

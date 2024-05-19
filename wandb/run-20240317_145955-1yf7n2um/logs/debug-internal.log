@@ -1,0 +1,84 @@
+2024-03-17 14:59:55,012 INFO    StreamThr :71176 [internal.py:wandb_internal():86] W&B internal server running at pid: 71176, started at: 2024-03-17 14:59:55.011704
+2024-03-17 14:59:55,014 DEBUG   HandlerThread:71176 [handler.py:handle_request():144] handle_request: status
+2024-03-17 14:59:55,019 INFO    WriterThread:71176 [datastore.py:open_for_write():85] open: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240317_145955-1yf7n2um/run-1yf7n2um.wandb
+2024-03-17 14:59:55,019 DEBUG   SenderThread:71176 [sender.py:send():380] send: header
+2024-03-17 14:59:55,060 DEBUG   SenderThread:71176 [sender.py:send():380] send: run
+2024-03-17 14:59:55,062 INFO    SenderThread:71176 [sender.py:_maybe_setup_resume():759] checking resume status for None/landslide-prediction/1yf7n2um
+2024-03-17 14:59:58,655 INFO    SenderThread:71176 [retry.py:__call__():172] Retry attempt failed:
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/urllib3/connection.py", line 174, in _new_conn
+    conn = connection.create_connection(
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/urllib3/util/connection.py", line 72, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/socket.py", line 955, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/urllib3/connectionpool.py", line 703, in urlopen
+    httplib_response = self._make_request(
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/urllib3/connectionpool.py", line 386, in _make_request
+    self._validate_conn(conn)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/urllib3/connectionpool.py", line 1042, in _validate_conn
+    conn.connect()
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/urllib3/connection.py", line 358, in connect
+    self.sock = conn = self._new_conn()
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/urllib3/connection.py", line 186, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPSConnection object at 0x110c6e4a0>: Failed to establish a new connection: [Errno 8] nodename nor servname provided, or not known
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/requests/adapters.py", line 489, in send
+    resp = conn.urlopen(
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    retries = retries.increment(
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/urllib3/util/retry.py", line 592, in increment
+    raise MaxRetryError(_pool, url, error or ResponseError(cause))
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='api.wandb.ai', port=443): Max retries exceeded with url: /graphql (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x110c6e4a0>: Failed to establish a new connection: [Errno 8] nodename nor servname provided, or not known'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/wandb/sdk/lib/retry.py", line 131, in __call__
+    result = self._call_fn(*args, **kwargs)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/wandb/sdk/internal/internal_api.py", line 366, in execute
+    return self.client.execute(*args, **kwargs)  # type: ignore
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/wandb/vendor/gql-0.2.0/wandb_gql/client.py", line 52, in execute
+    result = self._get_result(document, *args, **kwargs)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/wandb/vendor/gql-0.2.0/wandb_gql/client.py", line 60, in _get_result
+    return self.transport.execute(document, *args, **kwargs)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/wandb/sdk/lib/gql_request.py", line 58, in execute
+    request = self.session.post(self.url, **post_args)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/requests/sessions.py", line 635, in post
+    return self.request("POST", url, data=data, json=json, **kwargs)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/requests/sessions.py", line 587, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/requests/sessions.py", line 701, in send
+    r = adapter.send(request, **kwargs)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/requests/adapters.py", line 565, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPSConnectionPool(host='api.wandb.ai', port=443): Max retries exceeded with url: /graphql (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x110c6e4a0>: Failed to establish a new connection: [Errno 8] nodename nor servname provided, or not known'))
+2024-03-17 15:00:00,079 DEBUG   HandlerThread:71176 [handler.py:handle_request():144] handle_request: keepalive
+2024-03-17 15:00:05,095 DEBUG   HandlerThread:71176 [handler.py:handle_request():144] handle_request: keepalive
+2024-03-17 15:00:10,111 DEBUG   HandlerThread:71176 [handler.py:handle_request():144] handle_request: keepalive
+2024-03-17 15:00:10,194 DEBUG   HandlerThread:71176 [handler.py:handle_request():144] handle_request: shutdown
+2024-03-17 15:00:10,194 INFO    HandlerThread:71176 [handler.py:finish():844] shutting down handler
+2024-03-17 15:00:11,106 INFO    WriterThread:71176 [datastore.py:close():294] close: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240317_145955-1yf7n2um/run-1yf7n2um.wandb
+2024-03-17 17:56:33,697 INFO    SenderThread:71176 [dir_watcher.py:__init__():211] watching files in: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240317_145955-1yf7n2um/files
+2024-03-17 17:56:33,698 INFO    SenderThread:71176 [sender.py:_start_run_threads():1122] run started: 1yf7n2um with start time 1710683995.014103
+2024-03-17 17:56:33,698 INFO    SenderThread:71176 [sender.py:finish():1534] shutting down sender
+2024-03-17 17:56:33,699 INFO    SenderThread:71176 [dir_watcher.py:finish():358] shutting down directory watcher
+2024-03-17 17:56:34,702 INFO    SenderThread:71176 [dir_watcher.py:finish():388] scan: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240317_145955-1yf7n2um/files
+2024-03-17 17:56:34,703 INFO    SenderThread:71176 [dir_watcher.py:finish():402] scan save: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240317_145955-1yf7n2um/files/config.yaml config.yaml
+2024-03-17 17:56:34,703 INFO    SenderThread:71176 [file_pusher.py:finish():175] shutting down file pusher
+2024-03-17 17:56:34,703 INFO    SenderThread:71176 [file_pusher.py:join():181] waiting for file pusher
+2024-03-17 17:56:47,570 ERROR   wandb-upload_0:71176 [internal_api.py:upload_file():2556] upload_file exception https://storage.googleapis.com/wandb-production.appspot.com/kelsey-doerksen/landslide-prediction/1yf7n2um/config.yaml?Expires=1710780997&GoogleAccessId=gorilla-files-url-signer-man%40wandb-production.iam.gserviceaccount.com&Signature=uUaW2tbUBjWUV5LR3%2BnStLN5aC60jfWakSjDcQfmcwp3fKnHbE%2FBWW6QQLN9RNvHPw56wrkPhQpAcLOQI9nC0LZg9FWIzn8aVnVP78B1FDOUkrOdHhTETtE5dEycGLJfyZ07dDh88eQGtTN73fSEWBDbFUehyYphAp5XcfG3C1cp1VsqG%2FdFqlLvwbm%2B%2BsZ5Yb6uMLGrjdyvNEjx12eX%2FoAKIwNlATUzwDTlMexM9nY8NcjTDnal1KMyfFe%2Bxbv0B7s8ixhfYG5MIeS0%2Bl5fd946AOvFtSA1MXNYZzN7u40yKuIMcuMix8%2BXYjgq8wvCHxRjY455u8Ullocnk77Dpw%3D%3D: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2024-03-17 17:56:47,570 ERROR   wandb-upload_0:71176 [internal_api.py:upload_file():2558] upload_file request headers: {'User-Agent': 'python-requests/2.28.2', 'Accept-Encoding': 'gzip, deflate, br', 'Accept': '*/*', 'Connection': 'keep-alive', 'Content-Length': '367'}
+2024-03-17 17:56:47,570 ERROR   wandb-upload_0:71176 [internal_api.py:upload_file():2560] upload_file response body: 
+2024-03-17 17:56:53,620 INFO    wandb-upload_0:71176 [upload_job.py:push():131] Uploaded file /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240317_145955-1yf7n2um/files/config.yaml
+2024-03-17 17:56:54,314 INFO    SenderThread:71176 [file_stream.py:finish():595] file stream finish called
+2024-03-17 17:56:57,264 INFO    SenderThread:71176 [file_stream.py:finish():599] file stream finish is done

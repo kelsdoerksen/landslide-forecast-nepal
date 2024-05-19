@@ -1,0 +1,43 @@
+
+Loading data...
+Number of positive testing samples: 275
+Number of negative testing samples: 1606
+Fitting model...
+Evaluating model...
+The hard predictions were right 85.06% of the time
+No Skill: ROC AUC=0.500
+RFC: ROC AUC=0.807
+The number of non-landslide events is: 1606
+The number of landslide events is: 275
+Best Threshold=0.210000, F-Score=0.453
+Test set accuracy at threshold 0.21: 0.7676767676767676
+True Positive is 181
+True Negative is 1263
+False Positive is 343
+False Negative is 94
+False positive rate is 0.21357409713574096
+True positive rate is 0.6581818181818182
+False negative rate is 0.3418181818181818
+True negative rate is 0.7864259028642591
+/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py:107: RuntimeWarning: invalid value encountered in divide
+  fscore = (2 * precision * recall) / (precision + recall)
+--------------------
+{'0': {'precision': 0.9307295504789977, 'recall': 0.7864259028642591, 'f1-score': 0.8525143435707054, 'support': 1606}, '1': {'precision': 0.34541984732824427, 'recall': 0.6581818181818182, 'f1-score': 0.45306633291614523, 'support': 275}, 'accuracy': 0.7676767676767676, 'macro avg': {'precision': 0.638074698903621, 'recall': 0.7223038605230386, 'f1-score': 0.6527903382434254, 'support': 1881}, 'weighted avg': {'precision': 0.8451579564511099, 'recall': 0.7676767676767676, 'f1-score': 0.7941155116036644, 'support': 1881}}
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 399, in <module>
+    run_rf(X_train, y_train, X_test, y_test, results, experiment)
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 366, in run_rf
+    'roc at best threshold': wandb.plot.roc_curve(y_test, best_predictions)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/wandb/plot/roc_curve.py", line 71, in roc_curve
+    fpr[class_label], tpr[class_label], _ = sklearn_metrics.roc_curve(
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/metrics/_ranking.py", line 992, in roc_curve
+    fps, tps, thresholds = _binary_clf_curve(
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/metrics/_ranking.py", line 751, in _binary_clf_curve
+    check_consistent_length(y_true, y_score, sample_weight)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/utils/validation.py", line 394, in check_consistent_length
+    lengths = [_num_samples(X) for X in arrays if X is not None]
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/utils/validation.py", line 394, in <listcomp>
+    lengths = [_num_samples(X) for X in arrays if X is not None]
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/utils/validation.py", line 335, in _num_samples
+    raise TypeError(
+TypeError: Singleton array array(True) cannot be considered a valid collection.

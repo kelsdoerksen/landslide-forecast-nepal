@@ -1,0 +1,47 @@
+
+Loading data...
+> /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py(380)run_rf()
+    379     # Fit the model
+--> 380     print('Fitting model...')
+    381     forest.fit(Xtrain, ytrain)
+Index(['precip_rate_tminus_2', 'precip_rate_tminus_3', 'precip_rate_tminus_4',
+       'precip_rate_tminus_5', 'precip_rate_tminus_6', 'precip_rate_tminus_7',
+       'precip_rate_tminus_8', 'precip_rate_tminus_9', 'precip_rate_tminus_10',
+       'precip_rate_tminus_11', 'precip_rate_tminus_12',
+       'precip_rate_tminus_13', 'gpm_mean_precip_rate', 'gpm_max_precip_rate',
+       'gpm_min_precip_rate', 'gpm_total_cumulative_precipitation', 'dem_mean',
+       'dem_median', 'dem_stdev', 'dem_min', 'dem_max', 'dem_range',
+       'dem_variance', 'aspect_mean', 'aspect_median', 'aspect_stdev',
+       'aspect_min', 'aspect_max', 'aspect_range', 'aspect_variance',
+       'slope_mean', 'slope_median', 'slope_stdev', 'slope_min', 'slope_max',
+       'slope_range', 'slope_variance', 'lc_mode', 'lc_var',
+       'UKMO_ens_1_precip_rate_tplus_1', 'UKMO_ens_1_precip_rate_tplus_2',
+       'UKMO_ens_1_precip_rate_tplus_3', 'UKMO_ens_1_precip_rate_tplus_4',
+       'UKMO_ens_1_precip_rate_tplus_5', 'UKMO_ens_1_precip_rate_tplus_6',
+       'UKMO_ens_1_precip_rate_tplus_7', 'UKMO_ens_1_precip_rate_tplus_8',
+       'UKMO_ens_1_precip_rate_tplus_9', 'UKMO_ens_1_precip_rate_tplus_10',
+       'UKMO_ens_1_precip_rate_tplus_11', 'UKMO_ens_1_precip_rate_tplus_12',
+       'UKMO_ens_1_precip_mean_precip_rate',
+       'UKMO_ens_1_precip_max_precip_rate',
+       'UKMO_ens_1_precip_min_precip_rate',
+       'UKMO_ens_1_precip_total_cumulative_precipitation'],
+      dtype='object')
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 691, in <module>
+    run_rf(X_train, y_train, X_test, y_test, results, experiment, model)
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 380, in run_rf
+    print('Fitting model...')
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 380, in run_rf
+    print('Fitting model...')
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/bdb.py", line 115, in dispatch_line
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit
+If you suspect this is an IPython 8.7.0 bug, please report it at:
+    https://github.com/ipython/ipython/issues
+or send an email to the mailing list at ipython-dev@python.org
+You can print a more detailed traceback right now with "%tb", or use "%debug"
+to interactively debug it.
+Extra-detailed tracebacks for bug-reporting purposes can be enabled via:
+    %config Application.verbose_crash=True

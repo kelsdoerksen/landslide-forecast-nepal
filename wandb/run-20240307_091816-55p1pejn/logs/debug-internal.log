@@ -1,0 +1,280 @@
+2024-03-07 09:18:16,575 INFO    StreamThr :31195 [internal.py:wandb_internal():86] W&B internal server running at pid: 31195, started at: 2024-03-07 09:18:16.574656
+2024-03-07 09:18:16,576 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status
+2024-03-07 09:18:16,585 INFO    WriterThread:31195 [datastore.py:open_for_write():85] open: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/run-55p1pejn.wandb
+2024-03-07 09:18:16,586 DEBUG   SenderThread:31195 [sender.py:send():380] send: header
+2024-03-07 09:18:16,627 DEBUG   SenderThread:31195 [sender.py:send():380] send: run
+2024-03-07 09:18:16,630 INFO    SenderThread:31195 [sender.py:_maybe_setup_resume():759] checking resume status for None/landslide-prediction/55p1pejn
+2024-03-07 09:18:17,150 INFO    SenderThread:31195 [dir_watcher.py:__init__():211] watching files in: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files
+2024-03-07 09:18:17,150 INFO    SenderThread:31195 [sender.py:_start_run_threads():1122] run started: 55p1pejn with start time 1709803096.575291
+2024-03-07 09:18:17,161 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: check_version
+2024-03-07 09:18:17,162 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: check_version
+2024-03-07 09:18:17,241 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: run_start
+2024-03-07 09:18:17,254 DEBUG   HandlerThread:31195 [system_info.py:__init__():32] System info init
+2024-03-07 09:18:17,255 DEBUG   HandlerThread:31195 [system_info.py:__init__():47] System info init done
+2024-03-07 09:18:17,255 INFO    HandlerThread:31195 [system_monitor.py:start():181] Starting system monitor
+2024-03-07 09:18:17,255 INFO    SystemMonitor:31195 [system_monitor.py:_start():145] Starting system asset monitoring threads
+2024-03-07 09:18:17,256 INFO    HandlerThread:31195 [system_monitor.py:probe():201] Collecting system info
+2024-03-07 09:18:17,256 INFO    SystemMonitor:31195 [interfaces.py:start():190] Started cpu monitoring
+2024-03-07 09:18:17,256 DEBUG   HandlerThread:31195 [system_info.py:probe():196] Probing system
+2024-03-07 09:18:17,259 INFO    SystemMonitor:31195 [interfaces.py:start():190] Started disk monitoring
+2024-03-07 09:18:17,260 INFO    SystemMonitor:31195 [interfaces.py:start():190] Started memory monitoring
+2024-03-07 09:18:17,261 INFO    SystemMonitor:31195 [interfaces.py:start():190] Started network monitoring
+2024-03-07 09:18:17,272 DEBUG   HandlerThread:31195 [system_info.py:_probe_git():181] Probing git
+2024-03-07 09:18:17,324 DEBUG   HandlerThread:31195 [system_info.py:_probe_git():189] Probing git done
+2024-03-07 09:18:17,324 DEBUG   HandlerThread:31195 [system_info.py:probe():244] Probing system done
+2024-03-07 09:18:17,324 DEBUG   HandlerThread:31195 [system_monitor.py:probe():210] {'os': 'macOS-14.3.1-x86_64-i386-64bit', 'python': '3.10.13', 'heartbeatAt': '2024-03-07T09:18:17.257194', 'startedAt': '2024-03-07T09:18:16.566904', 'docker': None, 'cuda': None, 'args': ('--model', 'rf', '--test_year', '2023', '--forecast_model', 'KMA', '--ensemble_num', '1', '--experiment_type', 'no_hindcast'), 'state': 'running', 'program': '/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py', 'codePathLocal': 'run_classifier.py', 'codePath': '2024_Monsoon_Prep/run_classifier.py', 'git': {'remote': 'git@github.com:kelsdoerksen/landslide-prediction.git', 'commit': '9b093c7f3ed64248863160da302b85c4b08fc2b8'}, 'email': 'kelseydoerksen@gmail.com', 'root': '/Users/kelseydoerksen/code/landslide-prediction', 'host': 'Kelseys-MBP', 'username': 'kelseydoerksen', 'executable': '/Users/kelseydoerksen/opt/anaconda3/envs/aq/bin/python', 'cpu_count': 4, 'cpu_count_logical': 8, 'cpu_freq': {'current': 2300, 'min': 2300, 'max': 2300}, 'cpu_freq_per_core': [{'current': 2300, 'min': 2300, 'max': 2300}], 'disk': {'/': {'total': 465.62699127197266, 'used': 9.432418823242188}}, 'memory': {'total': 16.0}}
+2024-03-07 09:18:17,324 INFO    HandlerThread:31195 [system_monitor.py:probe():211] Finished collecting system info
+2024-03-07 09:18:17,324 INFO    HandlerThread:31195 [system_monitor.py:probe():214] Publishing system info
+2024-03-07 09:18:17,324 DEBUG   HandlerThread:31195 [system_info.py:_save_pip():52] Saving list of pip packages installed into the current environment
+2024-03-07 09:18:17,325 DEBUG   HandlerThread:31195 [system_info.py:_save_pip():68] Saving pip packages done
+2024-03-07 09:18:17,325 DEBUG   HandlerThread:31195 [system_info.py:_save_conda():75] Saving list of conda packages installed into the current environment
+2024-03-07 09:18:18,153 INFO    Thread-12 :31195 [dir_watcher.py:_on_file_created():271] file/dir created: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/requirements.txt
+2024-03-07 09:18:18,153 INFO    Thread-12 :31195 [dir_watcher.py:_on_file_created():271] file/dir created: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/conda-environment.yaml
+2024-03-07 09:18:27,544 DEBUG   HandlerThread:31195 [system_info.py:_save_conda():87] Saving conda packages done
+2024-03-07 09:18:27,545 INFO    HandlerThread:31195 [system_monitor.py:probe():216] Finished publishing system info
+2024-03-07 09:18:27,553 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status_report
+2024-03-07 09:18:27,553 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: keepalive
+2024-03-07 09:18:27,553 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status_report
+2024-03-07 09:18:27,553 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: keepalive
+2024-03-07 09:18:27,554 DEBUG   SenderThread:31195 [sender.py:send():380] send: files
+2024-03-07 09:18:27,554 INFO    SenderThread:31195 [sender.py:_save_file():1378] saving file wandb-metadata.json with policy now
+2024-03-07 09:18:27,563 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: stop_status
+2024-03-07 09:18:27,564 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: stop_status
+2024-03-07 09:18:27,565 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: internal_messages
+2024-03-07 09:18:27,736 DEBUG   SenderThread:31195 [sender.py:send():380] send: telemetry
+2024-03-07 09:18:27,736 DEBUG   SenderThread:31195 [sender.py:send():380] send: config
+2024-03-07 09:18:28,098 INFO    wandb-upload_0:31195 [upload_job.py:push():131] Uploaded file /var/folders/45/0gt2k_f526x1p6241p2jbczr0000gn/T/tmpl3qtao7gwandb/vtzjp8cd-wandb-metadata.json
+2024-03-07 09:18:28,193 INFO    Thread-12 :31195 [dir_watcher.py:_on_file_modified():288] file/dir modified: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/conda-environment.yaml
+2024-03-07 09:18:28,194 INFO    Thread-12 :31195 [dir_watcher.py:_on_file_created():271] file/dir created: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/output.log
+2024-03-07 09:18:28,194 INFO    Thread-12 :31195 [dir_watcher.py:_on_file_created():271] file/dir created: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/wandb-metadata.json
+2024-03-07 09:18:30,199 INFO    Thread-12 :31195 [dir_watcher.py:_on_file_modified():288] file/dir modified: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/output.log
+2024-03-07 09:18:32,205 INFO    Thread-12 :31195 [dir_watcher.py:_on_file_modified():288] file/dir modified: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/output.log
+2024-03-07 09:18:32,809 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status_report
+2024-03-07 09:18:37,827 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status_report
+2024-03-07 09:18:42,568 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: internal_messages
+2024-03-07 09:18:42,569 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: stop_status
+2024-03-07 09:18:42,570 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: stop_status
+2024-03-07 09:18:43,796 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status_report
+2024-03-07 09:18:48,812 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status_report
+2024-03-07 09:18:49,247 INFO    Thread-12 :31195 [dir_watcher.py:_on_file_modified():288] file/dir modified: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/config.yaml
+2024-03-07 09:18:53,981 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status_report
+2024-03-07 09:18:57,572 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: internal_messages
+2024-03-07 09:18:57,575 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: stop_status
+2024-03-07 09:18:57,576 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: stop_status
+2024-03-07 09:18:59,918 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status_report
+2024-03-07 09:19:04,922 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status_report
+2024-03-07 09:19:09,931 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status_report
+2024-03-07 09:19:12,574 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: internal_messages
+2024-03-07 09:19:12,575 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: stop_status
+2024-03-07 09:19:12,575 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: stop_status
+2024-03-07 09:19:15,772 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status_report
+2024-03-07 09:19:17,267 DEBUG   SystemMonitor:31195 [system_monitor.py:_start():159] Starting system metrics aggregation loop
+2024-03-07 09:19:17,269 DEBUG   SenderThread:31195 [sender.py:send():380] send: stats
+2024-03-07 09:19:21,284 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status_report
+2024-03-07 09:19:26,292 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status_report
+2024-03-07 09:19:27,576 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: internal_messages
+2024-03-07 09:19:27,577 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: stop_status
+2024-03-07 09:19:27,578 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: stop_status
+2024-03-07 09:19:31,733 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status_report
+2024-03-07 09:19:36,746 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status_report
+2024-03-07 09:19:41,767 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status_report
+2024-03-07 09:19:42,584 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: stop_status
+2024-03-07 09:19:42,584 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: internal_messages
+2024-03-07 09:19:42,585 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: stop_status
+2024-03-07 09:19:46,795 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status_report
+2024-03-07 09:19:47,273 DEBUG   SenderThread:31195 [sender.py:send():380] send: stats
+2024-03-07 09:19:52,286 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status_report
+2024-03-07 09:19:57,314 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status_report
+2024-03-07 09:19:57,588 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: internal_messages
+2024-03-07 09:19:57,588 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: stop_status
+2024-03-07 09:19:57,588 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: stop_status
+2024-03-07 09:20:02,753 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status_report
+2024-03-07 09:20:07,760 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status_report
+2024-03-07 09:20:12,588 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: stop_status
+2024-03-07 09:20:12,589 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: internal_messages
+2024-03-07 09:20:12,590 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: stop_status
+2024-03-07 09:20:13,737 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status_report
+2024-03-07 09:20:16,365 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: partial_history
+2024-03-07 09:20:16,367 DEBUG   SenderThread:31195 [sender.py:send():380] send: history
+2024-03-07 09:20:16,367 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: summary_record
+2024-03-07 09:20:16,368 INFO    SenderThread:31195 [sender.py:_save_file():1378] saving file wandb-summary.json with policy end
+2024-03-07 09:20:16,484 INFO    Thread-12 :31195 [dir_watcher.py:_on_file_modified():288] file/dir modified: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/output.log
+2024-03-07 09:20:16,484 INFO    Thread-12 :31195 [dir_watcher.py:_on_file_created():271] file/dir created: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/wandb-summary.json
+2024-03-07 09:20:17,279 DEBUG   SenderThread:31195 [sender.py:send():380] send: stats
+2024-03-07 09:20:18,493 INFO    Thread-12 :31195 [dir_watcher.py:_on_file_modified():288] file/dir modified: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/output.log
+2024-03-07 09:20:19,286 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status_report
+2024-03-07 09:20:24,299 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status_report
+2024-03-07 09:20:27,593 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: internal_messages
+2024-03-07 09:20:27,594 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: stop_status
+2024-03-07 09:20:27,594 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: stop_status
+2024-03-07 09:20:29,777 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status_report
+2024-03-07 09:20:34,791 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status_report
+2024-03-07 09:20:39,808 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status_report
+2024-03-07 09:20:42,595 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: stop_status
+2024-03-07 09:20:42,596 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: stop_status
+2024-03-07 09:20:42,648 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: internal_messages
+2024-03-07 09:20:43,057 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: partial_history
+2024-03-07 09:20:43,058 DEBUG   SenderThread:31195 [sender.py:send():380] send: history
+2024-03-07 09:20:43,058 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: summary_record
+2024-03-07 09:20:43,059 INFO    SenderThread:31195 [sender.py:_save_file():1378] saving file wandb-summary.json with policy end
+2024-03-07 09:20:43,084 DEBUG   SenderThread:31195 [sender.py:send():380] send: config
+2024-03-07 09:20:43,338 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: log_artifact
+2024-03-07 09:20:43,339 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: log_artifact
+2024-03-07 09:20:43,571 INFO    Thread-12 :31195 [dir_watcher.py:_on_file_modified():288] file/dir modified: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/wandb-summary.json
+2024-03-07 09:20:43,572 INFO    Thread-12 :31195 [dir_watcher.py:_on_file_created():271] file/dir created: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/media/table/roc_table_2_7440f0cee5d5bd20ff12.table.json
+2024-03-07 09:20:43,573 INFO    Thread-12 :31195 [dir_watcher.py:_on_file_created():271] file/dir created: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/media
+2024-03-07 09:20:43,574 INFO    Thread-12 :31195 [dir_watcher.py:_on_file_created():271] file/dir created: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/media/table
+2024-03-07 09:20:43,658 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: partial_history
+2024-03-07 09:20:43,936 INFO    wandb-upload_0:31195 [upload_job.py:push():131] Uploaded file /var/folders/45/0gt2k_f526x1p6241p2jbczr0000gn/T/tmpl3qtao7gwandb/58qgn9rm-media/table/roc_table_2_7440f0cee5d5bd20ff12.table.json
+2024-03-07 09:20:44,513 INFO    wandb-upload_1:31195 [upload_job.py:push():89] Uploaded file /Users/kelseydoerksen/Library/Application Support/wandb/artifacts/staging/tmpc4k9hjds
+2024-03-07 09:20:44,575 INFO    Thread-12 :31195 [dir_watcher.py:_on_file_modified():288] file/dir modified: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/output.log
+2024-03-07 09:20:45,018 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: poll_exit
+2024-03-07 09:20:45,325 INFO    SenderThread:31195 [sender.py:send_request_log_artifact():1444] logged artifact run-55p1pejn-roc_table - {'id': 'QXJ0aWZhY3Q6NzQ0OTE1Mjk0', 'state': 'PENDING', 'artifactSequence': {'id': 'QXJ0aWZhY3RDb2xsZWN0aW9uOjE0NjM2NjgwMA==', 'latestArtifact': None}}
+2024-03-07 09:20:45,325 DEBUG   SenderThread:31195 [sender.py:send():380] send: files
+2024-03-07 09:20:45,326 INFO    SenderThread:31195 [sender.py:_save_file():1378] saving file media/table/roc_table_2_7440f0cee5d5bd20ff12.table.json with policy now
+2024-03-07 09:20:45,326 DEBUG   SenderThread:31195 [sender.py:send():380] send: history
+2024-03-07 09:20:45,326 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: summary_record
+2024-03-07 09:20:45,327 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status_report
+2024-03-07 09:20:45,328 INFO    SenderThread:31195 [sender.py:_save_file():1378] saving file wandb-summary.json with policy end
+2024-03-07 09:20:45,328 DEBUG   SenderThread:31195 [sender.py:send():380] send: exit
+2024-03-07 09:20:45,328 INFO    SenderThread:31195 [sender.py:send_exit():585] handling exit code: 0
+2024-03-07 09:20:45,329 INFO    SenderThread:31195 [sender.py:send_exit():587] handling runtime: 146
+2024-03-07 09:20:45,329 INFO    SenderThread:31195 [sender.py:_save_file():1378] saving file wandb-summary.json with policy end
+2024-03-07 09:20:45,329 INFO    SenderThread:31195 [sender.py:send_exit():593] send defer
+2024-03-07 09:20:45,330 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: poll_exit
+2024-03-07 09:20:45,330 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: defer
+2024-03-07 09:20:45,330 INFO    HandlerThread:31195 [handler.py:handle_request_defer():170] handle defer: 0
+2024-03-07 09:20:45,330 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: defer
+2024-03-07 09:20:45,330 INFO    SenderThread:31195 [sender.py:send_request_defer():609] handle sender defer: 0
+2024-03-07 09:20:45,331 INFO    SenderThread:31195 [sender.py:transition_state():613] send defer: 1
+2024-03-07 09:20:45,331 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: defer
+2024-03-07 09:20:45,331 INFO    HandlerThread:31195 [handler.py:handle_request_defer():170] handle defer: 1
+2024-03-07 09:20:45,331 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: defer
+2024-03-07 09:20:45,331 INFO    SenderThread:31195 [sender.py:send_request_defer():609] handle sender defer: 1
+2024-03-07 09:20:45,331 INFO    SenderThread:31195 [sender.py:transition_state():613] send defer: 2
+2024-03-07 09:20:45,332 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: defer
+2024-03-07 09:20:45,332 INFO    HandlerThread:31195 [handler.py:handle_request_defer():170] handle defer: 2
+2024-03-07 09:20:45,332 INFO    HandlerThread:31195 [system_monitor.py:finish():190] Stopping system monitor
+2024-03-07 09:20:45,332 DEBUG   SystemMonitor:31195 [system_monitor.py:_start():166] Finished system metrics aggregation loop
+2024-03-07 09:20:45,332 INFO    HandlerThread:31195 [interfaces.py:finish():202] Joined cpu monitor
+2024-03-07 09:20:45,333 DEBUG   SystemMonitor:31195 [system_monitor.py:_start():170] Publishing last batch of metrics
+2024-03-07 09:20:45,333 INFO    HandlerThread:31195 [interfaces.py:finish():202] Joined disk monitor
+2024-03-07 09:20:45,336 INFO    HandlerThread:31195 [interfaces.py:finish():202] Joined memory monitor
+2024-03-07 09:20:45,336 INFO    HandlerThread:31195 [interfaces.py:finish():202] Joined network monitor
+2024-03-07 09:20:45,337 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: defer
+2024-03-07 09:20:45,337 INFO    SenderThread:31195 [sender.py:send_request_defer():609] handle sender defer: 2
+2024-03-07 09:20:45,337 INFO    SenderThread:31195 [sender.py:transition_state():613] send defer: 3
+2024-03-07 09:20:45,337 DEBUG   SenderThread:31195 [sender.py:send():380] send: stats
+2024-03-07 09:20:45,338 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: defer
+2024-03-07 09:20:45,338 INFO    HandlerThread:31195 [handler.py:handle_request_defer():170] handle defer: 3
+2024-03-07 09:20:45,339 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: defer
+2024-03-07 09:20:45,339 INFO    SenderThread:31195 [sender.py:send_request_defer():609] handle sender defer: 3
+2024-03-07 09:20:45,339 INFO    SenderThread:31195 [sender.py:transition_state():613] send defer: 4
+2024-03-07 09:20:45,339 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: defer
+2024-03-07 09:20:45,339 INFO    HandlerThread:31195 [handler.py:handle_request_defer():170] handle defer: 4
+2024-03-07 09:20:45,340 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: defer
+2024-03-07 09:20:45,340 INFO    SenderThread:31195 [sender.py:send_request_defer():609] handle sender defer: 4
+2024-03-07 09:20:45,340 INFO    SenderThread:31195 [sender.py:transition_state():613] send defer: 5
+2024-03-07 09:20:45,340 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: defer
+2024-03-07 09:20:45,340 INFO    HandlerThread:31195 [handler.py:handle_request_defer():170] handle defer: 5
+2024-03-07 09:20:45,340 DEBUG   SenderThread:31195 [sender.py:send():380] send: summary
+2024-03-07 09:20:45,341 INFO    SenderThread:31195 [sender.py:_save_file():1378] saving file wandb-summary.json with policy end
+2024-03-07 09:20:45,341 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: defer
+2024-03-07 09:20:45,341 INFO    SenderThread:31195 [sender.py:send_request_defer():609] handle sender defer: 5
+2024-03-07 09:20:45,341 INFO    SenderThread:31195 [sender.py:transition_state():613] send defer: 6
+2024-03-07 09:20:45,342 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: defer
+2024-03-07 09:20:45,342 INFO    HandlerThread:31195 [handler.py:handle_request_defer():170] handle defer: 6
+2024-03-07 09:20:45,342 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: defer
+2024-03-07 09:20:45,342 INFO    SenderThread:31195 [sender.py:send_request_defer():609] handle sender defer: 6
+2024-03-07 09:20:45,346 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status_report
+2024-03-07 09:20:45,510 INFO    SenderThread:31195 [sender.py:transition_state():613] send defer: 7
+2024-03-07 09:20:45,511 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: defer
+2024-03-07 09:20:45,511 INFO    HandlerThread:31195 [handler.py:handle_request_defer():170] handle defer: 7
+2024-03-07 09:20:45,511 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: defer
+2024-03-07 09:20:45,512 INFO    SenderThread:31195 [sender.py:send_request_defer():609] handle sender defer: 7
+2024-03-07 09:20:45,582 INFO    Thread-12 :31195 [dir_watcher.py:_on_file_modified():288] file/dir modified: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/wandb-summary.json
+2024-03-07 09:20:45,582 INFO    Thread-12 :31195 [dir_watcher.py:_on_file_modified():288] file/dir modified: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/config.yaml
+2024-03-07 09:20:45,836 INFO    wandb-upload_0:31195 [upload_job.py:push():131] Uploaded file /var/folders/45/0gt2k_f526x1p6241p2jbczr0000gn/T/tmpl3qtao7gwandb/7cmq9w4r-media/table/roc_table_2_7440f0cee5d5bd20ff12.table.json
+2024-03-07 09:20:46,020 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: poll_exit
+2024-03-07 09:20:47,854 INFO    SenderThread:31195 [sender.py:transition_state():613] send defer: 8
+2024-03-07 09:20:47,855 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: poll_exit
+2024-03-07 09:20:47,855 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: defer
+2024-03-07 09:20:47,856 INFO    HandlerThread:31195 [handler.py:handle_request_defer():170] handle defer: 8
+2024-03-07 09:20:47,856 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: defer
+2024-03-07 09:20:47,857 INFO    SenderThread:31195 [sender.py:send_request_defer():609] handle sender defer: 8
+2024-03-07 09:20:47,857 INFO    SenderThread:31195 [job_builder.py:build():281] Attempting to build job artifact
+2024-03-07 09:20:47,859 INFO    SenderThread:31195 [job_builder.py:_get_source_type():393] is repo sourced job
+2024-03-07 09:20:47,862 INFO    SenderThread:31195 [job_builder.py:build():369] adding wandb-job metadata file
+2024-03-07 09:20:47,868 INFO    SenderThread:31195 [sender.py:transition_state():613] send defer: 9
+2024-03-07 09:20:47,870 DEBUG   SenderThread:31195 [sender.py:send():380] send: artifact
+2024-03-07 09:20:47,870 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: defer
+2024-03-07 09:20:47,875 INFO    HandlerThread:31195 [handler.py:handle_request_defer():170] handle defer: 9
+2024-03-07 09:20:48,308 INFO    SenderThread:31195 [sender.py:send_artifact():1456] sent artifact job-git_github.com_kelsdoerksen_landslide-prediction.git_2024_Monsoon_Prep_run_classifier.py - {'id': 'QXJ0aWZhY3Q6NzQ0ODI5OTUw', 'state': 'COMMITTED', 'artifactSequence': {'id': 'QXJ0aWZhY3RDb2xsZWN0aW9uOjE0MzgwNjI2MA==', 'latestArtifact': {'id': 'QXJ0aWZhY3Q6NzQ0ODI5OTUw', 'versionIndex': 6}}}
+2024-03-07 09:20:48,308 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: defer
+2024-03-07 09:20:48,309 INFO    SenderThread:31195 [sender.py:send_request_defer():609] handle sender defer: 9
+2024-03-07 09:20:48,309 INFO    SenderThread:31195 [dir_watcher.py:finish():358] shutting down directory watcher
+2024-03-07 09:20:48,589 INFO    SenderThread:31195 [dir_watcher.py:_on_file_modified():288] file/dir modified: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/output.log
+2024-03-07 09:20:48,591 INFO    SenderThread:31195 [dir_watcher.py:finish():388] scan: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files
+2024-03-07 09:20:48,591 INFO    SenderThread:31195 [dir_watcher.py:finish():402] scan save: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/requirements.txt requirements.txt
+2024-03-07 09:20:48,591 INFO    SenderThread:31195 [dir_watcher.py:finish():402] scan save: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/output.log output.log
+2024-03-07 09:20:48,594 INFO    SenderThread:31195 [dir_watcher.py:finish():402] scan save: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/config.yaml config.yaml
+2024-03-07 09:20:48,594 INFO    SenderThread:31195 [dir_watcher.py:finish():402] scan save: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/wandb-summary.json wandb-summary.json
+2024-03-07 09:20:48,595 INFO    SenderThread:31195 [dir_watcher.py:finish():402] scan save: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/conda-environment.yaml conda-environment.yaml
+2024-03-07 09:20:48,597 INFO    SenderThread:31195 [dir_watcher.py:finish():402] scan save: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/wandb-metadata.json wandb-metadata.json
+2024-03-07 09:20:48,611 INFO    SenderThread:31195 [dir_watcher.py:finish():402] scan save: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/media/table/roc_table_2_7440f0cee5d5bd20ff12.table.json media/table/roc_table_2_7440f0cee5d5bd20ff12.table.json
+2024-03-07 09:20:48,611 INFO    SenderThread:31195 [sender.py:transition_state():613] send defer: 10
+2024-03-07 09:20:48,611 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: defer
+2024-03-07 09:20:48,611 INFO    HandlerThread:31195 [handler.py:handle_request_defer():170] handle defer: 10
+2024-03-07 09:20:48,612 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: defer
+2024-03-07 09:20:48,612 INFO    SenderThread:31195 [sender.py:send_request_defer():609] handle sender defer: 10
+2024-03-07 09:20:48,612 INFO    SenderThread:31195 [file_pusher.py:finish():175] shutting down file pusher
+2024-03-07 09:20:48,974 INFO    wandb-upload_1:31195 [upload_job.py:push():131] Uploaded file /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/requirements.txt
+2024-03-07 09:20:49,004 INFO    wandb-upload_2:31195 [upload_job.py:push():131] Uploaded file /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/config.yaml
+2024-03-07 09:20:49,024 INFO    wandb-upload_3:31195 [upload_job.py:push():131] Uploaded file /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/wandb-summary.json
+2024-03-07 09:20:49,042 INFO    wandb-upload_0:31195 [upload_job.py:push():131] Uploaded file /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/output.log
+2024-03-07 09:20:49,058 INFO    wandb-upload_4:31195 [upload_job.py:push():131] Uploaded file /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/files/conda-environment.yaml
+2024-03-07 09:20:49,264 INFO    Thread-11 (_thread_body):31195 [sender.py:transition_state():613] send defer: 11
+2024-03-07 09:20:49,264 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: defer
+2024-03-07 09:20:49,265 INFO    HandlerThread:31195 [handler.py:handle_request_defer():170] handle defer: 11
+2024-03-07 09:20:49,265 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: defer
+2024-03-07 09:20:49,265 INFO    SenderThread:31195 [sender.py:send_request_defer():609] handle sender defer: 11
+2024-03-07 09:20:49,265 INFO    SenderThread:31195 [file_pusher.py:join():181] waiting for file pusher
+2024-03-07 09:20:49,265 INFO    SenderThread:31195 [sender.py:transition_state():613] send defer: 12
+2024-03-07 09:20:49,265 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: defer
+2024-03-07 09:20:49,266 INFO    HandlerThread:31195 [handler.py:handle_request_defer():170] handle defer: 12
+2024-03-07 09:20:49,266 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: defer
+2024-03-07 09:20:49,266 INFO    SenderThread:31195 [sender.py:send_request_defer():609] handle sender defer: 12
+2024-03-07 09:20:49,266 INFO    SenderThread:31195 [file_stream.py:finish():595] file stream finish called
+2024-03-07 09:20:51,038 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: keepalive
+2024-03-07 09:20:54,884 INFO    SenderThread:31195 [file_stream.py:finish():599] file stream finish is done
+2024-03-07 09:20:54,884 INFO    SenderThread:31195 [sender.py:transition_state():613] send defer: 13
+2024-03-07 09:20:54,885 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: defer
+2024-03-07 09:20:54,886 INFO    HandlerThread:31195 [handler.py:handle_request_defer():170] handle defer: 13
+2024-03-07 09:20:54,886 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: status_report
+2024-03-07 09:20:54,887 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: defer
+2024-03-07 09:20:54,887 INFO    SenderThread:31195 [sender.py:send_request_defer():609] handle sender defer: 13
+2024-03-07 09:20:54,888 INFO    SenderThread:31195 [sender.py:transition_state():613] send defer: 14
+2024-03-07 09:20:54,889 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: defer
+2024-03-07 09:20:54,889 INFO    HandlerThread:31195 [handler.py:handle_request_defer():170] handle defer: 14
+2024-03-07 09:20:54,889 DEBUG   SenderThread:31195 [sender.py:send():380] send: final
+2024-03-07 09:20:54,890 DEBUG   SenderThread:31195 [sender.py:send():380] send: footer
+2024-03-07 09:20:54,890 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: defer
+2024-03-07 09:20:54,890 INFO    SenderThread:31195 [sender.py:send_request_defer():609] handle sender defer: 14
+2024-03-07 09:20:54,891 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: poll_exit
+2024-03-07 09:20:54,891 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: server_info
+2024-03-07 09:20:54,892 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: poll_exit
+2024-03-07 09:20:54,892 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: server_info
+2024-03-07 09:20:54,895 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: get_summary
+2024-03-07 09:20:54,897 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: sampled_history
+2024-03-07 09:20:54,901 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: internal_messages
+2024-03-07 09:20:54,902 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: job_info
+2024-03-07 09:20:55,099 DEBUG   SenderThread:31195 [sender.py:send_request():407] send_request: job_info
+2024-03-07 09:20:55,099 INFO    MainThread:31195 [wandb_run.py:_footer_history_summary_info():3554] rendering history
+2024-03-07 09:20:55,100 INFO    MainThread:31195 [wandb_run.py:_footer_history_summary_info():3586] rendering summary
+2024-03-07 09:20:55,100 INFO    MainThread:31195 [wandb_run.py:_footer_sync_info():3513] logging synced files
+2024-03-07 09:20:55,101 DEBUG   HandlerThread:31195 [handler.py:handle_request():144] handle_request: shutdown
+2024-03-07 09:20:55,101 INFO    HandlerThread:31195 [handler.py:finish():844] shutting down handler
+2024-03-07 09:20:55,906 INFO    WriterThread:31195 [datastore.py:close():294] close: /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/wandb/run-20240307_091816-55p1pejn/run-55p1pejn.wandb
+2024-03-07 09:20:56,103 INFO    SenderThread:31195 [sender.py:finish():1534] shutting down sender
+2024-03-07 09:20:56,103 INFO    SenderThread:31195 [file_pusher.py:finish():175] shutting down file pusher
+2024-03-07 09:20:56,103 INFO    SenderThread:31195 [file_pusher.py:join():181] waiting for file pusher

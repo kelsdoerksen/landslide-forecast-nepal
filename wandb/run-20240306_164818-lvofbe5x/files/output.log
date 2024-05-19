@@ -1,0 +1,20 @@
+
+Loading data...
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 605, in <module>
+    X_train, y_train, X_test, y_test = load_data(test_year, '{}/LabelledData/{}/ensemble_{}'.format(root_dir,
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 291, in load_data
+    X_train = df_train.drop(columns=['label', 'district', 'date', 'Unnamed: 0', 'Unnamed: 0.1'])
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/pandas/util/_decorators.py", line 331, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/pandas/core/frame.py", line 5396, in drop
+    return super().drop(
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/pandas/util/_decorators.py", line 331, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/pandas/core/generic.py", line 4505, in drop
+    obj = obj._drop_axis(labels, axis, level=level, errors=errors)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/pandas/core/generic.py", line 4546, in _drop_axis
+    new_axis = axis.drop(labels, errors=errors)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/pandas/core/indexes/base.py", line 6977, in drop
+    raise KeyError(f"{list(labels[mask])} not found in axis")
+KeyError: "['Unnamed: 0.1'] not found in axis"

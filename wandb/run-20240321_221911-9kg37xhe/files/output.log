@@ -1,0 +1,102 @@
+
+Loading data...
+Fitting model...
+/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/xgboost/core.py:160: UserWarning: [22:19:25] WARNING: /Users/runner/work/xgboost/xgboost/src/objective/regression_obj.cu:209: reg:linear is now deprecated in favor of reg:squarederror.
+  warnings.warn(smsg, UserWarning)
+/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/xgboost/core.py:160: UserWarning: [22:19:26] WARNING: /Users/runner/work/xgboost/xgboost/src/objective/regression_obj.cu:209: reg:linear is now deprecated in favor of reg:squarederror.
+  warnings.warn(smsg, UserWarning)
+/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/model_selection/_validation.py:776: UserWarning: Scoring failed. The score on this train-test partition for these parameters will be set to nan. Details:
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/model_selection/_validation.py", line 767, in _score
+    scores = scorer(estimator, X_test, y_test)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/metrics/_scorer.py", line 107, in __call__
+    score = scorer._score(cached_call, estimator, *args, **kwargs)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/metrics/_scorer.py", line 268, in _score
+    return self._sign * self._score_func(y_true, y_pred, **self._kwargs)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/utils/_param_validation.py", line 192, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/metrics/_classification.py", line 221, in accuracy_score
+    y_type, y_true, y_pred = _check_targets(y_true, y_pred)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/metrics/_classification.py", line 95, in _check_targets
+    raise ValueError(
+ValueError: Classification metrics can't handle a mix of binary and continuous targets
+  warnings.warn(
+/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/xgboost/core.py:160: UserWarning: [22:19:28] WARNING: /Users/runner/work/xgboost/xgboost/src/objective/regression_obj.cu:209: reg:linear is now deprecated in favor of reg:squarederror.
+  warnings.warn(smsg, UserWarning)
+/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/model_selection/_validation.py:776: UserWarning: Scoring failed. The score on this train-test partition for these parameters will be set to nan. Details:
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/model_selection/_validation.py", line 767, in _score
+    scores = scorer(estimator, X_test, y_test)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/metrics/_scorer.py", line 107, in __call__
+    score = scorer._score(cached_call, estimator, *args, **kwargs)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/metrics/_scorer.py", line 268, in _score
+    return self._sign * self._score_func(y_true, y_pred, **self._kwargs)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/utils/_param_validation.py", line 192, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/metrics/_classification.py", line 221, in accuracy_score
+    y_type, y_true, y_pred = _check_targets(y_true, y_pred)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/metrics/_classification.py", line 95, in _check_targets
+    raise ValueError(
+ValueError: Classification metrics can't handle a mix of binary and continuous targets
+  warnings.warn(
+/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/xgboost/core.py:160: UserWarning: [22:19:29] WARNING: /Users/runner/work/xgboost/xgboost/src/objective/regression_obj.cu:209: reg:linear is now deprecated in favor of reg:squarederror.
+  warnings.warn(smsg, UserWarning)
+/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/model_selection/_validation.py:776: UserWarning: Scoring failed. The score on this train-test partition for these parameters will be set to nan. Details:
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/model_selection/_validation.py", line 767, in _score
+    scores = scorer(estimator, X_test, y_test)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/metrics/_scorer.py", line 107, in __call__
+    score = scorer._score(cached_call, estimator, *args, **kwargs)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/metrics/_scorer.py", line 268, in _score
+    return self._sign * self._score_func(y_true, y_pred, **self._kwargs)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/utils/_param_validation.py", line 192, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/metrics/_classification.py", line 221, in accuracy_score
+    y_type, y_true, y_pred = _check_targets(y_true, y_pred)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/metrics/_classification.py", line 95, in _check_targets
+    raise ValueError(
+ValueError: Classification metrics can't handle a mix of binary and continuous targets
+  warnings.warn(
+/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/xgboost/core.py:160: UserWarning: [22:19:30] WARNING: /Users/runner/work/xgboost/xgboost/src/objective/regression_obj.cu:209: reg:linear is now deprecated in favor of reg:squarederror.
+  warnings.warn(smsg, UserWarning)
+/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/model_selection/_validation.py:776: UserWarning: Scoring failed. The score on this train-test partition for these parameters will be set to nan. Details:
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/model_selection/_validation.py", line 767, in _score
+    scores = scorer(estimator, X_test, y_test)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/metrics/_scorer.py", line 107, in __call__
+    score = scorer._score(cached_call, estimator, *args, **kwargs)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/metrics/_scorer.py", line 268, in _score
+    return self._sign * self._score_func(y_true, y_pred, **self._kwargs)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/utils/_param_validation.py", line 192, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/metrics/_classification.py", line 221, in accuracy_score
+    y_type, y_true, y_pred = _check_targets(y_true, y_pred)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/metrics/_classification.py", line 95, in _check_targets
+    raise ValueError(
+ValueError: Classification metrics can't handle a mix of binary and continuous targets
+  warnings.warn(
+/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/xgboost/core.py:160: UserWarning: [22:19:31] WARNING: /Users/runner/work/xgboost/xgboost/src/objective/regression_obj.cu:209: reg:linear is now deprecated in favor of reg:squarederror.
+  warnings.warn(smsg, UserWarning)
+/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/model_selection/_validation.py:776: UserWarning: Scoring failed. The score on this train-test partition for these parameters will be set to nan. Details:
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/model_selection/_validation.py", line 767, in _score
+    scores = scorer(estimator, X_test, y_test)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/metrics/_scorer.py", line 107, in __call__
+    score = scorer._score(cached_call, estimator, *args, **kwargs)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/metrics/_scorer.py", line 268, in _score
+    return self._sign * self._score_func(y_true, y_pred, **self._kwargs)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/utils/_param_validation.py", line 192, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/metrics/_classification.py", line 221, in accuracy_score
+    y_type, y_true, y_pred = _check_targets(y_true, y_pred)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/metrics/_classification.py", line 95, in _check_targets
+    raise ValueError(
+ValueError: Classification metrics can't handle a mix of binary and continuous targets
+  warnings.warn(
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 641, in <module>
+    run_xgb(X_train, y_train, X_test, y_test, results, experiment, model)
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 511, in run_xgb
+    probs = clf.predict_proba(Xtest)
+AttributeError: 'XGBRegressor' object has no attribute 'predict_proba'
+Evaluating model...

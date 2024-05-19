@@ -1,0 +1,24 @@
+
+Loading data...
+Fitting model...
+Evaluating model...
+The hard predictions were right 84.89% of the time
+No Skill: ROC AUC=0.500
+RFC: ROC AUC=0.798
+/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py:135: RuntimeWarning: invalid value encountered in divide
+  fscore = (2 * precision * recall) / (precision + recall)
+The number of non-landslide events is: 11232
+The number of landslide events is: 1935
+Best Threshold=0.190000, F-Score=0.445
+Test set accuracy at threshold 0.19: 0.7790688843320422
+Test set F1 at threshold 0.19: 0.4451649818806027
+True Positive is 1167
+True Negative is 9091
+False Positive is 2141
+False Negative is 768
+False positive rate at best threshold is 0.19061609686609687
+True positive rate at best threshold is is 0.6031007751937985
+False negative rate at best threshold is is 0.39689922480620154
+True negative rate at best threshold is is 0.8093839031339032
+--------------------
+{'0': {'precision': 0.9221016330256618, 'recall': 0.8093839031339032, 'f1-score': 0.8620738703712485, 'support': 11232}, '1': {'precision': 0.35278113663845223, 'recall': 0.6031007751937985, 'f1-score': 0.4451649818806027, 'support': 1935}, 'accuracy': 0.7790688843320422, 'macro avg': {'precision': 0.637441384832057, 'recall': 0.7062423391638508, 'f1-score': 0.6536194261259256, 'support': 13167}, 'weighted avg': {'precision': 0.8384352579585053, 'recall': 0.7790688843320422, 'f1-score': 0.8008056468404975, 'support': 13167}}

@@ -1,0 +1,21 @@
+
+Loading data...
+Fitting model...
+Evaluating model...
+The hard predictions were right 85.21% of the time
+No Skill: ROC AUC=0.500
+RFC: ROC AUC=0.802
+/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py:136: RuntimeWarning: invalid value encountered in divide
+  fscore = (2 * precision * recall) / (precision + recall)
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 635, in <module>
+    run_rf(X_train, y_train, X_test, y_test, results, experiment, model)
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 406, in run_rf
+    calc_model_performance(forest, ytest, probs, Xtest, results, wandb_exp, model_type)
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 213, in calc_model_performance
+    best_thresh = get_threshold_precision_and_recall(probs[:,1], labels, results_dir)
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 147, in get_threshold_precision_and_recall
+    print('The number of non-landslide events is: {}'.format(labels.tolist().count(0)))
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/pandas/core/generic.py", line 5902, in __getattr__
+    return object.__getattribute__(self, name)
+AttributeError: 'DataFrame' object has no attribute 'tolist'

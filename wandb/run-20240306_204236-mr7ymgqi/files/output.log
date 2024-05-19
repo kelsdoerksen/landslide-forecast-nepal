@@ -1,0 +1,6 @@
+
+Loading data...
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 614, in <module>
+    X_train, y_train, X_test, y_test = load_data(test_year, '{}/LabelledData/{}/ensemble_{}'.format(root_dir,
+TypeError: load_data() missing 1 required positional argument: 'experiment_type'

@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 389, in <module>
+    os.mkdirs(results)
+AttributeError: module 'os' has no attribute 'mkdirs'

@@ -1,0 +1,30 @@
+
+Evaluating model...
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 677, in <module>
+    run_ecmwf_test(root_dir, results, experiment, model)
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 629, in run_ecmwf_test
+    probs = rf_model.predict_proba(X_test)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/ensemble/_forest.py", line 863, in predict_proba
+    X = self._validate_X_predict(X)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/ensemble/_forest.py", line 603, in _validate_X_predict
+    X = self._validate_data(X, dtype=DTYPE, accept_sparse="csr", reset=False)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/base.py", line 518, in _validate_data
+    self._check_feature_names(X, reset=reset)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/base.py", line 451, in _check_feature_names
+    raise ValueError(message)
+ValueError: The feature names should match those that were passed during fit.
+Feature names unseen at fit time:
+- date
+- district
+- ecmwf_ens_1_precip_max_precip_rate
+- ecmwf_ens_1_precip_mean_precip_rate
+- ecmwf_ens_1_precip_min_precip_rate
+- ...
+Feature names seen at fit time, yet now missing:
+- UKMO_ens_1_precip_max_precip_rate
+- UKMO_ens_1_precip_mean_precip_rate
+- UKMO_ens_1_precip_min_precip_rate
+- UKMO_ens_1_precip_rate_tplus_1
+- UKMO_ens_1_precip_rate_tplus_10
+- ...

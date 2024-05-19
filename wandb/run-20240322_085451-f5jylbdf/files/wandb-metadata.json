@@ -1,0 +1,56 @@
+{
+    "os": "macOS-14.3.1-x86_64-i386-64bit",
+    "python": "3.10.13",
+    "heartbeatAt": "2024-03-22T07:54:52.606440",
+    "startedAt": "2024-03-22T07:54:51.713602",
+    "docker": null,
+    "cuda": null,
+    "args": [
+        "--model",
+        "rf",
+        "--test_year",
+        "2019",
+        "--forecast_model",
+        "UKMO",
+        "--ensemble_num",
+        "1",
+        "--experiment_type",
+        "full"
+    ],
+    "state": "running",
+    "program": "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py",
+    "codePathLocal": "run_classifier.py",
+    "codePath": "2024_Monsoon_Prep/run_classifier.py",
+    "git": {
+        "remote": "git@github.com:kelsdoerksen/landslide-prediction.git",
+        "commit": "9b093c7f3ed64248863160da302b85c4b08fc2b8"
+    },
+    "email": "kelseydoerksen@gmail.com",
+    "root": "/Users/kelseydoerksen/code/landslide-prediction",
+    "host": "Kelseys-MBP.homenet.telecomitalia.it",
+    "username": "kelseydoerksen",
+    "executable": "/Users/kelseydoerksen/opt/anaconda3/envs/aq/bin/python",
+    "cpu_count": 4,
+    "cpu_count_logical": 8,
+    "cpu_freq": {
+        "current": 2300,
+        "min": 2300,
+        "max": 2300
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2300,
+            "min": 2300,
+            "max": 2300
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 465.62699127197266,
+            "used": 9.432418823242188
+        }
+    },
+    "memory": {
+        "total": 16.0
+    }
+}

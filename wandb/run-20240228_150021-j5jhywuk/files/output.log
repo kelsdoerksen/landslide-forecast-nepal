@@ -1,0 +1,34 @@
+
+Loading data...
+Number of positive testing samples: 275
+Number of negative testing samples: 1606
+Fitting model...
+Evaluating model...
+The hard predictions were right 85.06% of the time
+No Skill: ROC AUC=0.500
+RFC: ROC AUC=0.803
+The number of non-landslide events is: 1606
+The number of landslide events is: 275
+Best Threshold=0.185000, F-Score=0.446
+/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py:107: RuntimeWarning: invalid value encountered in divide
+  fscore = (2 * precision * recall) / (precision + recall)
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 388, in <module>
+    run_rf(X_train, y_train, X_test, y_test, results, experiment)
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 348, in run_rf
+    calc_model_performance(forest, ytest, probs, Xtest, results, wandb_exp)
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 190, in calc_model_performance
+    'roc at best threshold {}'.format(best_thresh): wandb.plot.roc_curve(labels, preds_1_and_0)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/wandb/plot/roc_curve.py", line 71, in roc_curve
+    fpr[class_label], tpr[class_label], _ = sklearn_metrics.roc_curve(
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/metrics/_ranking.py", line 992, in roc_curve
+    fps, tps, thresholds = _binary_clf_curve(
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/metrics/_ranking.py", line 751, in _binary_clf_curve
+    check_consistent_length(y_true, y_score, sample_weight)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/utils/validation.py", line 394, in check_consistent_length
+    lengths = [_num_samples(X) for X in arrays if X is not None]
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/utils/validation.py", line 394, in <listcomp>
+    lengths = [_num_samples(X) for X in arrays if X is not None]
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/utils/validation.py", line 335, in _num_samples
+    raise TypeError(
+TypeError: Singleton array array(0) cannot be considered a valid collection.

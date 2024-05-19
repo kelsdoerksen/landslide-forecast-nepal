@@ -1,0 +1,10 @@
+Evaluating model...
+The hard predictions were right 86.30% of the time
+No Skill: ROC AUC=0.500
+RFC: ROC AUC=0.786
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 679, in <module>
+    run_ecmwf_test(root_dir, results, experiment, model)
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 650, in run_ecmwf_test
+    calc_model_performance(rf_model, y_test, probs, Xtest, results_dir, wandb_exp, model_type)
+NameError: name 'Xtest' is not defined

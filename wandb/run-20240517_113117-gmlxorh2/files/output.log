@@ -1,0 +1,18 @@
+
+Evaluating model...
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 696, in <module>
+    run_trained_ukmo(root_dir, results, experiment, model, test_forecast_model)
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 653, in run_trained_ukmo
+    accuracy = rf_model.score(X_test, y_test)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/base.py", line 638, in score
+    return accuracy_score(y, self.predict(X), sample_weight=sample_weight)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/utils/_param_validation.py", line 192, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/metrics/_classification.py", line 221, in accuracy_score
+    y_type, y_true, y_pred = _check_targets(y_true, y_pred)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/metrics/_classification.py", line 86, in _check_targets
+    check_consistent_length(y_true, y_pred)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/utils/validation.py", line 397, in check_consistent_length
+    raise ValueError(
+ValueError: Found input variables with inconsistent numbers of samples: [21021, 14091]

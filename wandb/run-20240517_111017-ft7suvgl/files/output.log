@@ -1,0 +1,76 @@
+Loading data...
+> /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py(695)<module>()
+    694         ipdb.set_trace()
+--> 695         X_train, y_train, X_test, y_test = load_data(test_year, '{}/LabelledData/{}/operational/ensemble_{}'.format(root_dir,
+    696                                                                                                         forecast_model,
+'/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep/LabelledData/ukmo/operational/ensemble_1'
+       precip_rate_tminus_2  precip_rate_tminus_3  ...        date         district
+12265              3.052599             11.898907  ...  2019-08-09       Kapilbastu
+4602              10.923868             14.477478  ...  2020-07-27          Dailekh
+19821             62.064042             35.323007  ...  2021-05-22          Rukum_W
+7412              32.442809              4.576297  ...  2017-04-23            Dolpa
+9956               6.094030              2.267787  ...  2020-06-03  Kabhrepalanchok
+...                     ...                   ...  ...         ...              ...
+8910               8.671557             96.405084  ...  2022-05-27            Jumla
+13245              0.832046             10.384841  ...  2019-04-16          Khotang
+18111             10.228104              6.586347  ...  2017-08-15      Okhaldhunga
+9576              20.288366              3.821279  ...  2020-04-22            Jumla
+12441              0.795445              0.046098  ...  2022-09-16        Mahottari
+[92169 rows x 57 columns]
+       precip_rate_tminus_2  precip_rate_tminus_3  ...        date   district
+26805              6.944119              1.493966  ...  2017-06-10     Tanahu
+12982              3.956127             36.160013  ...  2019-07-27  Kathmandu
+1353               0.047812             18.964976  ...  2022-04-12    Bajhang
+20586              0.128648              0.000000  ...  2017-05-27     Rasuwa
+1250               0.072260              0.000000  ...  2021-10-08    Baitadi
+...                     ...                   ...  ...         ...        ...
+9929               0.000000              0.379957  ...  2022-09-08    Kalikot
+24291             19.893072              5.510440  ...  2018-07-21   Sindhuli
+14143              0.602295              0.000000  ...  2018-10-01    Lamjung
+3467               3.239947              0.168693  ...  2017-07-02  Bhaktapur
+27502              0.232749              0.026439  ...  2018-05-08  Terhathum
+[92169 rows x 57 columns]
+       precip_rate_tminus_2  precip_rate_tminus_3  ...        date  district
+26805             29.352085             26.926703  ...  2018-06-10    Tanahu
+26805              6.944119              1.493966  ...  2017-06-10    Tanahu
+26805              1.614763              3.398988  ...  2019-06-10    Tanahu
+[3 rows x 57 columns]
+Index(['precip_rate_tminus_2', 'precip_rate_tminus_3', 'precip_rate_tminus_4',
+       'precip_rate_tminus_5', 'precip_rate_tminus_6', 'precip_rate_tminus_7',
+       'precip_rate_tminus_8', 'precip_rate_tminus_9', 'precip_rate_tminus_10',
+       'precip_rate_tminus_11', 'precip_rate_tminus_12',
+       'precip_rate_tminus_13', 'gpm_mean_precip_rate', 'gpm_max_precip_rate',
+       'gpm_min_precip_rate', 'gpm_total_cumulative_precipitation', 'dem_mean',
+       'dem_median', 'dem_stdev', 'dem_min', 'dem_max', 'dem_range',
+       'dem_variance', 'aspect_mean', 'aspect_median', 'aspect_stdev',
+       'aspect_min', 'aspect_max', 'aspect_range', 'aspect_variance',
+       'slope_mean', 'slope_median', 'slope_stdev', 'slope_min', 'slope_max',
+       'slope_range', 'slope_variance', 'lc_mode', 'lc_var',
+       'UKMO_ens_1_precip_rate_tplus_1', 'UKMO_ens_1_precip_rate_tplus_2',
+       'UKMO_ens_1_precip_rate_tplus_3', 'UKMO_ens_1_precip_rate_tplus_4',
+       'UKMO_ens_1_precip_rate_tplus_5', 'UKMO_ens_1_precip_rate_tplus_6',
+       'UKMO_ens_1_precip_rate_tplus_7', 'UKMO_ens_1_precip_rate_tplus_8',
+       'UKMO_ens_1_precip_rate_tplus_9', 'UKMO_ens_1_precip_rate_tplus_10',
+       'UKMO_ens_1_precip_rate_tplus_11', 'UKMO_ens_1_precip_rate_tplus_12',
+       'UKMO_ens_1_precip_mean_precip_rate',
+       'UKMO_ens_1_precip_max_precip_rate',
+       'UKMO_ens_1_precip_min_precip_rate',
+       'UKMO_ens_1_precip_total_cumulative_precipitation', 'date', 'district'],
+      dtype='object')
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 695, in <module>
+    X_train, y_train, X_test, y_test = load_data(test_year, '{}/LabelledData/{}/operational/ensemble_{}'.format(root_dir,
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 695, in <module>
+    X_train, y_train, X_test, y_test = load_data(test_year, '{}/LabelledData/{}/operational/ensemble_{}'.format(root_dir,
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/bdb.py", line 115, in dispatch_line
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit
+If you suspect this is an IPython 8.7.0 bug, please report it at:
+    https://github.com/ipython/ipython/issues
+or send an email to the mailing list at ipython-dev@python.org
+You can print a more detailed traceback right now with "%tb", or use "%debug"
+to interactively debug it.
+Extra-detailed tracebacks for bug-reporting purposes can be enabled via:
+    %config Application.verbose_crash=True

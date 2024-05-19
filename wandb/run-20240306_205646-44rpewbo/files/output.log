@@ -1,0 +1,39 @@
+
+Loading data...
+Fitting model...
+Evaluating model...
+The hard predictions were right 85.07% of the time
+True Positive is 203
+True Negative is 10998
+False Positive is 234
+False Negative is 1732
+> /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py(172)calc_confusion_matrix()
+    171
+--> 172     with open('{}/confusion_matrix.txt'.format(save_directory), 'w') as f:
+    173         f.write('False positive rate at best threshold is {}'.format(FP_Rate))
+*** NameError: name 'cv_scoring' is not defined
+0.020833333333333332
+0.1049095607235142
+0.8950904392764858
+0.9791666666666666
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 625, in <module>
+    run_rf(X_train, y_train, X_test, y_test, results, experiment, model)
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 344, in run_rf
+    calc_confusion_matrix(ytest, hard_preds, 'save_directory')
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 172, in calc_confusion_matrix
+    with open('{}/confusion_matrix.txt'.format(save_directory), 'w') as f:
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 172, in calc_confusion_matrix
+    with open('{}/confusion_matrix.txt'.format(save_directory), 'w') as f:
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/bdb.py", line 115, in dispatch_line
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit
+If you suspect this is an IPython 8.7.0 bug, please report it at:
+    https://github.com/ipython/ipython/issues
+or send an email to the mailing list at ipython-dev@python.org
+You can print a more detailed traceback right now with "%tb", or use "%debug"
+to interactively debug it.
+Extra-detailed tracebacks for bug-reporting purposes can be enabled via:
+    %config Application.verbose_crash=True

@@ -1,0 +1,36 @@
+
+Loading data...
+> /Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py(345)run_rf()
+    344     # Fit the model
+--> 345     print('Fitting model...')
+    346     forest.fit(Xtrain, ytrain)
+*** NameError: name 'scoring' is not defined
+*** NameError: name 'cv_scorin' is not defined
+{'fit_time': array([18.49691963, 24.29694819, 20.24841499, 20.5723381 , 18.8996079 ,
+       17.75281286, 16.36478996, 17.74614692, 18.96705103, 17.22776103]), 'score_time': array([0.10773706, 0.11543107, 0.10342693, 0.17461467, 0.11487389,
+       0.10287309, 0.10247183, 0.19119906, 0.11110783, 0.10562277]), 'test_accuracy': array([0.90164131, 0.8946927 , 0.90451659, 0.89672936, 0.90056308,
+       0.90247993, 0.9015215 , 0.89972445, 0.89911335, 0.89731608]), 'test_f1': array([0.59336305, 0.55806938, 0.60719566, 0.57242063, 0.58910891,
+       0.59623016, 0.58858859, 0.58295964, 0.58562992, 0.5759525 ])}
+<built-in method keys of dict object at 0x12c8fba80>
+dict_keys(['fit_time', 'score_time', 'test_accuracy', 'test_f1'])
+array([0.90164131, 0.8946927 , 0.90451659, 0.89672936, 0.90056308,
+       0.90247993, 0.9015215 , 0.89972445, 0.89911335, 0.89731608])
+array([0.59336305, 0.55806938, 0.60719566, 0.57242063, 0.58910891,
+       0.59623016, 0.58858859, 0.58295964, 0.58562992, 0.5759525 ])
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 629, in <module>
+    if model == 'xgb':
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 345, in run_rf
+  File "/Users/kelseydoerksen/code/landslide-prediction/2024_Monsoon_Prep/run_classifier.py", line 345, in run_rf
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/bdb.py", line 115, in dispatch_line
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit
+If you suspect this is an IPython 8.7.0 bug, please report it at:
+    https://github.com/ipython/ipython/issues
+or send an email to the mailing list at ipython-dev@python.org
+You can print a more detailed traceback right now with "%tb", or use "%debug"
+to interactively debug it.
+Extra-detailed tracebacks for bug-reporting purposes can be enabled via:
+    %config Application.verbose_crash=True
