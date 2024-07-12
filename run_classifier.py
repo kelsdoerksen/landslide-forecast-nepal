@@ -297,7 +297,11 @@ def load_data(test_year, data_dir, experiment_type):
         '2023': ['2016', '2017', '2018', '2019', '2020', '2021', '2022']
     }
 
-    train_years = year_split_dict[test_year]
+    if test_year == '2024':
+        # Training the model on all the data to save
+        train_years = ['2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023']
+    else:
+        train_years = year_split_dict[test_year]
 
     df_train_list = []
     monsoon_train_list = []
@@ -307,14 +311,24 @@ def load_data(test_year, data_dir, experiment_type):
         monsoon_train = daterange(date(int(y), 4, 1), date(int(y), 10, 31))
         monsoon_train_list.append(monsoon_train[:])
 
-    monsoon_train_list = [x for xs in monsoon_train_list for x in xs]
-
-    df_train = pd.concat(df_train_list)
-    df_test = pd.read_csv('{}/{}_windowsize14_district.csv'.format(data_dir, test_year))
-
     # Split into monsoon season
-    monsoon_test_list = daterange(date(int(test_year), 4, 1), date(int(test_year), 10, 31))
+    monsoon_train_list = [x for xs in monsoon_train_list for x in xs]
+    df_train = pd.concat(df_train_list)
     monsoon_train = df_train[df_train['date'].isin(monsoon_train_list)]
+
+    if test_year == '2024':
+        y_train = monsoon_train['label']
+        X_train = monsoon_train.drop(columns=['label', 'Unnamed: 0'])
+        y_test = None
+        X_test = None
+        if 'Unnamed: 0.1' in X_train.columns:
+            X_train = X_train.drop(columns=['Unnamed: 0.1'])
+        return X_train, y_train, X_test, y_test
+
+
+    # Split into monsoon season test set
+    df_test = pd.read_csv('{}/{}_windowsize14_district.csv'.format(data_dir, test_year))
+    monsoon_test_list = daterange(date(int(test_year), 4, 1), date(int(test_year), 10, 31))
     monsoon_test = df_test[df_test['date'].isin(monsoon_test_list)]
 
     # Shuffle
@@ -352,13 +366,10 @@ def load_data(test_year, data_dir, experiment_type):
     return X_train, y_train, X_test, y_test
 
 
-def run_rf(Xtrain, ytrain, Xtest, ytest, results_dir, wandb_exp, model_type):
+def run_rf(Xtrain, ytrain, Xtest, ytest, results_dir, wandb_exp, model_type, test_year):
     """
     Experiment for train and test set from all years, all regions
     """
-
-
-
     # Create an instance of Random Forest
     forest = RandomForestClassifier(criterion='gini',
                                     random_state=87,
@@ -369,9 +380,29 @@ def run_rf(Xtrain, ytrain, Xtest, ytest, results_dir, wandb_exp, model_type):
     # Preserve date and location information for output
     info_cols = ['date', 'district']
     train_info = Xtrain[info_cols]
-    test_info = Xtest[info_cols]
-
     Xtrain = Xtrain.drop(columns=info_cols)
+
+    if test_year == '2024':
+        Xtrain['label'] = ytrain
+        Xtrain = Xtrain.dropna()
+        Xtrain = Xtrain.reset_index()
+        Xtrain = shuffle(Xtrain)
+        ytrain=Xtrain['label']
+        Xtrain = Xtrain.drop(columns=['label', 'index'])
+        import ipdb
+        ipdb.set_trace()
+        print('Fitting model on all data including 2023 and returning')
+        # Fit model and save
+        forest.fit(Xtrain, ytrain)
+        # Save the model to file
+        joblib.dump(forest, '{}/rf_model.joblib'.format(results_dir))
+
+        # saving as pickle too
+        with open("{}/rf_model.pkl".format(results_dir), "wb") as file:
+            pickle.dump(forest, file)
+        return
+
+    test_info = Xtest[info_cols]
     Xtest = Xtest.drop(columns=info_cols)
 
     # Fit the model
@@ -619,7 +650,7 @@ def run_trained_ukmo(root_directory, results_dir, wandb_exp, model_type, forecas
     rf_model = joblib.load('{}/Results/classic-vortex-111_ForecastModelukmo_EnsembleNum1/rf_model.joblib'.
                            format(root_directory))
     if forecast_model_testing == 'ecmwf':
-        test_df = pd.read_csv('{}/LabelledData/ecmwf/operational/2023_windowsize14_district.csv'.
+        test_df = pd.read_csv('{}/LabelledData/ecmwf/2023_windowsize14_district.csv'.
                               format(root_directory))
         monsoon_test_list = daterange(date(2023, 4, 1), date(2023, 10, 31))
         monsoon_test = test_df[test_df['date'].isin(monsoon_test_list)]
@@ -629,9 +660,9 @@ def run_trained_ukmo(root_directory, results_dir, wandb_exp, model_type, forecas
         # Rename ecmwf columns so that the model can recognize the correct features from the UKMO trained model
         X_test.columns = X_test.columns.str.replace('ecmwf', 'UKMO')
     if forecast_model_testing == 'ncep':
-        test_df = pd.read_csv('{}/LabelledData/NCEP/operational/ensemble_1/2023_windowsize14_district.csv'.
+        test_df = pd.read_csv('{}/LabelledData/NCEP/ensemble_1/2023_windowsize14_district.csv'.
                               format(root_directory))
-        monsoon_test_list = daterange(date(int(test_year), 4, 1), date(int(test_year), 10, 31))
+        monsoon_test_list = daterange(date(2023, 4, 1), date(2023, 10, 31))
         monsoon_test = test_df[test_df['date'].isin(monsoon_test_list)]
         y_test = monsoon_test['label']
         X_test = monsoon_test.drop(columns=['label', 'Unnamed: 0'])
@@ -669,7 +700,7 @@ def run_trained_ukmo(root_directory, results_dir, wandb_exp, model_type, forecas
 if __name__ == '__main__':
     args = get_args()
     model = args.model
-    test_year = args.test_year
+    test_y = args.test_year
     forecast_model = args.forecast_model
     ensemble_num = args.ensemble_num
     exp = args.experiment_type
@@ -681,7 +712,7 @@ if __name__ == '__main__':
     # Set up wandb experiment for tracking
     experiment = wandb.init(project='landslide-prediction',
                            resume='allow', anonymous='must')
-    experiment.config.update(dict(model=model, test_year=test_year))
+    experiment.config.update(dict(model=model, test_year=test_y))
 
     # Make results directory
     if wandb_setting == 'offline':
@@ -699,12 +730,12 @@ if __name__ == '__main__':
     else:
         # Load data
         print('Loading data...')
-        X_train, y_train, X_test, y_test = load_data(test_year, '{}/LabelledData/{}/operational/ensemble_{}'.format(root_dir,
+        X_train, y_train, X_test, y_test = load_data(test_y, '{}/LabelledData/{}/ensemble_{}'.format(root_dir,
                                                                                                         forecast_model,
                                                                                                         ensemble_num), exp)
 
         if model == 'rf':
-            run_rf(X_train, y_train, X_test, y_test, results, experiment, model)
+            run_rf(X_train, y_train, X_test, y_test, results, experiment, model, test_y)
 
         if model == 'gb':
             run_gb(X_train, y_train, X_test, y_test, results, experiment, model)

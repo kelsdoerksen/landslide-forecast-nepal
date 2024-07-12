@@ -19,6 +19,7 @@ full_path = '/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/
 # Read in incidents records for 2011-2023
 incidents_df = pd.read_csv(full_path + '/Wards_with_Bipad_events_one_to_many_landslides_only.csv')
 
+
 # Grab District Names -> Harcoded to match Bipad Portal records
 districts = ['Achham', 'Arghakhanchi', 'Baglung', 'Baitadi', 'Bajhang', 'Bajura', 'Banke', 'Bara', 'Bardiya',
              'Bhaktapur', 'Bhojpur', 'Chitawan', 'Dadeldhura', 'Dailekh', 'Dang', 'Darchula', 'Dhading',

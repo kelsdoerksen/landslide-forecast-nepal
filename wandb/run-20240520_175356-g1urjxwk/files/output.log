@@ -1,0 +1,8 @@
+
+Loading data...
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 726, in <module>
+    X_train, y_train, X_test, y_test = load_data(test_y, '{}/LabelledData/{}/ensemble_{}'.format(root_dir,
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 304, in load_data
+    train_years = year_split_dict[test_year]
+KeyError: '2024'

@@ -1,0 +1,54 @@
+
+Loading data...
+> /Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py(377)run_rf()
+    376
+--> 377     Xtrain = Xtrain.drop(columns=info_cols)
+    378     Xtest = Xtest.drop(columns=info_cols)
+*** NameError: name 'Xbomined' is not defined
+       precip_rate_tminus_2  precip_rate_tminus_3  ...        date    district
+1350               0.241332              0.059164  ...  2022-04-09     Bajhang
+13392              0.002116              0.000000  ...  2021-10-14  Makawanpur
+1561              12.210398              0.021039  ...  2019-04-12     Bajhang
+20602              0.204591             13.986887  ...  2017-06-12      Rasuwa
+9372               0.014919              0.043071  ...  2020-10-01       Jhapa
+...                     ...                   ...  ...         ...         ...
+16829             27.124657             14.143774  ...  2023-06-26   Rupandehi
+11592              0.000000              0.059591  ...  2023-05-07      Morang
+4618               1.418165              6.062115  ...  2023-09-08     Dhading
+16921              5.483950              0.025546  ...  2023-09-26   Rupandehi
+16037             96.630448             56.718443  ...  2023-07-23       Rolpa
+[106260 rows x 57 columns]
+1350     0
+13392    0
+1561     0
+20602    0
+9372     0
+        ..
+16829    0
+11592    0
+4618     0
+16921    0
+16037    1
+Name: label, Length: 106260, dtype: int64
+RandomForestClassifier(class_weight='balanced', n_estimators=200, n_jobs=-1,
+                       random_state=87)
+['/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep/Results/earnest-terrain-113_ForecastModelukmo_EnsembleNum1/rf_model.joblib']
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 710, in <module>
+    run_rf(X_train, y_train, X_test, y_test, results, experiment, model)
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 377, in run_rf
+    Xtrain = Xtrain.drop(columns=info_cols)
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 377, in run_rf
+    Xtrain = Xtrain.drop(columns=info_cols)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/bdb.py", line 115, in dispatch_line
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit
+If you suspect this is an IPython 8.7.0 bug, please report it at:
+    https://github.com/ipython/ipython/issues
+or send an email to the mailing list at ipython-dev@python.org
+You can print a more detailed traceback right now with "%tb", or use "%debug"
+to interactively debug it.
+Extra-detailed tracebacks for bug-reporting purposes can be enabled via:
+    %config Application.verbose_crash=True

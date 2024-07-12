@@ -1,0 +1,53 @@
+
+Loading data...
+> /Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py(388)run_rf()
+    387
+--> 388     if test_year == '2024':
+    389         print('Fitting model on all data including 2023 and returning')
+       precip_rate_tminus_0  precip_rate_tminus_1  ...  UKMO_ens_1_precip_min_precip_rate  UKMO_ens_1_precip_total_cumulative_precipitation
+0                  0.000000              0.000000  ...                           0.004298                                       1821.778592
+1                  0.000000              0.000000  ...                           0.004298                                       1804.184703
+2                  0.000000              0.000000  ...                           0.003690                                       1795.842364
+3                  0.000000              0.000000  ...                           0.003690                                         97.049641
+4                  0.000000              0.000000  ...                           0.003690                                         96.146014
+...                     ...                   ...  ...                                ...                                               ...
+21016              0.000000              0.000000  ...                          28.907883                                      34206.850416
+21017              1.796016              0.000000  ...                          28.907883                                      34537.714104
+21018              0.790217              1.796016  ...                          28.907883                                      29010.632952
+21019              3.345872              0.790217  ...                          28.907883                                      26271.742392
+21020             36.429203              3.345872  ...                          23.314417                                      22527.943200
+[185416 rows x 59 columns]
+'2024'
+0        0
+1        0
+2        0
+3        0
+4        0
+        ..
+21016    0
+21017    0
+21018    0
+21019    0
+21020    0
+Name: label, Length: 185416, dtype: int64
+*** ValueError: Input X contains NaN.
+RandomForestClassifier does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 733, in <module>
+    run_rf(X_train, y_train, X_test, y_test, results, experiment, model, test_y)
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 388, in run_rf
+    if test_year == '2024':
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 388, in run_rf
+    if test_year == '2024':
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/bdb.py", line 115, in dispatch_line
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit
+If you suspect this is an IPython 8.7.0 bug, please report it at:
+    https://github.com/ipython/ipython/issues
+or send an email to the mailing list at ipython-dev@python.org
+You can print a more detailed traceback right now with "%tb", or use "%debug"
+to interactively debug it.
+Extra-detailed tracebacks for bug-reporting purposes can be enabled via:
+    %config Application.verbose_crash=True

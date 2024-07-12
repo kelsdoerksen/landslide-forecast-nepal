@@ -1,0 +1,20 @@
+
+Loading data...
+Fitting model on all data including 2023 and returning
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 731, in <module>
+    run_rf(X_train, y_train, X_test, y_test, results, experiment, model, test_y)
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 389, in run_rf
+    forest.fit(Xtrain, ytrain)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/ensemble/_forest.py", line 346, in fit
+    X, y = self._validate_data(
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/base.py", line 554, in _validate_data
+    X, y = check_X_y(X, y, **check_params)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/utils/validation.py", line 1104, in check_X_y
+    X = check_array(
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/utils/validation.py", line 919, in check_array
+    _assert_all_finite(
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/utils/validation.py", line 161, in _assert_all_finite
+    raise ValueError(msg_err)
+ValueError: Input X contains NaN.
+RandomForestClassifier does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values

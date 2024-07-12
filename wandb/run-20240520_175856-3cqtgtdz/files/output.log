@@ -1,0 +1,39 @@
+
+Loading data...
+> /Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py(322)load_data()
+    321
+--> 322     if test_year == '2024':
+    323         y_train = df_train['label']
+       Unnamed: 0  precip_rate_tminus_0  precip_rate_tminus_1  ...  label        date  district
+0               0              0.000000              0.000000  ...      0  2016-11-01    Achham
+1               0              0.000000              0.000000  ...      0  2016-11-02    Achham
+2               0              0.000000              0.000000  ...      0  2016-11-03    Achham
+3               0              0.000000              0.000000  ...      0  2016-11-04    Achham
+4               0              0.000000              0.000000  ...      0  2016-11-05    Achham
+...           ...                   ...                   ...  ...    ...         ...       ...
+21016           0              0.000000              0.000000  ...      0  2023-09-26  Udayapur
+21017           0              1.796016              0.000000  ...      0  2023-09-27  Udayapur
+21018           0              0.790217              1.796016  ...      0  2023-09-28  Udayapur
+21019           0              3.345872              0.790217  ...      0  2023-09-29  Udayapur
+21020           0             36.429203              3.345872  ...      0  2023-09-30  Udayapur
+[185416 rows x 63 columns]
+'2024'
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 729, in <module>
+    X_train, y_train, X_test, y_test = load_data(test_y, '{}/LabelledData/{}/ensemble_{}'.format(root_dir,
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 322, in load_data
+    if test_year == '2024':
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 322, in load_data
+    if test_year == '2024':
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/bdb.py", line 115, in dispatch_line
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit
+If you suspect this is an IPython 8.7.0 bug, please report it at:
+    https://github.com/ipython/ipython/issues
+or send an email to the mailing list at ipython-dev@python.org
+You can print a more detailed traceback right now with "%tb", or use "%debug"
+to interactively debug it.
+Extra-detailed tracebacks for bug-reporting purposes can be enabled via:
+    %config Application.verbose_crash=True

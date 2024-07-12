@@ -1,0 +1,236 @@
+2024-05-21 23:25:32,881 INFO    StreamThr :3469 [internal.py:wandb_internal():86] W&B internal server running at pid: 3469, started at: 2024-05-21 23:25:32.880939
+2024-05-21 23:25:32,883 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: status
+2024-05-21 23:25:32,888 INFO    WriterThread:3469 [datastore.py:open_for_write():85] open: /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240521_232532-gll4m3c7/run-gll4m3c7.wandb
+2024-05-21 23:25:32,889 DEBUG   SenderThread:3469 [sender.py:send():380] send: header
+2024-05-21 23:25:32,919 DEBUG   SenderThread:3469 [sender.py:send():380] send: run
+2024-05-21 23:25:32,921 INFO    SenderThread:3469 [sender.py:_maybe_setup_resume():759] checking resume status for None/landslide-prediction/gll4m3c7
+2024-05-21 23:25:33,549 INFO    SenderThread:3469 [dir_watcher.py:__init__():211] watching files in: /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240521_232532-gll4m3c7/files
+2024-05-21 23:25:33,549 INFO    SenderThread:3469 [sender.py:_start_run_threads():1122] run started: gll4m3c7 with start time 1716330332.881879
+2024-05-21 23:25:33,564 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: check_version
+2024-05-21 23:25:33,564 DEBUG   SenderThread:3469 [sender.py:send_request():407] send_request: check_version
+2024-05-21 23:25:33,651 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: run_start
+2024-05-21 23:25:33,662 DEBUG   HandlerThread:3469 [system_info.py:__init__():32] System info init
+2024-05-21 23:25:33,662 DEBUG   HandlerThread:3469 [system_info.py:__init__():47] System info init done
+2024-05-21 23:25:33,662 INFO    HandlerThread:3469 [system_monitor.py:start():181] Starting system monitor
+2024-05-21 23:25:33,663 INFO    SystemMonitor:3469 [system_monitor.py:_start():145] Starting system asset monitoring threads
+2024-05-21 23:25:33,663 INFO    HandlerThread:3469 [system_monitor.py:probe():201] Collecting system info
+2024-05-21 23:25:33,664 INFO    SystemMonitor:3469 [interfaces.py:start():190] Started cpu monitoring
+2024-05-21 23:25:33,664 DEBUG   HandlerThread:3469 [system_info.py:probe():196] Probing system
+2024-05-21 23:25:33,664 INFO    SystemMonitor:3469 [interfaces.py:start():190] Started disk monitoring
+2024-05-21 23:25:33,667 INFO    SystemMonitor:3469 [interfaces.py:start():190] Started memory monitoring
+2024-05-21 23:25:33,667 INFO    SystemMonitor:3469 [interfaces.py:start():190] Started network monitoring
+2024-05-21 23:25:33,676 DEBUG   HandlerThread:3469 [system_info.py:_probe_git():181] Probing git
+2024-05-21 23:25:33,712 DEBUG   HandlerThread:3469 [system_info.py:_probe_git():189] Probing git done
+2024-05-21 23:25:33,712 DEBUG   HandlerThread:3469 [system_info.py:probe():244] Probing system done
+2024-05-21 23:25:33,712 DEBUG   HandlerThread:3469 [system_monitor.py:probe():210] {'os': 'macOS-14.3.1-x86_64-i386-64bit', 'python': '3.10.13', 'heartbeatAt': '2024-05-21T22:25:33.664673', 'startedAt': '2024-05-21T22:25:32.869861', 'docker': None, 'cuda': None, 'args': ('--model', 'rf', '--test_year', '2024', '--forecast_model', 'UKMO', '--ensemble_num', '1', '--experiment_type', 'full', '--wandb_setting', 'online', '--test_forecast', 'UKMO'), 'state': 'running', 'program': '/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py', 'codePathLocal': 'run_classifier.py', 'codePath': 'run_classifier.py', 'git': {'remote': 'git@github.com:kelsdoerksen/landslide-forecast-nepal.git', 'commit': '7dc78a548532d870581ea7a00b6da1cd97ed2561'}, 'email': 'kelseydoerksen@gmail.com', 'root': '/Users/kelseydoerksen/code/landslide-forecast-nepal', 'host': 'Kelseys-MBP', 'username': 'kelseydoerksen', 'executable': '/Users/kelseydoerksen/opt/anaconda3/envs/aq/bin/python', 'cpu_count': 4, 'cpu_count_logical': 8, 'cpu_freq': {'current': 2300, 'min': 2300, 'max': 2300}, 'cpu_freq_per_core': [{'current': 2300, 'min': 2300, 'max': 2300}], 'disk': {'/': {'total': 465.62699127197266, 'used': 13.388309478759766}}, 'memory': {'total': 16.0}}
+2024-05-21 23:25:33,712 INFO    HandlerThread:3469 [system_monitor.py:probe():211] Finished collecting system info
+2024-05-21 23:25:33,712 INFO    HandlerThread:3469 [system_monitor.py:probe():214] Publishing system info
+2024-05-21 23:25:33,712 DEBUG   HandlerThread:3469 [system_info.py:_save_pip():52] Saving list of pip packages installed into the current environment
+2024-05-21 23:25:33,713 DEBUG   HandlerThread:3469 [system_info.py:_save_pip():68] Saving pip packages done
+2024-05-21 23:25:33,713 DEBUG   HandlerThread:3469 [system_info.py:_save_conda():75] Saving list of conda packages installed into the current environment
+2024-05-21 23:25:34,552 INFO    Thread-12 :3469 [dir_watcher.py:_on_file_created():271] file/dir created: /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240521_232532-gll4m3c7/files/requirements.txt
+2024-05-21 23:25:34,552 INFO    Thread-12 :3469 [dir_watcher.py:_on_file_created():271] file/dir created: /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240521_232532-gll4m3c7/files/conda-environment.yaml
+2024-05-21 23:25:40,577 INFO    Thread-12 :3469 [dir_watcher.py:_on_file_modified():288] file/dir modified: /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240521_232532-gll4m3c7/files/conda-environment.yaml
+2024-05-21 23:25:40,686 DEBUG   HandlerThread:3469 [system_info.py:_save_conda():87] Saving conda packages done
+2024-05-21 23:25:40,686 INFO    HandlerThread:3469 [system_monitor.py:probe():216] Finished publishing system info
+2024-05-21 23:25:40,690 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: status_report
+2024-05-21 23:25:40,690 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: keepalive
+2024-05-21 23:25:40,690 DEBUG   SenderThread:3469 [sender.py:send():380] send: files
+2024-05-21 23:25:40,691 INFO    SenderThread:3469 [sender.py:_save_file():1378] saving file wandb-metadata.json with policy now
+2024-05-21 23:25:40,696 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: stop_status
+2024-05-21 23:25:40,696 DEBUG   SenderThread:3469 [sender.py:send_request():407] send_request: stop_status
+2024-05-21 23:25:40,697 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: internal_messages
+2024-05-21 23:25:40,857 DEBUG   SenderThread:3469 [sender.py:send():380] send: telemetry
+2024-05-21 23:25:40,857 DEBUG   SenderThread:3469 [sender.py:send():380] send: config
+2024-05-21 23:25:41,200 INFO    wandb-upload_0:3469 [upload_job.py:push():131] Uploaded file /var/folders/45/0gt2k_f526x1p6241p2jbczr0000gn/T/tmplsu8pfp6wandb/h709zkem-wandb-metadata.json
+2024-05-21 23:25:41,579 INFO    Thread-12 :3469 [dir_watcher.py:_on_file_created():271] file/dir created: /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240521_232532-gll4m3c7/files/output.log
+2024-05-21 23:25:41,579 INFO    Thread-12 :3469 [dir_watcher.py:_on_file_created():271] file/dir created: /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240521_232532-gll4m3c7/files/wandb-metadata.json
+2024-05-21 23:25:43,584 INFO    Thread-12 :3469 [dir_watcher.py:_on_file_modified():288] file/dir modified: /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240521_232532-gll4m3c7/files/output.log
+2024-05-21 23:25:44,219 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: status_report
+2024-05-21 23:25:45,590 INFO    Thread-12 :3469 [dir_watcher.py:_on_file_modified():288] file/dir modified: /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240521_232532-gll4m3c7/files/output.log
+2024-05-21 23:25:49,409 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: status_report
+2024-05-21 23:25:49,600 INFO    Thread-12 :3469 [dir_watcher.py:_on_file_modified():288] file/dir modified: /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240521_232532-gll4m3c7/files/output.log
+2024-05-21 23:25:54,424 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: status_report
+2024-05-21 23:25:55,702 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: internal_messages
+2024-05-21 23:25:55,703 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: stop_status
+2024-05-21 23:25:55,705 DEBUG   SenderThread:3469 [sender.py:send_request():407] send_request: stop_status
+2024-05-21 23:25:59,903 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: status_report
+2024-05-21 23:26:04,923 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: status_report
+2024-05-21 23:26:05,655 INFO    Thread-12 :3469 [dir_watcher.py:_on_file_modified():288] file/dir modified: /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240521_232532-gll4m3c7/files/config.yaml
+2024-05-21 23:26:10,069 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: status_report
+2024-05-21 23:26:10,702 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: stop_status
+2024-05-21 23:26:10,702 DEBUG   SenderThread:3469 [sender.py:send_request():407] send_request: stop_status
+2024-05-21 23:26:10,704 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: internal_messages
+2024-05-21 23:26:15,916 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: status_report
+2024-05-21 23:26:19,736 INFO    Thread-12 :3469 [dir_watcher.py:_on_file_modified():288] file/dir modified: /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240521_232532-gll4m3c7/files/output.log
+2024-05-21 23:26:21,419 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: status_report
+2024-05-21 23:26:25,705 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: stop_status
+2024-05-21 23:26:25,706 DEBUG   SenderThread:3469 [sender.py:send_request():407] send_request: stop_status
+2024-05-21 23:26:25,709 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: internal_messages
+2024-05-21 23:26:26,933 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: status_report
+2024-05-21 23:26:31,962 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: status_report
+2024-05-21 23:26:33,671 DEBUG   SystemMonitor:3469 [system_monitor.py:_start():159] Starting system metrics aggregation loop
+2024-05-21 23:26:33,672 DEBUG   SenderThread:3469 [sender.py:send():380] send: stats
+2024-05-21 23:26:37,120 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: status_report
+2024-05-21 23:26:39,166 INFO    Thread-12 :3469 [dir_watcher.py:_on_file_modified():288] file/dir modified: /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240521_232532-gll4m3c7/files/output.log
+2024-05-21 23:26:40,710 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: stop_status
+2024-05-21 23:26:40,711 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: internal_messages
+2024-05-21 23:26:40,712 DEBUG   SenderThread:3469 [sender.py:send_request():407] send_request: stop_status
+2024-05-21 23:26:42,960 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: status_report
+2024-05-21 23:26:47,979 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: status_report
+2024-05-21 23:26:52,991 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: status_report
+2024-05-21 23:26:55,714 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: internal_messages
+2024-05-21 23:26:55,715 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: stop_status
+2024-05-21 23:26:55,716 DEBUG   SenderThread:3469 [sender.py:send_request():407] send_request: stop_status
+2024-05-21 23:26:56,207 INFO    Thread-12 :3469 [dir_watcher.py:_on_file_modified():288] file/dir modified: /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240521_232532-gll4m3c7/files/output.log
+2024-05-21 23:26:58,938 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: status_report
+2024-05-21 23:27:03,675 DEBUG   SenderThread:3469 [sender.py:send():380] send: stats
+2024-05-21 23:27:04,680 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: status_report
+2024-05-21 23:27:09,701 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: status_report
+2024-05-21 23:27:10,717 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: internal_messages
+2024-05-21 23:27:10,719 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: stop_status
+2024-05-21 23:27:10,720 DEBUG   SenderThread:3469 [sender.py:send_request():407] send_request: stop_status
+2024-05-21 23:27:14,955 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: status_report
+2024-05-21 23:27:19,968 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: status_report
+2024-05-21 23:27:24,982 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: status_report
+2024-05-21 23:27:25,719 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: internal_messages
+2024-05-21 23:27:25,720 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: stop_status
+2024-05-21 23:27:25,721 DEBUG   SenderThread:3469 [sender.py:send_request():407] send_request: stop_status
+2024-05-21 23:27:29,001 DEBUG   SenderThread:3469 [sender.py:send():380] send: exit
+2024-05-21 23:27:29,001 INFO    SenderThread:3469 [sender.py:send_exit():585] handling exit code: 0
+2024-05-21 23:27:29,001 INFO    SenderThread:3469 [sender.py:send_exit():587] handling runtime: 115
+2024-05-21 23:27:29,002 INFO    SenderThread:3469 [sender.py:_save_file():1378] saving file wandb-summary.json with policy end
+2024-05-21 23:27:29,002 INFO    SenderThread:3469 [sender.py:send_exit():593] send defer
+2024-05-21 23:27:29,002 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: defer
+2024-05-21 23:27:29,002 INFO    HandlerThread:3469 [handler.py:handle_request_defer():170] handle defer: 0
+2024-05-21 23:27:29,003 DEBUG   SenderThread:3469 [sender.py:send_request():407] send_request: defer
+2024-05-21 23:27:29,003 INFO    SenderThread:3469 [sender.py:send_request_defer():609] handle sender defer: 0
+2024-05-21 23:27:29,003 INFO    SenderThread:3469 [sender.py:transition_state():613] send defer: 1
+2024-05-21 23:27:29,003 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: defer
+2024-05-21 23:27:29,003 INFO    HandlerThread:3469 [handler.py:handle_request_defer():170] handle defer: 1
+2024-05-21 23:27:29,004 DEBUG   SenderThread:3469 [sender.py:send_request():407] send_request: defer
+2024-05-21 23:27:29,004 INFO    SenderThread:3469 [sender.py:send_request_defer():609] handle sender defer: 1
+2024-05-21 23:27:29,004 INFO    SenderThread:3469 [sender.py:transition_state():613] send defer: 2
+2024-05-21 23:27:29,004 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: defer
+2024-05-21 23:27:29,004 INFO    HandlerThread:3469 [handler.py:handle_request_defer():170] handle defer: 2
+2024-05-21 23:27:29,004 INFO    HandlerThread:3469 [system_monitor.py:finish():190] Stopping system monitor
+2024-05-21 23:27:29,004 DEBUG   SystemMonitor:3469 [system_monitor.py:_start():166] Finished system metrics aggregation loop
+2024-05-21 23:27:29,004 DEBUG   SystemMonitor:3469 [system_monitor.py:_start():170] Publishing last batch of metrics
+2024-05-21 23:27:29,005 INFO    HandlerThread:3469 [interfaces.py:finish():202] Joined cpu monitor
+2024-05-21 23:27:29,005 INFO    HandlerThread:3469 [interfaces.py:finish():202] Joined disk monitor
+2024-05-21 23:27:29,005 INFO    HandlerThread:3469 [interfaces.py:finish():202] Joined memory monitor
+2024-05-21 23:27:29,005 INFO    HandlerThread:3469 [interfaces.py:finish():202] Joined network monitor
+2024-05-21 23:27:29,005 DEBUG   SenderThread:3469 [sender.py:send_request():407] send_request: defer
+2024-05-21 23:27:29,005 INFO    SenderThread:3469 [sender.py:send_request_defer():609] handle sender defer: 2
+2024-05-21 23:27:29,005 INFO    SenderThread:3469 [sender.py:transition_state():613] send defer: 3
+2024-05-21 23:27:29,005 DEBUG   SenderThread:3469 [sender.py:send():380] send: stats
+2024-05-21 23:27:29,005 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: defer
+2024-05-21 23:27:29,006 INFO    HandlerThread:3469 [handler.py:handle_request_defer():170] handle defer: 3
+2024-05-21 23:27:29,006 DEBUG   SenderThread:3469 [sender.py:send_request():407] send_request: defer
+2024-05-21 23:27:29,006 INFO    SenderThread:3469 [sender.py:send_request_defer():609] handle sender defer: 3
+2024-05-21 23:27:29,006 INFO    SenderThread:3469 [sender.py:transition_state():613] send defer: 4
+2024-05-21 23:27:29,006 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: defer
+2024-05-21 23:27:29,006 INFO    HandlerThread:3469 [handler.py:handle_request_defer():170] handle defer: 4
+2024-05-21 23:27:29,006 DEBUG   SenderThread:3469 [sender.py:send_request():407] send_request: defer
+2024-05-21 23:27:29,006 INFO    SenderThread:3469 [sender.py:send_request_defer():609] handle sender defer: 4
+2024-05-21 23:27:29,006 INFO    SenderThread:3469 [sender.py:transition_state():613] send defer: 5
+2024-05-21 23:27:29,007 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: defer
+2024-05-21 23:27:29,007 INFO    HandlerThread:3469 [handler.py:handle_request_defer():170] handle defer: 5
+2024-05-21 23:27:29,007 DEBUG   SenderThread:3469 [sender.py:send():380] send: summary
+2024-05-21 23:27:29,007 INFO    SenderThread:3469 [sender.py:_save_file():1378] saving file wandb-summary.json with policy end
+2024-05-21 23:27:29,007 DEBUG   SenderThread:3469 [sender.py:send_request():407] send_request: defer
+2024-05-21 23:27:29,007 INFO    SenderThread:3469 [sender.py:send_request_defer():609] handle sender defer: 5
+2024-05-21 23:27:29,007 INFO    SenderThread:3469 [sender.py:transition_state():613] send defer: 6
+2024-05-21 23:27:29,007 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: defer
+2024-05-21 23:27:29,007 INFO    HandlerThread:3469 [handler.py:handle_request_defer():170] handle defer: 6
+2024-05-21 23:27:29,008 DEBUG   SenderThread:3469 [sender.py:send_request():407] send_request: defer
+2024-05-21 23:27:29,008 INFO    SenderThread:3469 [sender.py:send_request_defer():609] handle sender defer: 6
+2024-05-21 23:27:29,008 INFO    SenderThread:3469 [sender.py:transition_state():613] send defer: 7
+2024-05-21 23:27:29,008 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: status_report
+2024-05-21 23:27:29,008 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: defer
+2024-05-21 23:27:29,008 INFO    HandlerThread:3469 [handler.py:handle_request_defer():170] handle defer: 7
+2024-05-21 23:27:29,008 DEBUG   SenderThread:3469 [sender.py:send_request():407] send_request: defer
+2024-05-21 23:27:29,008 INFO    SenderThread:3469 [sender.py:send_request_defer():609] handle sender defer: 7
+2024-05-21 23:27:29,307 INFO    Thread-12 :3469 [dir_watcher.py:_on_file_created():271] file/dir created: /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240521_232532-gll4m3c7/files/wandb-summary.json
+2024-05-21 23:27:30,005 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: poll_exit
+2024-05-21 23:27:30,942 INFO    SenderThread:3469 [sender.py:transition_state():613] send defer: 8
+2024-05-21 23:27:30,942 DEBUG   SenderThread:3469 [sender.py:send_request():407] send_request: poll_exit
+2024-05-21 23:27:30,943 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: defer
+2024-05-21 23:27:30,943 INFO    HandlerThread:3469 [handler.py:handle_request_defer():170] handle defer: 8
+2024-05-21 23:27:30,943 DEBUG   SenderThread:3469 [sender.py:send_request():407] send_request: defer
+2024-05-21 23:27:30,943 INFO    SenderThread:3469 [sender.py:send_request_defer():609] handle sender defer: 8
+2024-05-21 23:27:30,943 INFO    SenderThread:3469 [job_builder.py:build():281] Attempting to build job artifact
+2024-05-21 23:27:30,944 INFO    SenderThread:3469 [job_builder.py:_get_source_type():393] is repo sourced job
+2024-05-21 23:27:30,947 INFO    SenderThread:3469 [job_builder.py:build():369] adding wandb-job metadata file
+2024-05-21 23:27:30,950 INFO    SenderThread:3469 [sender.py:transition_state():613] send defer: 9
+2024-05-21 23:27:30,951 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: defer
+2024-05-21 23:27:30,951 INFO    HandlerThread:3469 [handler.py:handle_request_defer():170] handle defer: 9
+2024-05-21 23:27:30,951 DEBUG   SenderThread:3469 [sender.py:send():380] send: artifact
+2024-05-21 23:27:31,008 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: poll_exit
+2024-05-21 23:27:31,314 INFO    Thread-12 :3469 [dir_watcher.py:_on_file_modified():288] file/dir modified: /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240521_232532-gll4m3c7/files/output.log
+2024-05-21 23:27:31,688 INFO    SenderThread:3469 [sender.py:send_artifact():1456] sent artifact job-git_github.com_kelsdoerksen_landslide-forecast-nepal.git_run_classifier.py - {'id': 'QXJ0aWZhY3Q6ODQzNDA3OTcw', 'state': 'COMMITTED', 'artifactSequence': {'id': 'QXJ0aWZhY3RDb2xsZWN0aW9uOjE3NzEwMDQ0MA==', 'latestArtifact': {'id': 'QXJ0aWZhY3Q6ODQ0NTI0MTI3', 'versionIndex': 1}}}
+2024-05-21 23:27:31,688 DEBUG   SenderThread:3469 [sender.py:send_request():407] send_request: defer
+2024-05-21 23:27:31,689 INFO    SenderThread:3469 [sender.py:send_request_defer():609] handle sender defer: 9
+2024-05-21 23:27:31,689 INFO    SenderThread:3469 [dir_watcher.py:finish():358] shutting down directory watcher
+2024-05-21 23:27:32,320 INFO    SenderThread:3469 [dir_watcher.py:finish():388] scan: /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240521_232532-gll4m3c7/files
+2024-05-21 23:27:32,321 INFO    SenderThread:3469 [dir_watcher.py:finish():402] scan save: /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240521_232532-gll4m3c7/files/requirements.txt requirements.txt
+2024-05-21 23:27:32,322 INFO    SenderThread:3469 [dir_watcher.py:finish():402] scan save: /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240521_232532-gll4m3c7/files/output.log output.log
+2024-05-21 23:27:32,326 INFO    SenderThread:3469 [dir_watcher.py:finish():402] scan save: /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240521_232532-gll4m3c7/files/config.yaml config.yaml
+2024-05-21 23:27:32,327 INFO    SenderThread:3469 [dir_watcher.py:finish():402] scan save: /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240521_232532-gll4m3c7/files/wandb-summary.json wandb-summary.json
+2024-05-21 23:27:32,335 INFO    SenderThread:3469 [dir_watcher.py:finish():402] scan save: /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240521_232532-gll4m3c7/files/conda-environment.yaml conda-environment.yaml
+2024-05-21 23:27:32,338 INFO    SenderThread:3469 [dir_watcher.py:finish():402] scan save: /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240521_232532-gll4m3c7/files/wandb-metadata.json wandb-metadata.json
+2024-05-21 23:27:32,338 INFO    SenderThread:3469 [sender.py:transition_state():613] send defer: 10
+2024-05-21 23:27:32,339 DEBUG   SenderThread:3469 [sender.py:send_request():407] send_request: poll_exit
+2024-05-21 23:27:32,343 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: defer
+2024-05-21 23:27:32,343 INFO    HandlerThread:3469 [handler.py:handle_request_defer():170] handle defer: 10
+2024-05-21 23:27:32,345 DEBUG   SenderThread:3469 [sender.py:send_request():407] send_request: defer
+2024-05-21 23:27:32,345 INFO    SenderThread:3469 [sender.py:send_request_defer():609] handle sender defer: 10
+2024-05-21 23:27:32,346 INFO    SenderThread:3469 [file_pusher.py:finish():175] shutting down file pusher
+2024-05-21 23:27:32,694 INFO    wandb-upload_0:3469 [upload_job.py:push():131] Uploaded file /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240521_232532-gll4m3c7/files/requirements.txt
+2024-05-21 23:27:32,744 INFO    wandb-upload_2:3469 [upload_job.py:push():131] Uploaded file /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240521_232532-gll4m3c7/files/config.yaml
+2024-05-21 23:27:32,831 INFO    wandb-upload_3:3469 [upload_job.py:push():131] Uploaded file /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240521_232532-gll4m3c7/files/wandb-summary.json
+2024-05-21 23:27:32,852 INFO    wandb-upload_4:3469 [upload_job.py:push():131] Uploaded file /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240521_232532-gll4m3c7/files/conda-environment.yaml
+2024-05-21 23:27:32,903 INFO    wandb-upload_1:3469 [upload_job.py:push():131] Uploaded file /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240521_232532-gll4m3c7/files/output.log
+2024-05-21 23:27:33,108 INFO    Thread-11 (_thread_body):3469 [sender.py:transition_state():613] send defer: 11
+2024-05-21 23:27:33,109 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: defer
+2024-05-21 23:27:33,109 INFO    HandlerThread:3469 [handler.py:handle_request_defer():170] handle defer: 11
+2024-05-21 23:27:33,109 DEBUG   SenderThread:3469 [sender.py:send_request():407] send_request: defer
+2024-05-21 23:27:33,109 INFO    SenderThread:3469 [sender.py:send_request_defer():609] handle sender defer: 11
+2024-05-21 23:27:33,109 INFO    SenderThread:3469 [file_pusher.py:join():181] waiting for file pusher
+2024-05-21 23:27:33,109 INFO    SenderThread:3469 [sender.py:transition_state():613] send defer: 12
+2024-05-21 23:27:33,109 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: defer
+2024-05-21 23:27:33,110 INFO    HandlerThread:3469 [handler.py:handle_request_defer():170] handle defer: 12
+2024-05-21 23:27:33,110 DEBUG   SenderThread:3469 [sender.py:send_request():407] send_request: defer
+2024-05-21 23:27:33,110 INFO    SenderThread:3469 [sender.py:send_request_defer():609] handle sender defer: 12
+2024-05-21 23:27:33,110 INFO    SenderThread:3469 [file_stream.py:finish():595] file stream finish called
+2024-05-21 23:27:33,706 INFO    SenderThread:3469 [file_stream.py:finish():599] file stream finish is done
+2024-05-21 23:27:33,706 INFO    SenderThread:3469 [sender.py:transition_state():613] send defer: 13
+2024-05-21 23:27:33,707 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: defer
+2024-05-21 23:27:33,707 INFO    HandlerThread:3469 [handler.py:handle_request_defer():170] handle defer: 13
+2024-05-21 23:27:33,708 DEBUG   SenderThread:3469 [sender.py:send_request():407] send_request: defer
+2024-05-21 23:27:33,708 INFO    SenderThread:3469 [sender.py:send_request_defer():609] handle sender defer: 13
+2024-05-21 23:27:33,708 INFO    SenderThread:3469 [sender.py:transition_state():613] send defer: 14
+2024-05-21 23:27:33,709 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: defer
+2024-05-21 23:27:33,709 INFO    HandlerThread:3469 [handler.py:handle_request_defer():170] handle defer: 14
+2024-05-21 23:27:33,710 DEBUG   SenderThread:3469 [sender.py:send():380] send: final
+2024-05-21 23:27:33,710 DEBUG   SenderThread:3469 [sender.py:send():380] send: footer
+2024-05-21 23:27:33,710 DEBUG   SenderThread:3469 [sender.py:send_request():407] send_request: defer
+2024-05-21 23:27:33,710 INFO    SenderThread:3469 [sender.py:send_request_defer():609] handle sender defer: 14
+2024-05-21 23:27:33,712 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: poll_exit
+2024-05-21 23:27:33,712 DEBUG   SenderThread:3469 [sender.py:send_request():407] send_request: poll_exit
+2024-05-21 23:27:33,713 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: server_info
+2024-05-21 23:27:33,714 DEBUG   SenderThread:3469 [sender.py:send_request():407] send_request: server_info
+2024-05-21 23:27:33,716 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: get_summary
+2024-05-21 23:27:33,718 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: sampled_history
+2024-05-21 23:27:33,719 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: internal_messages
+2024-05-21 23:27:33,720 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: job_info
+2024-05-21 23:27:33,837 DEBUG   SenderThread:3469 [sender.py:send_request():407] send_request: job_info
+2024-05-21 23:27:33,837 INFO    MainThread:3469 [wandb_run.py:_footer_history_summary_info():3554] rendering history
+2024-05-21 23:27:33,838 INFO    MainThread:3469 [wandb_run.py:_footer_history_summary_info():3586] rendering summary
+2024-05-21 23:27:33,838 INFO    MainThread:3469 [wandb_run.py:_footer_sync_info():3513] logging synced files
+2024-05-21 23:27:33,839 DEBUG   HandlerThread:3469 [handler.py:handle_request():144] handle_request: shutdown
+2024-05-21 23:27:33,839 INFO    HandlerThread:3469 [handler.py:finish():844] shutting down handler
+2024-05-21 23:27:34,724 INFO    WriterThread:3469 [datastore.py:close():294] close: /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240521_232532-gll4m3c7/run-gll4m3c7.wandb
+2024-05-21 23:27:34,841 INFO    SenderThread:3469 [sender.py:finish():1534] shutting down sender
+2024-05-21 23:27:34,841 INFO    SenderThread:3469 [file_pusher.py:finish():175] shutting down file pusher
+2024-05-21 23:27:34,841 INFO    SenderThread:3469 [file_pusher.py:join():181] waiting for file pusher

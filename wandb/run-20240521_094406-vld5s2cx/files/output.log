@@ -1,0 +1,42 @@
+
+Loading data...
+> /Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py(388)run_rf()
+    387
+--> 388     if test_year == '2024':
+    389         print('Fitting model on all data including 2023 and returning')
+185416
+       precip_rate_tminus_0  precip_rate_tminus_1  precip_rate_tminus_2  ...  UKMO_ens_1_precip_total_cumulative_precipitation        date  district
+0                  0.000000              0.000000              0.000000  ...                                       1821.778592  2016-11-01    Achham
+1                  0.000000              0.000000              0.000000  ...                                       1804.184703  2016-11-02    Achham
+2                  0.000000              0.000000              0.000000  ...                                       1795.842364  2016-11-03    Achham
+3                  0.000000              0.000000              0.000000  ...                                         97.049641  2016-11-04    Achham
+4                  0.000000              0.000000              0.000000  ...                                         96.146014  2016-11-05    Achham
+...                     ...                   ...                   ...  ...                                               ...         ...       ...
+21016              0.000000              0.000000              0.119935  ...                                      34206.850416  2023-09-26  Udayapur
+21017              1.796016              0.000000              0.000000  ...                                      34537.714104  2023-09-27  Udayapur
+21018              0.790217              1.796016              0.000000  ...                                      29010.632952  2023-09-28  Udayapur
+21019              3.345872              0.790217              1.796016  ...                                      26271.742392  2023-09-29  Udayapur
+21020             36.429203              3.345872              0.790217  ...                                      22527.943200  2023-09-30  Udayapur
+[183876 rows x 61 columns]
+185416
+*** AttributeError: 'Series' object has no attribute 'nonzero'
+<stdin>:1: FutureWarning: In a future version of pandas all arguments of DataFrame.any and Series.any will be keyword-only.
+*** NameError: name 'inds' is not defined
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 733, in <module>
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 388, in run_rf
+    Xtrain = Xtrain.dropna()
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 388, in run_rf
+    Xtrain = Xtrain.dropna()
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/bdb.py", line 115, in dispatch_line
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit
+If you suspect this is an IPython 8.7.0 bug, please report it at:
+    https://github.com/ipython/ipython/issues
+or send an email to the mailing list at ipython-dev@python.org
+You can print a more detailed traceback right now with "%tb", or use "%debug"
+to interactively debug it.
+Extra-detailed tracebacks for bug-reporting purposes can be enabled via:
+    %config Application.verbose_crash=True

@@ -1,0 +1,8 @@
+
+Loading data...
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 731, in <module>
+    run_rf(X_train, y_train, X_test, y_test, results, experiment, model, test_y)
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 383, in run_rf
+    test_info = Xtest[info_cols]
+TypeError: 'NoneType' object is not subscriptable

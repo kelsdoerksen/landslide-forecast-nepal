@@ -1,0 +1,53 @@
+
+Loading data...
+> /Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py(392)run_rf()
+    391         ipdb.set_trace()
+--> 392         print('Fitting model on all data including 2023 and returning')
+    393         # Fit model and save
+       precip_rate_tminus_0  precip_rate_tminus_1  precip_rate_tminus_2  ...  UKMO_ens_1_precip_total_cumulative_precipitation        date  district
+90                 9.063807              0.000000              0.000000  ...                                      65956.546440  2017-04-01    Achham
+91                 0.073775              9.063807              0.000000  ...                                      66784.682712  2017-04-02    Achham
+92                 2.647137              0.073775              9.063807  ...                                      64403.121672  2017-04-03    Achham
+93                 0.083351              2.647137              0.073775  ...                                      65830.515192  2017-04-04    Achham
+94                19.566420              0.083351              2.647137  ...                                      66435.127272  2017-04-05    Achham
+...                     ...                   ...                   ...  ...                                               ...         ...       ...
+21016              0.000000              0.000000              0.119935  ...                                      34206.850416  2023-09-26  Udayapur
+21017              1.796016              0.000000              0.000000  ...                                      34537.714104  2023-09-27  Udayapur
+21018              0.790217              1.796016              0.000000  ...                                      29010.632952  2023-09-28  Udayapur
+21019              3.345872              0.790217              1.796016  ...                                      26271.742392  2023-09-29  Udayapur
+21020             36.429203              3.345872              0.790217  ...                                      22527.943200  2023-09-30  Udayapur
+[105952 rows x 61 columns]
+*** KeyError: 'dates'
+1376
+        index  precip_rate_tminus_0  precip_rate_tminus_1  ...  UKMO_ens_1_precip_total_cumulative_precipitation        date  district
+0          90              9.063807              0.000000  ...                                      65956.546440  2017-04-01    Achham
+1          91              0.073775              9.063807  ...                                      66784.682712  2017-04-02    Achham
+2          92              2.647137              0.073775  ...                                      64403.121672  2017-04-03    Achham
+3          93              0.083351              2.647137  ...                                      65830.515192  2017-04-04    Achham
+4          94             19.566420              0.083351  ...                                      66435.127272  2017-04-05    Achham
+...       ...                   ...                   ...  ...                                               ...         ...       ...
+105947  21016              0.000000              0.000000  ...                                      34206.850416  2023-09-26  Udayapur
+105948  21017              1.796016              0.000000  ...                                      34537.714104  2023-09-27  Udayapur
+105949  21018              0.790217              1.796016  ...                                      29010.632952  2023-09-28  Udayapur
+105950  21019              3.345872              0.790217  ...                                      26271.742392  2023-09-29  Udayapur
+105951  21020             36.429203              3.345872  ...                                      22527.943200  2023-09-30  Udayapur
+[105952 rows x 62 columns]
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 736, in <module>
+    run_rf(X_train, y_train, X_test, y_test, results, experiment, model, test_y)
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 392, in run_rf
+    print('Fitting model on all data including 2023 and returning')
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 392, in run_rf
+    print('Fitting model on all data including 2023 and returning')
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/bdb.py", line 115, in dispatch_line
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit
+If you suspect this is an IPython 8.7.0 bug, please report it at:
+    https://github.com/ipython/ipython/issues
+or send an email to the mailing list at ipython-dev@python.org
+You can print a more detailed traceback right now with "%tb", or use "%debug"
+to interactively debug it.
+Extra-detailed tracebacks for bug-reporting purposes can be enabled via:
+    %config Application.verbose_crash=True

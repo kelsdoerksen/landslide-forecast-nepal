@@ -1,0 +1,46 @@
+
+Loading data...
+> /Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py(394)run_rf()
+    393         ipdb.set_trace()
+--> 394         print('Fitting model on all data including 2023 and returning')
+    395         # Fit model and save
+*** AttributeError: 'DataFrame' object has no attribute 'colummns'
+Index(['precip_rate_tminus_0', 'precip_rate_tminus_1', 'precip_rate_tminus_2',
+       'precip_rate_tminus_3', 'precip_rate_tminus_4', 'precip_rate_tminus_5',
+       'precip_rate_tminus_6', 'precip_rate_tminus_7', 'precip_rate_tminus_8',
+       'precip_rate_tminus_9', 'precip_rate_tminus_10',
+       'precip_rate_tminus_11', 'precip_rate_tminus_12',
+       'precip_rate_tminus_13', 'gpm_mean_precip_rate', 'gpm_max_precip_rate',
+       'gpm_min_precip_rate', 'gpm_total_cumulative_precipitation', 'dem_mean',
+       'dem_median', 'dem_stdev', 'dem_min', 'dem_max', 'dem_range',
+       'dem_variance', 'aspect_mean', 'aspect_median', 'aspect_stdev',
+       'aspect_min', 'aspect_max', 'aspect_range', 'aspect_variance',
+       'slope_mean', 'slope_median', 'slope_stdev', 'slope_min', 'slope_max',
+       'slope_range', 'slope_variance', 'lc_mode', 'lc_var',
+       'UKMO_ens_1_precip_rate_tplus_1', 'UKMO_ens_1_precip_rate_tplus_2',
+       'UKMO_ens_1_precip_rate_tplus_3', 'UKMO_ens_1_precip_rate_tplus_4',
+       'UKMO_ens_1_precip_rate_tplus_5', 'UKMO_ens_1_precip_rate_tplus_6',
+       'UKMO_ens_1_precip_rate_tplus_7', 'UKMO_ens_1_precip_rate_tplus_8',
+       'UKMO_ens_1_precip_rate_tplus_9', 'UKMO_ens_1_precip_rate_tplus_10',
+       'UKMO_ens_1_precip_rate_tplus_11', 'UKMO_ens_1_precip_rate_tplus_12',
+       'UKMO_ens_1_precip_rate_tplus_13', 'UKMO_ens_1_precip_rate_tplus_14',
+       'UKMO_ens_1_precip_mean_precip_rate',
+       'UKMO_ens_1_precip_max_precip_rate',
+       'UKMO_ens_1_precip_min_precip_rate',
+       'UKMO_ens_1_precip_total_cumulative_precipitation'],
+      dtype='object')
+<xarray.DataArray 'time' (time: 18)>
+array(['2024-05-15T00:00:00.000000000', '2024-05-16T00:00:00.000000000',
+       '2024-05-17T00:00:00.000000000', '2024-05-18T00:00:00.000000000',
+       '2024-05-19T00:00:00.000000000', '2024-05-20T00:00:00.000000000',
+       '2024-05-21T00:00:00.000000000', '2024-05-22T00:00:00.000000000',
+       '2024-05-23T00:00:00.000000000', '2024-05-24T00:00:00.000000000',
+       '2024-05-25T00:00:00.000000000', '2024-05-26T00:00:00.000000000',
+       '2024-05-27T00:00:00.000000000', '2024-05-28T00:00:00.000000000',
+       '2024-05-29T00:00:00.000000000', '2024-05-30T00:00:00.000000000',
+       '2024-05-31T00:00:00.000000000', '2024-06-01T00:00:00.000000000'],
+      dtype='datetime64[ns]')
+Coordinates:
+  * time     (time) datetime64[ns] 2024-05-15 2024-05-16 ... 2024-06-01
+Attributes:
+    standard_name:  time

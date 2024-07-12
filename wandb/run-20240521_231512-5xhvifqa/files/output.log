@@ -1,0 +1,27 @@
+
+Loading data...
+Fitting model on all data including 2023 and returning
+> /Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py(395)run_rf()
+    394         # Fit model and save
+--> 395         forest.fit(Xtrain, ytrain)
+    396         # Save the model to file
+*** KeyboardInterrupt
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 737, in <module>
+    run_rf(X_train, y_train, X_test, y_test, results, experiment, model, test_y)
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 395, in run_rf
+    forest.fit(Xtrain, ytrain)
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 395, in run_rf
+    forest.fit(Xtrain, ytrain)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/bdb.py", line 115, in dispatch_line
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit
+If you suspect this is an IPython 8.7.0 bug, please report it at:
+    https://github.com/ipython/ipython/issues
+or send an email to the mailing list at ipython-dev@python.org
+You can print a more detailed traceback right now with "%tb", or use "%debug"
+to interactively debug it.
+Extra-detailed tracebacks for bug-reporting purposes can be enabled via:
+    %config Application.verbose_crash=True
