@@ -15,4 +15,11 @@
 </div>
 
 ## 📄 Description
-This work presents the dataset curation, processing, model training, testing and analysis for the purposes of predicting landslides in Nepal that cause impact to infrastructure and/or loss of life. 
+This work presents the dataset curation, processing, model training, testing and analysis for the purposes of predicting landslides on a 14-day temporal scale in Nepal that cause impact to infrastructure and/or loss of life. 
+
+## 💧 Dataset
+Both the tabular-ML dataset and array dataset are composed of precipitation hindcast features, precipitation forecast featueres, and topographical feature extracted from the ALOS 30 meter resolution Digital Elevation model of Nepal. 
+
+## 👩‍🔬 Data Processing
+
+## 📚 Code Organization
