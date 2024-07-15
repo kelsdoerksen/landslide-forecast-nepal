@@ -8,16 +8,20 @@ import numpy as np
 import argparse
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
-parser = argparse.ArgumentParser(description='Generate Feature Space for District Landslide Prediction')
-parser.add_argument("--data-dir", help='Specify directory of stored data')
-parser.add_argument("--save-dir", help='Specify directory to save data')
-parser.add_argument("--year", help='Specify year to generate feature space for. Range 2015-2021')
+
+def get_args():
+    parser = argparse.ArgumentParser(description='Generate Feature Space for District Landslide Prediction')
+    parser.add_argument("--year", help='Specify year to generate feature space for. Range 2015-2021')
+    parser.add_argument("--hindcast_source", help='Hindcast precipitation source. Must be one of GPM or GSMaP')
+    parser.add_argument("--forecast_source", help='Forecast precipitation source. Must be one of UKMO, NCEP, KMA.')
+    parser.add_argument('--ens_member', help='Ensemble member to use precipitation data from.')
+    return parser.parse_args()
 
 # Set data path
-full_path = '/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
+root_dir = '/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
 
 # Read in incidents records for 2011-2023
-incidents_df = pd.read_csv(full_path + '/Wards_with_Bipad_events_one_to_many_landslides_only.csv')
+incidents_df = pd.read_csv(root_dir + '/Wards_with_Bipad_events_one_to_many_landslides_only.csv')
 
 
 # Grab District Names -> Harcoded to match Bipad Portal records
@@ -33,9 +37,8 @@ districts = ['Achham', 'Arghakhanchi', 'Baglung', 'Baitadi', 'Bajhang', 'Bajura'
              'Sindhupalchok', 'Siraha', 'Solukhumbu', 'Sunsari', 'Surkhet', 'Syangja', 'Tanahu',
              'Taplejung', 'Terhathum', 'Udayapur']
 
-
-
 print('The number of landslides on the District-level from 2015-2023 in Nepal is {}'.format(len(incidents_df)))
+
 
 def daterange(date1, date2):
   date_list = []
@@ -107,10 +110,9 @@ def add_landcover_features(modis_df, day):
     return df_lc
 
 
-def add_precip_lookahead(day, precip_forecast_df, window_size, model_name, ensemble_num, operational_mode=False):
+def add_precip_lookahead(day, precip_forecast_df, window_size, model_name, ensemble_num):
     '''
     Add precipitation lookahead from model forecast data
-    :param: operational_mode: refers to operational-use context, querying from tplus 2 days
     '''
     format = '%Y-%m-%d'
     day = str(day)
@@ -130,13 +132,6 @@ def add_precip_lookahead(day, precip_forecast_df, window_size, model_name, ensem
             print('Missing precipitation for date {}, setting as NaN to skip later'.format(lookahead))
             precip_dict['{}_ens_{}_precip_rate_tplus_{}'.format(model_name, ensemble_num, increment)] = np.nan
             cumulative_precip.append(lookahead_precip * 24)
-
-    if operational_mode:
-        entries_to_remove = ('{}_ens_{}_precip_rate_tplus_13'.format(model_name, ensemble_num),
-                             '{}_ens_{}_precip_rate_tplus_14'.format(model_name, ensemble_num))
-        for k in entries_to_remove:
-            precip_dict.pop(k, None)
-        cumulative_precip = cumulative_precip[-2:]
 
     precip_mean = np.mean(list(precip_dict.values()))
     precip_max = max(precip_dict.values())
@@ -216,8 +211,7 @@ def generate_landslide_label(label_df, day, window_size):
 
 
 def generate_labelled_xdays_sample(filepath, label_df, district, day, window_size,
-                                   precip_lookback, precip_lookahead, forecast_name, ensemble_number,
-                                   operational_mode=False):
+                                   precip_lookback, precip_lookahead, forecast_name, ensemble_number):
     '''
     For each unique date in date range of study, create feature space
     '''
@@ -242,8 +236,7 @@ def generate_labelled_xdays_sample(filepath, label_df, district, day, window_siz
     modis_df = add_landcover_features(modis, day)
 
     # Add precip lookahead features
-    df_precip_forecast = add_precip_lookahead(day, precip_lookahead, window_size, forecast_name, ensemble_number,
-                                              operational_mode)
+    df_precip_forecast = add_precip_lookahead(day, precip_lookahead, window_size, forecast_name, ensemble_number)
 
     # Generate landslide label
     label = generate_landslide_label(label_df, day, window_size)
@@ -281,12 +274,11 @@ def check_if_date_valid(query_date, precipitation_df, direction):
 
 
 def run_generate_data(root_dir, year, start_date, end_date, window_size, forecast_model, forecast_ensemble,
-                      operational=False):
+                      hindcast_data):
     '''
     :param year: year of data gathered
     :param start_date: format date(YYYY,MM,DD)
     :param end_date: format date(YYYY,MM,DD)
-    :param: operational: if we should use data in operational context or not. This means including a 2-day lag
     of data availability for GPM and forecast data
     :return: csv file of labelled data
     '''
@@ -306,15 +298,19 @@ def run_generate_data(root_dir, year, start_date, end_date, window_size, forecas
         print('Generating samples for district {}'.format(district))
         # Generate labels
         labelled_df = generate_labelled_district(incidents_df, district, daily_dates)
-        # Grab Precipitation data for GPM LOOKBACK
-        precip_gpm = pd.read_csv('{}/GPM_Mean_Pixelwise/Subseasonal/DistrictLevel/{}_GPM.csv'.format(root_dir, district))
+        # Grab Precipitation data for LOOKBACK
+
+        precip_lookback = pd.read_csv('{}/{}_Mean_Pixelwise/Subseasonal/DistrictLevel/{}_GPM.csv'.format(root_dir,
+                                                                                                         hindcast_data,
+                                                                                                         district))
+
         # Grab Precipitation data for Forecast LOOKAHEAD
         precip_forecast = pd.read_csv('{}/PrecipitationModel_Forecast_Data/Subseasonal/{}/DistrictLevel/'
                                       'ensemble_member_{}/{}_subseasonal_precipitation.csv'.
                                       format(root_dir, forecast_model,  forecast_ensemble, district))
 
         for i in range(len(daily_dates) - window_size):
-            if not check_if_date_valid(daily_dates[i], precip_gpm, 'lookback'):
+            if not check_if_date_valid(daily_dates[i], precip_lookback, 'lookback'):
                 print('We dont have all the lookback information needed, skipping sample for doy: {}'.
                       format(daily_dates[i]))
                 continue
@@ -324,86 +320,31 @@ def run_generate_data(root_dir, year, start_date, end_date, window_size, forecas
                 continue
 
             # check dates for lookahead and lookback precip
-            x_day_labelled_df = generate_labelled_xdays_sample(full_path, labelled_df,
+            x_day_labelled_df = generate_labelled_xdays_sample(root_dir, labelled_df,
                                                                    district, daily_dates[i],
-                                                                   window_size, precip_gpm,
-                                                                   precip_forecast, forecast_model, forecast_ensemble,
-                                                               operational)
+                                                                   window_size, precip_lookback,
+                                                                   precip_forecast, forecast_model, forecast_ensemble)
             all_data = all_data.append(x_day_labelled_df)
         count = count - 1
         print('%.2f percent complete' % (100 * (1 - count / total_districts)))
         print('{} districts left to generate samples for'.format(count))
     # Saving data for future use
     if forecast_model == 'ecmwf':
-        all_data.to_csv(
-            '/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep/LabelledData/'
-            '{}/operational/{}_windowsize{}_district.csv'.format(forecast_model, year, window_size))
+        all_data.to_csv('/LabelledData/{}/{}_windowsize{}_district.csv'.format(root_dir,
+                                                                               forecast_model, year, window_size))
     else:
-        all_data.to_csv('/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep/LabelledData/'
-                        '{}/operational/ensemble_{}/{}_windowsize{}_district.csv'.format(forecast_model, forecast_ensemble,
-                                                                             year, window_size))
+        all_data.to_csv('{}/LabelledData/{}/ensemble_{}/{}_windowsize{}_district.csv'.format(root_dir, forecast_model,
+                                                                                             forecast_ensemble,
+                                                                                             year, window_size))
     print('The program took {}s to run'.format(time.time()-start_time))
 
-run_generate_data(full_path, '2016', date(2016,11,1), date(2017,1,14), 14, 'KMA', '1', operational=True)
-run_generate_data(full_path, '2017', date(2017,1,1), date(2018,1,14), 14, 'KMA', '1', operational=True)
-run_generate_data(full_path, '2018', date(2018,1,1), date(2019,1,14), 14, 'KMA', '1', operational=True)
-run_generate_data(full_path, '2019', date(2019,1,1), date(2020,1,14), 14, 'KMA', '1', operational=True)
-run_generate_data(full_path, '2020', date(2020,1,1), date(2021,1,14), 14, 'KMA', '1', operational=True)
-run_generate_data(full_path, '2021', date(2021,1,1), date(2022,1,14), 14, 'KMA', '1', operational=True)
-run_generate_data(full_path, '2022', date(2022,1,1), date(2023,1,14), 14, 'KMA', '1', operational=True)
-run_generate_data(full_path, '2023', date(2023,1,1), date(2023,10,31), 14, 'KMA', '1', operational=True)
 
-run_generate_data(full_path, '2016', date(2016,11,1), date(2017,1,14), 14, 'KMA', '3', operational=True)
-run_generate_data(full_path, '2017', date(2017,1,1), date(2018,1,14), 14, 'KMA', '3', operational=True)
-run_generate_data(full_path, '2018', date(2018,1,1), date(2019,1,14), 14, 'KMA', '3', operational=True)
-run_generate_data(full_path, '2019', date(2019,1,1), date(2020,1,14), 14, 'KMA', '3', operational=True)
-run_generate_data(full_path, '2020', date(2020,1,1), date(2021,1,14), 14, 'KMA', '3', operational=True)
-run_generate_data(full_path, '2021', date(2021,1,1), date(2022,1,14), 14, 'KMA', '3', operational=True)
-run_generate_data(full_path, '2022', date(2022,1,1), date(2023,1,14), 14, 'KMA', '3', operational=True)
-run_generate_data(full_path, '2023', date(2023,1,1), date(2023,10,31), 14, 'KMA', '3', operational=True)
+if __name__ == "__main__":
+    args = get_args()
+    year = args.year
+    hindcast = args.hindcast_source
+    forecast = args.forecast_source
+    ens_num = args.ens_number
 
-run_generate_data(full_path, '2016', date(2016,11,1), date(2017,1,14), 14, 'NCEP', '4', operational=True)
-run_generate_data(full_path, '2017', date(2017,1,1), date(2018,1,14), 14, 'NCEP', '4', operational=True)
-run_generate_data(full_path, '2018', date(2018,1,1), date(2019,1,14), 14, 'NCEP', '4', operational=True)
-run_generate_data(full_path, '2019', date(2019,1,1), date(2020,1,14), 14, 'NCEP', '4', operational=True)
-run_generate_data(full_path, '2020', date(2020,1,1), date(2021,1,14), 14, 'NCEP', '4', operational=True)
-run_generate_data(full_path, '2021', date(2021,1,1), date(2022,1,14), 14, 'NCEP', '4', operational=True)
-run_generate_data(full_path, '2022', date(2022,1,1), date(2023,1,14), 14, 'NCEP', '4', operational=True)
-run_generate_data(full_path, '2023', date(2023,1,1), date(2023,10,31), 14, 'NCEP', '4', operational=True)
+    run_generate_data(root_dir, year, date(int(year), 11, 1), date(int(year)+1, 1, 14), 14, forecast, ens_num)
 
-run_generate_data(full_path, '2016', date(2016,11,1), date(2017,1,14), 14, 'NCEP', '8', operational=True)
-run_generate_data(full_path, '2017', date(2017,1,1), date(2018,1,14), 14, 'NCEP', '8', operational=True)
-run_generate_data(full_path, '2018', date(2018,1,1), date(2019,1,14), 14, 'NCEP', '8', operational=True)
-run_generate_data(full_path, '2019', date(2019,1,1), date(2020,1,14), 14, 'NCEP', '8', operational=True)
-run_generate_data(full_path, '2020', date(2020,1,1), date(2021,1,14), 14, 'NCEP', '8', operational=True)
-run_generate_data(full_path, '2021', date(2021,1,1), date(2022,1,14), 14, 'NCEP', '8', operational=True)
-run_generate_data(full_path, '2022', date(2022,1,1), date(2023,1,14), 14, 'NCEP', '8', operational=True)
-run_generate_data(full_path, '2023', date(2023,1,1), date(2023,10,31), 14, 'NCEP', '8', operational=True)
-'''
-run_generate_data(full_path, '2016', date(2016,11,1), date(2017,1,14), 14, 'NCEP', '1')
-run_generate_data(full_path, '2017', date(2017,1,1), date(2018,1,14), 14, 'NCEP', '1')
-run_generate_data(full_path, '2018', date(2018,1,1), date(2019,1,14), 14, 'NCEP', '1')
-run_generate_data(full_path, '2019', date(2019,1,1), date(2020,1,14), 14, 'NCEP', '1')
-run_generate_data(full_path, '2020', date(2020,1,1), date(2021,1,14), 14, 'NCEP', '1')
-run_generate_data(full_path, '2021', date(2021,1,1), date(2022,1,14), 14, 'NCEP', '1')
-run_generate_data(full_path, '2022', date(2022,1,1), date(2023,1,14), 14, 'NCEP', '1')
-run_generate_data(full_path, '2023', date(2023,1,1), date(2023,10,31), 14, 'NCEP', '1')
-
-run_generate_data(full_path, '2016', date(2016,11,1), date(2017,1,14), 14, 'NCEP', '4')
-run_generate_data(full_path, '2017', date(2017,1,1), date(2018,1,14), 14, 'NCEP', '4')
-run_generate_data(full_path, '2018', date(2018,1,1), date(2019,1,14), 14, 'NCEP', '4')
-run_generate_data(full_path, '2019', date(2019,1,1), date(2020,1,14), 14, 'NCEP', '4')
-run_generate_data(full_path, '2020', date(2020,1,1), date(2021,1,14), 14, 'NCEP', '4')
-run_generate_data(full_path, '2021', date(2021,1,1), date(2022,1,14), 14, 'NCEP', '4')
-run_generate_data(full_path, '2022', date(2022,1,1), date(2023,1,14), 14, 'NCEP', '4')
-run_generate_data(full_path, '2023', date(2023,1,1), date(2023,10,31), 14, 'NCEP', '4')
-
-run_generate_data(full_path, '2016', date(2016,11,1), date(2017,1,14), 14, 'NCEP', '8')
-run_generate_data(full_path, '2017', date(2017,1,1), date(2018,1,14), 14, 'NCEP', '8')
-run_generate_data(full_path, '2018', date(2018,1,1), date(2019,1,14), 14, 'NCEP', '8')
-run_generate_data(full_path, '2019', date(2019,1,1), date(2020,1,14), 14, 'NCEP', '8')
-run_generate_data(full_path, '2020', date(2020,1,1), date(2021,1,14), 14, 'NCEP', '8')
-run_generate_data(full_path, '2021', date(2021,1,1), date(2022,1,14), 14, 'NCEP', '8')
-run_generate_data(full_path, '2022', date(2022,1,1), date(2023,1,14), 14, 'NCEP', '8')
-run_generate_data(full_path, '2023', date(2023,1,1), date(2023,10,31), 14, 'NCEP', '8')
-'''

@@ -8,7 +8,18 @@ import os
 import pandas as pd
 from PIL import Image
 import re
+import argparse
 
+
+def get_args():
+    parser = argparse.ArgumentParser(description='Processing Precipitation Data to Tabular format')
+    parser.add_argument("--precip_source", default=None, help='Precipitation source. Must be one of GPM, GSMaP, KMA,'
+                                                              'NCEP, UKMO')
+    parser.add_argument("--ens_member", default=None, help='Ensemble member to use precipitation data from.')
+    return parser.parse_args()
+
+
+root_dir = '/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
 
 district_dict = {
     'Bhojpur': 1, 'Dhankuta': 2, 'Ilam': 3, 'Jhapa': 4, 'Khotang': 5, 'Morang': 6, 'Okhaldhunga': 7,
@@ -19,11 +30,12 @@ district_dict = {
     'Rasuwa': 33, 'Sindhuli': 34, 'Sindhupalchok': 35, 'Baglung': 36, 'Gorkha': 37, 'Kaski': 38, 'Lamjung': 39,
     'Manang': 40, 'Mustang': 41, 'Myagdi': 42, 'Nawalparasi_E': 43, 'Parbat': 44, 'Syangja': 45, 'Tanahu': 46,
     'Arghakhanchi': 47, 'Banke': 48, 'Bardiya': 49, 'Dang': 50, 'Gulmi': 51, 'Kapilbastu': 52, 'Palpa': 53,
-    'Nawalparasi_W': 54, 'Pyuthan': 55, 'Rolpa': 56, 'Rukum East': 57, 'Rupandehi': 58, 'Dailekh': 59, 'Dolpa': 60,
-    'Humla': 61, 'Jajarkot': 62, 'Jumla': 63, 'Kalikot': 64, 'Mugu': 65, 'Rukum West': 66, 'Salyan': 67,
+    'Nawalparasi_W': 54, 'Pyuthan': 55, 'Rolpa': 56, 'Rukum_E': 57, 'Rupandehi': 58, 'Dailekh': 59, 'Dolpa': 60,
+    'Humla': 61, 'Jajarkot': 62, 'Jumla': 63, 'Kalikot': 64, 'Mugu': 65, 'Rukum_W': 66, 'Salyan': 67,
     'Surkhet': 68, 'Achham': 78, 'Baitadi': 70, 'Bajhang': 71, 'Bajura': 72, 'Dadeldhura': 73, 'Darchula': 74,
     'Doti': 75, 'Kailali': 76, 'Kanchanpur': 77
 }
+
 
 def convert_npy_to_precip(nepal_im, data_dir, precip_source, results_dir):
     """
@@ -39,8 +51,8 @@ def convert_npy_to_precip(nepal_im, data_dir, precip_source, results_dir):
         for f in os.listdir(data_dir):
             if f == '.DS_Store':
                 continue
-            if precip_source == 'GPM':
-                result = re.search('GPM_(.*).npy', f)
+            if precip_source in ['GPM', 'GSMaP']:
+                result = re.search('{}_(.*).npy'.format(precip_source), f)
             else:
                 result = re.search('doy_(.*).npy', f)
             try:
@@ -74,36 +86,27 @@ def convert_npy_to_precip(nepal_im, data_dir, precip_source, results_dir):
         df_sorted.to_csv('{}/{}_{}.csv'.format(results_dir, key, savename))
 
 
-# Load in the things we need
-root_dir = '/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
-forecast_model = 'ecmwf'
-ensemble_member = '1'
+if __name__ == "__main__":
+    args = get_args()
+    precip_source = args.precip_source
+    ens_num = args.ens_member
 
-if forecast_model == 'ecmwf':
-    subseasonal_precip_dir = '{}/PrecipitationModel_Forecast_Data/Subseasonal/{}'.format(
-        root_dir, forecast_model)
-    savedir = '{}/PrecipitationModel_Forecast_Data/Subseasonal/{}/DistrictLevel'.format(
-        root_dir, forecast_model, ensemble_member)
-else:
-    subseasonal_precip_dir = '{}/PrecipitationModel_Forecast_Data/Subseasonal/{}/ensemble_member_{}'.format(
-        root_dir, forecast_model, ensemble_member)
-    savedir = '{}/PrecipitationModel_Forecast_Data/Subseasonal/{}/DistrictLevel/ensemble_member_{}'.format(
-        root_dir, forecast_model, ensemble_member)
-
-if not os.path.exists(subseasonal_precip_dir):
-    os.makedirs(subseasonal_precip_dir)
-
-
-nepal_tiff = Image.open('{}/District_Labels.tif'.format(root_dir))
-convert_npy_to_precip(nepal_tiff, subseasonal_precip_dir, forecast_model, savedir)
-
-'''
-if forecast_model == 'GPM':
-    subseasonal_precip_dir = '{}/GPM_Mean_Pixelwise'.format(root_dir)
-    savedir = '{}/GPM_Mean_Pixelwise/Subseasonal/DistrictLevel'.format(root_dir)
-    if not os.path.exists(savedir):
-        os.makedirs(savedir)
     nepal_tiff = Image.open('{}/District_Labels.tif'.format(root_dir))
-    convert_npy_to_precip(nepal_tiff, subseasonal_precip_dir, forecast_model, savedir)
-else:
-'''
+
+    forecast = ['KMA', 'NCEP', 'UKMO']
+    hindcast = ['GPM', 'GSMaP']
+
+    if precip_source in forecast:
+        data_dir = '{}/PrecipitationModel_Forecast_Data/Subseasonal/{}/ensemble_member_{}'.format(root_dir,
+                                                                                                  precip_source,
+                                                                                                  ens_num)
+        save_dir = '{}/PrecipitationModel_Forecast_Data/Subseasonal/{}/DistrictLevel/ensemble_member_{}'.format(
+            root_dir, precip_source, ens_num)
+    else:
+        data_dir = '{}/{}_Mean_Pixelwise'.format(root_dir, precip_source)
+        save_dir = '{}/{}_Mean_Pixelwise/Subseasonal/DistrictLevel'.format(root_dir, precip_source)
+
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+
+    convert_npy_to_precip(nepal_tiff, data_dir=data_dir, precip_source=precip_source, results_dir=save_dir)
