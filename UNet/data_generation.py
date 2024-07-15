@@ -22,7 +22,6 @@ MODIS_dir = '{}/MODIS_Pixelwise'.format(root_dir)
 GPM_dir = '{}/GPM_Mean_Pixelwise'.format(root_dir)
 precip_dir = '{}/PrecipitationModel_Forecast_Data'.format(root_dir)
 dem_dir = '{}/Topography'.format(root_dir)
-label_dir = '{}/Binary_Landslide_Labels_14day'.format(root_dir)
 
 
 def load_dem_arrays():
