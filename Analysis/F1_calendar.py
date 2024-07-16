@@ -8,6 +8,13 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import f1_score
 from datetime import datetime, timedelta
 import os
+import argparse
+
+
+def get_args():
+    parser = argparse.ArgumentParser(description='Generating Confusion Matrix')
+    parser.add_argument('--run', help='Wandb run name')
+    return parser.parse_args()
 
 
 def f1_score_gen(df, decision_threshold):
@@ -71,10 +78,12 @@ def generate_f1_fig(df, save_dir):
         plt.close()
 
 
-results_dirs = ['honest-gorge-110_ForecastModelukmo_EnsembleNum1']
-root_dir = '/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
-for dir in results_dirs:
-    results = '{}/Results/{}'.format(root_dir, dir)
+if __name__ == '__main__':
+    args = get_args()
+    run_dir = args.run
+
+    root_dir = '/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
+    results = '{}/Results/{}'.format(root_dir, run_dir)
     prediction_df = pd.read_csv('{}/predictions_and_groundtruth.csv'.format(results))
     generate_f1_fig(prediction_df, results)
 

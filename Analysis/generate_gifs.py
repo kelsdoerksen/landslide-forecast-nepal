@@ -3,7 +3,14 @@ Generating gifs from plots etc
 """
 import glob
 from PIL import Image
-from os import listdir
+import argparse
+
+
+def get_args():
+    parser = argparse.ArgumentParser(description='Generating Confusion Matrix')
+    parser.add_argument('--run', help='Wandb run name')
+    return parser.parse_args()
+
 
 def make_gif(folder, target):
 
@@ -23,12 +30,15 @@ def make_gif(folder, target):
 
 
 # Specify paths for root dir, results respectively
-root_dir = '/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep/Results'
-results_dir = '{}/honest-gorge-110_ForecastModelUKMO_EnsembleNum1'.format(root_dir)
 
-# Run gif maker for what we want to generate
-targets = ['F1']
-#targets = ['precipitation', 'F1', 'prediction']
-for target in targets:
-    print('Generating gifs for: {}'.format(target))
-    make_gif(results_dir, target)
+if __name__ == '__main__':
+    args = get_args()
+    run_dir = args.run
+    root_dir = '/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep/Results'
+    results_dir = '{}/{}'.format(root_dir, run_dir)
+
+    # Run gif maker for what we want to generate
+    targets = ['precipitation', 'F1', 'prediction']
+    for target in targets:
+        print('Generating gifs for: {}'.format(target))
+        make_gif(results_dir, target)

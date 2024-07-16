@@ -17,6 +17,17 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 import os
+import argparse
+
+
+def get_args():
+    parser = argparse.ArgumentParser(description='Generating Confusion Matrix')
+    parser.add_argument('--run', help='Wandb run name')
+    parser.add_argument('--forecast_model', help='Precipitation Forecast Model used')
+    parser.add_argument('--ens_member', help='Precipitation Forecast Model Ens member used')
+    parser.add_argument('--hindcast_model', help='Precipitation Hindcast Model used')
+    return parser.parse_args()
+
 
 district_dict = {
     'Bhojpur': 1, 'Dhankuta': 2, 'Ilam': 3, 'Jhapa': 4, 'Khotang': 5, 'Morang': 6, 'Okhaldhunga': 7,
@@ -32,6 +43,7 @@ district_dict = {
     'Surkhet': 68, 'Achham': 78, 'Baitadi': 70, 'Bajhang': 71, 'Bajura': 72, 'Dadeldhura': 73, 'Darchula': 74,
     'Doti': 75, 'Kailali': 76, 'Kanchanpur': 77
 }
+
 
 def generate_prediction_map(df, nepal_mask, save_dir):
     '''
@@ -122,18 +134,24 @@ def generate_precipitation_map(precip_df, nepal_mask, save_dir, ens_model):
         plt.close()
 
 
+if __name__ == '__main__':
+    args = get_args()
+    run_dir = args.run
+    forecast_model = args.forecast_model
+    ens_number = args.ens_member
+    hindcast_model =args.hindcast_model
 
-root_dir = '/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
-nepal_im = Image.open('{}/District_Labels.tif'.format(root_dir))
-feature_df = pd.read_csv('{}/LabelledData/UKMO/ensemble_1/2023_windowsize14_district.csv'.format(root_dir))
-
-results_dirs = ['deft-energy-92_ForecastModelUKMO_EnsembleNum1']
-root_dir = '/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
-for dir in results_dirs:
-    results = '{}/Results/{}'.format(root_dir, dir)
-    prediction_df = pd.read_csv('{}/predictions_and_groundtruth.csv'.format(results))
-    generate_prediction_map(prediction_df, nepal_im, results)
-    generate_precipitation_map(feature_df, nepal_im, results, 'UKMO')
+    root_dir = '/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
+    nepal_im = Image.open('{}/District_Labels.tif'.format(root_dir))
+    feature_df = pd.read_csv('{}/LabelledData_{}/{}/ensemble_{}/2023_windowsize14_district.csv'.format(root_dir,
+                                                                                                       hindcast_model,
+                                                                                                       forecast_model,
+                                                                                                       ens_number))
+    results_dir = '{}/Results/{}'.format(root_dir, run_dir)
+    prediction_df = pd.read_csv('{}/predictions_and_groundtruth.csv'.format(results_dir))
+    # Generate maps
+    generate_prediction_map(prediction_df, nepal_im, results_dir)
+    generate_precipitation_map(feature_df, nepal_im, results_dir, forecast_model)
 
 
 

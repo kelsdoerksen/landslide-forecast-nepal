@@ -1,12 +1,19 @@
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import confusion_matrix
 import pandas as pd
 import seaborn as sn
 import matplotlib.pyplot as plt
 import numpy as np
-from datetime import datetime, timedelta
 import os
 from PIL import Image
 import copy
+import argparse
+from datetime import datetime, timedelta
+
+
+def get_args():
+    parser = argparse.ArgumentParser(description='Generating Confusion Matrix')
+    parser.add_argument('--run', help='Wandb run name')
+    return parser.parse_args()
 
 
 district_dict = {
@@ -38,6 +45,7 @@ def generate_confusion_matrix(df, threshold=0.2):
 
     return CM
 
+
 def generate_plot(CM, start_date, end_date, threshold, save_dir, save_date):
     """
     Generate cfm plot
@@ -61,8 +69,6 @@ def generate_plot(CM, start_date, end_date, threshold, save_dir, save_date):
     labels = np.asarray(labels).reshape(2, 2)
 
     sn.heatmap(CM_rate, annot=labels, cmap='Reds', vmin=0, vmax=1, fmt='')
-    cbar = plt.colorbar()
-    cbar.set_label('% Rate', rotation=270)
     plt.title('{}-{} at Decision Threshold: {}'.format(start_date.strftime("%Y-%m-%d"),
                                                                         end_date.strftime("%Y-%m-%d"), threshold))
     plt.savefig('{}/CM/{}_confusion_matrix'.format(save_dir, save_date))
@@ -143,62 +149,65 @@ def generate_tp_rate_map(df, nepal_mask, save_dir, decision_threshold=0.2):
     plt.close()
 
 
-root_dir = '/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep/Results'
+def generate_monsoon_plots(results_df):
+    """
+    Generate Monsoon Season CM plots
+    """
+    # Get list of unique dates in dataframe
+    date_list = results_df['date'].unique()
+    sorted_dates = sorted(date_list)
+    may = sorted_dates.index("2023-05-01")
+    june = sorted_dates.index("2023-06-01")
+    july = sorted_dates.index("2023-07-01")
+    aug = sorted_dates.index("2023-08-01")
+    sept = sorted_dates.index("2023-09-01")
+    # Iterate through date list and make confusion matrix plot
+    total_tp = []
+    total_fp = []
+    total_fn = []
+    total_tn = []
 
-nepal_im = Image.open('/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
-                      '/District_Labels.tif')
+    for date in sorted_dates:
+        # subset date
+        df_subset = results_df[results_df['date'] == date]
+        start = datetime.strptime(date, '%Y-%m-%d') + timedelta(days=1)
+        end = start + timedelta(days=14)
+        cm = generate_confusion_matrix(df_subset, 0.2)
+        total_tp.append(cm[1][1])
+        total_fp.append(cm[0][1])
+        total_fn.append(cm[1][0])
+        total_tn.append(cm[0][0])
+        generate_plot(cm, start, end, 0.2, results_dir, date)
 
-# --- Update this with whatever we want to generate for
-results = 'honest-gorge-110_ForecastModelukmo_EnsembleNum1'
+    fig, ax = plt.subplots()
+    plt.plot(sorted_dates, total_tp, label='True Positive')
+    plt.plot(sorted_dates, total_fp, label='False Positive')
+    plt.plot(sorted_dates, total_fn, label='False Negative')
+    ax.set_xticks([sorted_dates[may], sorted_dates[june], sorted_dates[july], sorted_dates[aug],
+                   sorted_dates[sept]])
+    ax.tick_params(axis='x', labelsize=8)
+    plt.xlabel('Date')
+    plt.ylabel('Count')
+    plt.legend()
+    plt.title('True Positive, False Positive, and False Negative Count for UKMO Ensemble Member 1')
+    plt.show()
 
-results_dir = '{}/{}'.format(root_dir, results)
-results_df = pd.read_csv('{}/predictions_and_groundtruth.csv'.format(results_dir))
 
-if not os.path.exists('{}/CM'.format(results_dir)):
-    os.mkdir('{}/CM'.format(results_dir))
+if __name__ == '__main__':
+    args = get_args()
+    run_dir = args.run
 
+    root_dir = '/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep/Results'
 
-# Get overall TP rate per Dist
-generate_tp_rate_map(results_df, nepal_im, results_dir)
+    nepal_im = Image.open('/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
+                          '/District_Labels.tif')
 
+    results_dir = '{}/{}'.format(root_dir, run_dir)
+    results_df = pd.read_csv('{}/predictions_and_groundtruth.csv'.format(results_dir))
 
-'''
-# Plotting
-# Get list of unique dates in dataframe
-date_list = results_df['date'].unique()
-sorted_dates = sorted(date_list)
-may = sorted_dates.index("2023-05-01")
-june = sorted_dates.index("2023-06-01")
-july = sorted_dates.index("2023-07-01")
-aug = sorted_dates.index("2023-08-01")
-sept = sorted_dates.index("2023-09-01")
-# Iterate through date list and make confusion matrix plot
-total_tp = []
-total_fp = []
-total_fn = []
-total_tn = []
-for date in sorted_dates:
-    # subset date
-    df_subset = results_df[results_df['date'] == date]
-    start = datetime.strptime(date, '%Y-%m-%d') + timedelta(days=1)
-    end = start + timedelta(days=14)
-    cm = generate_confusion_matrix(df_subset, 0.2)
-    total_tp.append(cm[1][1])
-    total_fp.append(cm[0][1])
-    total_fn.append(cm[1][0])
-    total_tn.append(cm[0][0])
-    #generate_plot(cm, start, end, 0.2, results_dir, date)
+    if not os.path.exists('{}/CM'.format(results_dir)):
+        os.mkdir('{}/CM'.format(results_dir))
 
-fig, ax = plt.subplots()
-plt.plot(sorted_dates, total_tp, label='True Positive')
-plt.plot(sorted_dates, total_fp, label='False Positive')
-plt.plot(sorted_dates, total_fn, label='False Negative')
-ax.set_xticks([sorted_dates[may], sorted_dates[june], sorted_dates[july], sorted_dates[aug],
-               sorted_dates[sept]])
-ax.tick_params(axis='x', labelsize=8)
-plt.xlabel('Date')
-plt.ylabel('Count')
-plt.legend()
-plt.title('True Positive, False Positive, and False Negative Count for UKMO Ensemble Member 1')
-plt.show()
-'''
+    # Get overall TP rate per Dist
+    generate_tp_rate_map(results_df, nepal_im, results_dir)
+    generate_monsoon_plots(results_df)
