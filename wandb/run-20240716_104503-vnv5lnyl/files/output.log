@@ -1,0 +1,24 @@
+
+Loading data...
+Fitting model...
+Evaluating model...
+The hard predictions were right 82.85% of the time
+No Skill: ROC AUC=0.500
+RFC: ROC AUC=0.843
+The number of non-landslide events is: 12580
+The number of landslide events is: 2820
+Best Threshold=0.145000, F-Score=0.550
+Test set accuracy at threshold 0.145: 0.7823376623376623
+Test set F1 at threshold 0.145: 0.5495834453104004
+True Positive is 2045
+True Negative is 10003
+False Positive is 2577
+False Negative is 775
+False positive rate at best threshold is 0.2048489666136725
+True positive rate at best threshold is is 0.725177304964539
+False negative rate at best threshold is is 0.274822695035461
+True negative rate at best threshold is is 0.7951510333863275
+/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py:140: RuntimeWarning: invalid value encountered in true_divide
+  fscore = (2 * precision * recall) / (precision + recall)
+--------------------
+{'0': {'precision': 0.9280942660976063, 'recall': 0.7951510333863275, 'f1-score': 0.8564945628906584, 'support': 12580}, '1': {'precision': 0.44244915620943315, 'recall': 0.725177304964539, 'f1-score': 0.5495834453104004, 'support': 2820}, 'accuracy': 0.7823376623376623, 'macro avg': {'precision': 0.6852717111535197, 'recall': 0.7601641691754333, 'f1-score': 0.7030390041005294, 'support': 15400}, 'weighted avg': {'precision': 0.8391644472739279, 'recall': 0.7823376623376623, 'f1-score': 0.8002939556454424, 'support': 15400}}

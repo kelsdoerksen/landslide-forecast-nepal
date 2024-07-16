@@ -1,0 +1,60 @@
+{
+    "os": "macOS-14.3.1-x86_64-i386-64bit",
+    "python": "3.10.13",
+    "heartbeatAt": "2024-07-16T17:45:04.856717",
+    "startedAt": "2024-07-16T17:45:03.594785",
+    "docker": null,
+    "cuda": null,
+    "args": [
+        "--model",
+        "rf",
+        "--test_year",
+        "2023",
+        "--forecast_model",
+        "UKMO",
+        "--ensemble_num",
+        "1",
+        "--hindcast_model",
+        "GSMaP",
+        "--wandb_setting",
+        "online",
+        "--test_forecast",
+        "None"
+    ],
+    "state": "running",
+    "program": "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py",
+    "codePathLocal": "run_classifier.py",
+    "codePath": "run_classifier.py",
+    "git": {
+        "remote": "git@github.com:kelsdoerksen/landslide-forecast-nepal.git",
+        "commit": "e569407a27f8c8644ba4443be61e13f67cdddbfc"
+    },
+    "email": "kelseydoerksen@gmail.com",
+    "root": "/Users/kelseydoerksen/code/landslide-forecast-nepal",
+    "host": "Kelseys-MBP.hsd1.wa.comcast.net",
+    "username": "kelseydoerksen",
+    "executable": "/Users/kelseydoerksen/opt/anaconda3/envs/aq/bin/python",
+    "cpu_count": 4,
+    "cpu_count_logical": 8,
+    "cpu_freq": {
+        "current": 2300,
+        "min": 2300,
+        "max": 2300
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2300,
+            "min": 2300,
+            "max": 2300
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 465.62699127197266,
+            "used": 13.388309478759766
+        }
+    },
+    "memory": {
+        "total": 16.0
+    }
+}
