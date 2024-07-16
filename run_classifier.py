@@ -14,8 +14,8 @@ from sklearn.utils import shuffle
 from sklearn.inspection import permutation_importance
 import os
 import json
-from datetime import datetime, date, timedelta
-from sklearn.metrics import f1_score, make_scorer
+from datetime import date, timedelta
+from sklearn.metrics import f1_score
 import wandb
 import argparse
 import xgboost as xgb
@@ -30,6 +30,7 @@ def get_args():
     parser.add_argument('--test_year', help='Test year for study. Supports 2016-2023')
     parser.add_argument('--forecast_model', help='Precipitation Forecast Model Used')
     parser.add_argument('--ensemble_num', help='Ensemble member id used from precipitation forecast model')
+    parser.add_argument('--hindcast_model', help='Hindcast precipitation model used')
     parser.add_argument('--experiment_type', help='Type of experiment. no_hindcast, no_forecast refers'
                                                   'to removing those features respectively, full is standard')
     parser.add_argument('--wandb_setting', help='Wandb experiment setting, offline or online')
@@ -113,7 +114,6 @@ def plot_importances(imp, perm, save_dir):
     plt.xlabel('Feature Name', fontname='serif')
     plt.ylabel('Importance', fontname='serif')
     plt.legend()
-    plt.tight_layout()
     #plt.show()
     plt.savefig('{}/importances.png'.format(save_dir))
     plt.clf()
@@ -697,12 +697,14 @@ def run_trained_ukmo(root_directory, results_dir, wandb_exp, model_type, forecas
 
     calc_model_performance(rf_model, y_test, probs, X_test, results_dir, wandb_exp, model_type)
 
+
 if __name__ == '__main__':
     args = get_args()
     model = args.model
     test_y = args.test_year
     forecast_model = args.forecast_model
     ensemble_num = args.ensemble_num
+    hindcast_model = args.hindcast_model
     exp = args.experiment_type
     wandb_setting = args.wandb_setting
     test_forecast = args.test_forecast
@@ -730,9 +732,11 @@ if __name__ == '__main__':
     else:
         # Load data
         print('Loading data...')
-        X_train, y_train, X_test, y_test = load_data(test_y, '{}/LabelledData/{}/ensemble_{}'.format(root_dir,
+        X_train, y_train, X_test, y_test = load_data(test_y, '{}/LabelledData_{}/{}/ensemble_{}'.format(root_dir,
+                                                                                                        hindcast_model,
                                                                                                         forecast_model,
-                                                                                                        ensemble_num), exp)
+                                                                                                        ensemble_num),
+                                                     exp)
 
         if model == 'rf':
             run_rf(X_train, y_train, X_test, y_test, results, experiment, model, test_y)

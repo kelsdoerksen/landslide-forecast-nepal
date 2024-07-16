@@ -217,7 +217,7 @@ def generate_labelled_xdays_sample(filepath, label_df, district, day, window_siz
     '''
 
     # Grab GPM Precipitation features
-    df_gpm_precip = generate_precip_lookback(day, precip_lookback, window_size, operational_mode)
+    df_gpm_precip = generate_precip_lookback(day, precip_lookback, window_size)
 
     # Grab geomorphic features
     dem = pd.read_csv(filepath +
@@ -300,9 +300,10 @@ def run_generate_data(root_dir, year, start_date, end_date, window_size, forecas
         labelled_df = generate_labelled_district(incidents_df, district, daily_dates)
         # Grab Precipitation data for LOOKBACK
 
-        precip_lookback = pd.read_csv('{}/{}_Mean_Pixelwise/Subseasonal/DistrictLevel/{}_GPM.csv'.format(root_dir,
+        precip_lookback = pd.read_csv('{}/{}_Mean_Pixelwise/Subseasonal/DistrictLevel/{}_{}.csv'.format(root_dir,
                                                                                                          hindcast_data,
-                                                                                                         district))
+                                                                                                         district,
+                                                                                                        hindcast_data))
 
         # Grab Precipitation data for Forecast LOOKAHEAD
         precip_forecast = pd.read_csv('{}/PrecipitationModel_Forecast_Data/Subseasonal/{}/DistrictLevel/'
@@ -330,12 +331,13 @@ def run_generate_data(root_dir, year, start_date, end_date, window_size, forecas
         print('{} districts left to generate samples for'.format(count))
     # Saving data for future use
     if forecast_model == 'ecmwf':
-        all_data.to_csv('/LabelledData/{}/{}_windowsize{}_district.csv'.format(root_dir,
-                                                                               forecast_model, year, window_size))
+        all_data.to_csv('{}/LabelledData_{}/{}/{}_windowsize{}_district.csv'.format(root_dir, hindcast_data,
+                                                                                    forecast_model, year, window_size))
     else:
-        all_data.to_csv('{}/LabelledData/{}/ensemble_{}/{}_windowsize{}_district.csv'.format(root_dir, forecast_model,
-                                                                                             forecast_ensemble,
-                                                                                             year, window_size))
+        all_data.to_csv('{}/LabelledData_{}/{}/ensemble_{}/{}_windowsize{}_district.csv'.format(root_dir, hindcast_data,
+                                                                                                forecast_model,
+                                                                                                forecast_ensemble,
+                                                                                                year, window_size))
     print('The program took {}s to run'.format(time.time()-start_time))
 
 
@@ -344,7 +346,7 @@ if __name__ == "__main__":
     year = args.year
     hindcast = args.hindcast_source
     forecast = args.forecast_source
-    ens_num = args.ens_number
+    ens_num = args.ens_member
 
-    run_generate_data(root_dir, year, date(int(year), 11, 1), date(int(year)+1, 1, 14), 14, forecast, ens_num)
+    run_generate_data(root_dir, year, date(int(year), 1, 1), date(int(year)+1, 1, 14), 14, forecast, ens_num, hindcast)
 
