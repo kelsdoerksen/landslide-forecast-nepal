@@ -12,6 +12,7 @@ def get_args():
     parser.add_argument('--model', help='Ensemble Model to query precipitation data from. Currently supports KMA, NCEP,'
                                         'UKMO')
     parser.add_argument('--ens_member', help='Ensemble member to use precipitation data from.')
+    parser.add_argument('--hindcast_source', help='Precipitation Hindcast data source. Must be one of GPM or GSMaP')
 
     return parser.parse_args()
 
@@ -19,7 +20,6 @@ def get_args():
 # Setting data directories to query from
 root_dir = '/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
 MODIS_dir = '{}/MODIS_Pixelwise'.format(root_dir)
-GPM_dir = '{}/GPM_Mean_Pixelwise'.format(root_dir)
 precip_dir = '{}/PrecipitationModel_Forecast_Data'.format(root_dir)
 dem_dir = '{}/Topography'.format(root_dir)
 
@@ -49,12 +49,15 @@ def load_modis(doy):
     return modis_arr
 
 
-def load_precip_lookback(day):
+def load_precip_lookback(day, hindcast_data):
     '''
     Load 14-day precipitation lookback and generate
     mean, cumulative precipitation arrays for sample
+    :param: doy: day of year
+    :param: hindcast_data: precipitation data source
     '''
     format = '%Y-%m-%d'
+    hindcast_dir = '{}/{}_Mean_Pixelwise'.format(root_dir, hindcast_data)
     day = str(day)
     date_dateformat = datetime.strptime(day, format)
 
@@ -65,9 +68,9 @@ def load_precip_lookback(day):
         lookback = delta.strftime(format)
         print('running for lookback {}'.format(lookback))
         try:
-            lookback_precip = np.load('{}/GPM_{}.npy'.format(GPM_dir, lookback))
+            lookback_precip = np.load('{}/{}_{}.npy'.format(hindcast_dir, hindcast_data, lookback))
         except FileNotFoundError:
-            print('No GPM available for lookback, skipping sample')
+            print('No {} available for lookback, skipping sample'.format(hindcast_data))
             return None
         precip_list.append(lookback_precip)
         cumulative_precip.append(lookback_precip * 24)
@@ -112,16 +115,20 @@ def load_precip_lookahead(day, ensemble_model, ensemble_num):
     return np.array(precip_list)
 
 
-def generate_sample(doy, ens_model, ens_num):
+def generate_sample(doy, ens_model, ens_num, hindcast):
     """
     Generate sample for doy specified
+    :param: doy: day of year to generate sample
+    :param: ens_model: precipitation forecast model
+    :param: ens_num: precipitation forecast model ensemble member
+    :param: hindcast: precipitation hindcast data source
     """
     sample_list = []
     # Add dem, aspect, slope
     dem, aspect, slope = load_dem_arrays()
 
     # Get lookback precip
-    lookback = load_precip_lookback(doy)
+    lookback = load_precip_lookback(doy, hindcast)
     if lookback is None:
         print('Missing lookback data, cannot generate sample, skipping for doy: {}'.format(doy))
         return None
@@ -147,7 +154,7 @@ def generate_sample(doy, ens_model, ens_num):
     except IndexError:
         return None
     # Save array
-    np.save('{}/UNet_Samples_14Day/{}/ensemble_{}/sample_{}.npy'.format(root_dir, ens_model, ens_num, doy),
+    np.save('{}/UNet_Samples_14Day_{}/{}/ensemble_{}/sample_{}.npy'.format(root_dir, hindcast, ens_model, ens_num, doy),
             sample_array)
 
 
@@ -163,6 +170,7 @@ if __name__ == "__main__":
     args = get_args()
     model = args.model
     ens_num = args.ens_member
+    hindcast_source = args.hindcast_source
 
     print('Generating samples using forecast data from model: {}, member: {}'.format(model, ens_num))
 
@@ -174,7 +182,7 @@ if __name__ == "__main__":
     # Generate samples
     for date in date_list:
         print('Generating sample for DOY: {}'.format(date))
-        generate_sample(date, model, ens_num)
+        generate_sample(date, model, ens_num, hindcast_source)
 
 
 
