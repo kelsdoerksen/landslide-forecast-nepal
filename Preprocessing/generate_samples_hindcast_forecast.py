@@ -18,7 +18,7 @@ def get_args():
     return parser.parse_args()
 
 # Set data path
-root_dir = '/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
+root_dir = '/scratch-ssd/kelsen'
 
 # Read in incidents records for 2011-2023
 incidents_df = pd.read_csv(root_dir + '/Wards_with_Bipad_events_one_to_many_landslides_only.csv')
