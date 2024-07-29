@@ -38,7 +38,7 @@ if __name__ == '__main__':
     results_dir = '{}/{}'.format(root_dir, run_dir)
 
     # Run gif maker for what we want to generate
-    targets = ['precipitation', 'F1', 'prediction']
+    targets = ['precipitation', 'F1', 'prediction', 'confusion_matrix']
     for target in targets:
         print('Generating gifs for: {}'.format(target))
         make_gif(results_dir, target)
