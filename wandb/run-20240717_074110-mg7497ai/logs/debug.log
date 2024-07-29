@@ -1,0 +1,31 @@
+2024-07-17 07:41:10,902 INFO    MainThread:87859 [wandb_setup.py:_flush():76] Current SDK version is 0.15.11
+2024-07-17 07:41:10,903 INFO    MainThread:87859 [wandb_setup.py:_flush():76] Configure stats pid to 87859
+2024-07-17 07:41:10,903 INFO    MainThread:87859 [wandb_setup.py:_flush():76] Loading settings from /Users/kelseydoerksen/.config/wandb/settings
+2024-07-17 07:41:10,903 INFO    MainThread:87859 [wandb_setup.py:_flush():76] Loading settings from /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/settings
+2024-07-17 07:41:10,903 INFO    MainThread:87859 [wandb_setup.py:_flush():76] Loading settings from environment variables: {}
+2024-07-17 07:41:10,903 INFO    MainThread:87859 [wandb_setup.py:_flush():76] Applying setup settings: {'_disable_service': False}
+2024-07-17 07:41:10,903 INFO    MainThread:87859 [wandb_setup.py:_flush():76] Inferring run settings from compute environment: {'program_relpath': 'run_classifier.py', 'program_abspath': '/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py', 'program': '/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py'}
+2024-07-17 07:41:10,903 INFO    MainThread:87859 [wandb_setup.py:_flush():76] Applying login settings: {'anonymous': 'must'}
+2024-07-17 07:41:10,903 INFO    MainThread:87859 [wandb_init.py:_log_setup():528] Logging user logs to /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240717_074110-mg7497ai/logs/debug.log
+2024-07-17 07:41:10,903 INFO    MainThread:87859 [wandb_init.py:_log_setup():529] Logging internal logs to /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20240717_074110-mg7497ai/logs/debug-internal.log
+2024-07-17 07:41:10,903 INFO    MainThread:87859 [wandb_init.py:init():568] calling init triggers
+2024-07-17 07:41:10,903 INFO    MainThread:87859 [wandb_init.py:init():575] wandb.init called with sweep_config: {}
+config: {}
+2024-07-17 07:41:10,903 INFO    MainThread:87859 [wandb_init.py:init():618] starting backend
+2024-07-17 07:41:10,903 INFO    MainThread:87859 [wandb_init.py:init():622] setting up manager
+2024-07-17 07:41:10,906 INFO    MainThread:87859 [backend.py:_multiprocessing_setup():105] multiprocessing start_methods=spawn,fork,forkserver, using: spawn
+2024-07-17 07:41:10,908 INFO    MainThread:87859 [wandb_init.py:init():628] backend started and connected
+2024-07-17 07:41:10,912 INFO    MainThread:87859 [wandb_init.py:init():720] updated telemetry
+2024-07-17 07:41:10,978 INFO    MainThread:87859 [wandb_init.py:init():753] communicating run to backend with 90.0 second timeout
+2024-07-17 07:41:12,360 INFO    MainThread:87859 [wandb_run.py:_on_init():2220] communicating current version
+2024-07-17 07:41:13,264 INFO    MainThread:87859 [wandb_run.py:_on_init():2229] got version response upgrade_message: "wandb version 0.17.4 is available!  To upgrade, please run:\n $ pip install wandb --upgrade"
+
+2024-07-17 07:41:13,264 INFO    MainThread:87859 [wandb_init.py:init():804] starting run threads in backend
+2024-07-17 07:41:26,038 INFO    MainThread:87859 [wandb_run.py:_console_start():2199] atexit reg
+2024-07-17 07:41:26,038 INFO    MainThread:87859 [wandb_run.py:_redirect():2054] redirect: wrap_raw
+2024-07-17 07:41:26,039 INFO    MainThread:87859 [wandb_run.py:_redirect():2119] Wrapping output streams.
+2024-07-17 07:41:26,039 INFO    MainThread:87859 [wandb_run.py:_redirect():2144] Redirects installed.
+2024-07-17 07:41:26,039 INFO    MainThread:87859 [wandb_init.py:init():845] run started, returning control to user process
+2024-07-17 07:41:26,040 INFO    MainThread:87859 [wandb_run.py:_config_callback():1324] config_cb None None {'model': 'rf', 'test_year': '2023'}
+2024-07-17 07:44:48,395 INFO    MainThread:87859 [wandb_run.py:_config_callback():1324] config_cb ('_wandb', 'visualize', 'roc') {'panel_type': 'Vega2', 'panel_config': {'panelDefId': 'wandb/area-under-curve/v0', 'fieldSettings': {'x': 'fpr', 'y': 'tpr', 'class': 'class'}, 'stringSettings': {'title': 'ROC', 'x-axis-title': 'False positive rate', 'y-axis-title': 'True positive rate'}, 'transform': {'name': 'tableWithLeafColNames'}, 'userQuery': {'queryFields': [{'name': 'runSets', 'args': [{'name': 'runSets', 'value': '${runSets}'}], 'fields': [{'name': 'id', 'fields': []}, {'name': 'name', 'fields': []}, {'name': '_defaultColorIndex', 'fields': []}, {'name': 'summaryTable', 'args': [{'name': 'tableKey', 'value': 'roc_table'}], 'fields': []}]}]}}} None
+2024-07-17 07:45:02,412 WARNING MsgRouterThr:87859 [router.py:message_loop():77] message_loop has been closed

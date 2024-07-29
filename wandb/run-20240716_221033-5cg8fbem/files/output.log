@@ -1,0 +1,17 @@
+
+Loading data...
+Fitting model...
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 742, in <module>
+    run_rf(X_train, y_train, X_test, y_test, results, experiment, model, test_y)
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 410, in run_rf
+    forest.fit(Xtrain, ytrain)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/ensemble/_forest.py", line 346, in fit
+    X, y = self._validate_data(
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/base.py", line 554, in _validate_data
+    X, y = check_X_y(X, y, **check_params)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/utils/validation.py", line 1104, in check_X_y
+    X = check_array(
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/sklearn/utils/validation.py", line 929, in check_array
+    raise ValueError(
+ValueError: Found array with 0 sample(s) (shape=(0, 59)) while a minimum of 1 is required by RandomForestClassifier.

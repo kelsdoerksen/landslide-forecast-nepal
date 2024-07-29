@@ -18,7 +18,7 @@ def get_args():
     return parser.parse_args()
 
 # Set data path
-root_dir = '/scratch-ssd/kelsen'
+root_dir = '/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
 
 # Read in incidents records for 2011-2023
 incidents_df = pd.read_csv(root_dir + '/Wards_with_Bipad_events_one_to_many_landslides_only.csv')
@@ -145,7 +145,7 @@ def add_precip_lookahead(day, precip_forecast_df, window_size, model_name, ensem
     return pd.DataFrame([precip_dict])
 
 
-def generate_precip_lookback(day, precip, window_size, operational_mode=False):
+def generate_precip_lookback(day, precip, window_size, lookback_name):
     '''
     Generate Precipitation lookback features given day0, precipitation df
     :param: operaiotnal_mode: refers to operational-use context, querying from tminus days bwack
@@ -164,20 +164,13 @@ def generate_precip_lookback(day, precip, window_size, operational_mode=False):
         precip_dict['precip_rate_tminus_{}'.format(i)] = lookback_precip
         cumulative_precip.append(lookback_precip * 24)
 
-    # check if operational context, if so let's drop the first two lookback days
-    if operational_mode:
-        entries_to_remove = ('precip_rate_tminus_0', 'precip_rate_tminus_1')
-        for k in entries_to_remove:
-            precip_dict.pop(k, None)
-        cumulative_precip = cumulative_precip[2:]
-
     precip_mean = np.mean(list(precip_dict.values()))
     precip_max = max(precip_dict.values())
     precip_min = min(precip_dict.values())
-    precip_dict['gpm_mean_precip_rate'] = precip_mean
-    precip_dict['gpm_max_precip_rate'] = precip_max
-    precip_dict['gpm_min_precip_rate'] = precip_min
-    precip_dict['gpm_total_cumulative_precipitation'] = sum(cumulative_precip)
+    precip_dict['{}_mean_precip_rate'.format(lookback_name)] = precip_mean
+    precip_dict['{}_max_precip_rate'.format(lookback_name)] = precip_max
+    precip_dict['{}_min_precip_rate'.format(lookback_name)] = precip_min
+    precip_dict['{}_total_cumulative_precipitation'.format(lookback_name)] = sum(cumulative_precip)
 
     return pd.DataFrame([precip_dict])
 
@@ -211,13 +204,13 @@ def generate_landslide_label(label_df, day, window_size):
 
 
 def generate_labelled_xdays_sample(filepath, label_df, district, day, window_size,
-                                   precip_lookback, precip_lookahead, forecast_name, ensemble_number):
+                                   precip_lookback, precip_lookahead, forecast_name, ensemble_number, hindcast_name):
     '''
     For each unique date in date range of study, create feature space
     '''
 
-    # Grab GPM Precipitation features
-    df_gpm_precip = generate_precip_lookback(day, precip_lookback, window_size)
+    # Grab Lookback
+    df_lookback_precip = generate_precip_lookback(day, precip_lookback, window_size, hindcast_name)
 
     # Grab geomorphic features
     dem = pd.read_csv(filepath +
@@ -241,9 +234,9 @@ def generate_labelled_xdays_sample(filepath, label_df, district, day, window_siz
     # Generate landslide label
     label = generate_landslide_label(label_df, day, window_size)
 
-    labelled_df = df_gpm_precip.join(dem_df).join(aspect_df).join(slope_df).join(modis_df).join(df_precip_forecast).\
+    labelled_df = df_lookback_precip.join(dem_df).join(aspect_df).join(slope_df).join(modis_df).join(df_precip_forecast).\
         join(label)
-    # add date and distric location
+    # add date and district location
     labelled_df['date'] = day
     labelled_df['district'] = district
 
@@ -321,10 +314,10 @@ def run_generate_data(root_dir, year, start_date, end_date, window_size, forecas
                 continue
 
             # check dates for lookahead and lookback precip
-            x_day_labelled_df = generate_labelled_xdays_sample(root_dir, labelled_df,
-                                                                   district, daily_dates[i],
-                                                                   window_size, precip_lookback,
-                                                                   precip_forecast, forecast_model, forecast_ensemble)
+            x_day_labelled_df = generate_labelled_xdays_sample(root_dir, labelled_df, district, daily_dates[i],
+                                                               window_size, precip_lookback,
+                                                               precip_forecast, forecast_model, forecast_ensemble,
+                                                               hindcast_data)
             all_data = all_data.append(x_day_labelled_df)
         count = count - 1
         print('%.2f percent complete' % (100 * (1 - count / total_districts)))
