@@ -66,11 +66,15 @@ def load_precip_lookback(day, hindcast_data):
         print('running for lookback {}'.format(lookback))
         try:
             lookback_precip = np.load('{}/{}_{}.npy'.format(hindcast_dir, hindcast_data, lookback))
-        except FileNotFoundError:
+            if lookback_precip.shape != np.zeros((60,100)).shape:
+                print('Missing precipitation for date {}, returning None'.format(lookback))
+                return None
+            else:
+                precip_list.append(lookback_precip)
+                cumulative_precip.append(lookback_precip * 24)
+        except ValueError and FileNotFoundError:
             print('No {} available for lookback, skipping sample'.format(hindcast_data))
             return None
-        precip_list.append(lookback_precip)
-        cumulative_precip.append(lookback_precip * 24)
 
     precip_mean = np.array(precip_list).mean(axis=0)
     precip_list.append(precip_mean)
