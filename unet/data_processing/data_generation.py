@@ -7,12 +7,15 @@ from PIL import Image
 from datetime import datetime, timedelta, date
 import argparse
 
+
 def get_args():
     parser = argparse.ArgumentParser(description='Running ML Pipeline for Landslide Prediction')
     parser.add_argument('--model', help='Ensemble Model to query precipitation data from. Currently supports KMA, NCEP,'
                                         'UKMO')
     parser.add_argument('--ens_member', help='Ensemble member to use precipitation data from.')
     parser.add_argument('--hindcast_source', help='Precipitation Hindcast data source. Must be one of GPM or GSMaP')
+    parser.add_argument('--start_year', help='Year to start data processing')
+    parser.add_argument('--end_year', help='Year to end data processing')
 
     return parser.parse_args()
 
@@ -171,12 +174,14 @@ if __name__ == "__main__":
     model = args.model
     ens_num = args.ens_member
     hindcast_source = args.hindcast_source
+    start = args.start_year
+    end = args.end_year
 
     print('Generating samples using forecast data from model: {}, member: {}'.format(model, ens_num))
 
     # Get list of dates
-    sdate = date(2020, 1, 1)
-    edate = date(2023, 10, 31)
+    sdate = date(int(start), 1, 1)
+    edate = date(int(end), 12, 31)
     date_list = daterange(sdate, edate)
 
     # Generate samples
