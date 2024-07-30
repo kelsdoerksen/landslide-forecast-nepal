@@ -10,6 +10,7 @@ import argparse
 
 def get_args():
     parser = argparse.ArgumentParser(description='Running ML Pipeline for Landslide Prediction')
+    parser.add_argument('--root_dir', help='Root directory of data')
     parser.add_argument('--model', help='Ensemble Model to query precipitation data from. Currently supports KMA, NCEP,'
                                         'UKMO')
     parser.add_argument('--ens_member', help='Ensemble member to use precipitation data from.')
@@ -18,13 +19,6 @@ def get_args():
     parser.add_argument('--end_year', help='Year to end data processing')
 
     return parser.parse_args()
-
-
-# Setting data directories to query from
-root_dir = '/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
-MODIS_dir = '{}/MODIS_Pixelwise'.format(root_dir)
-precip_dir = '{}/PrecipitationModel_Forecast_Data'.format(root_dir)
-dem_dir = '{}/Topography'.format(root_dir)
 
 
 def load_dem_arrays():
@@ -176,6 +170,12 @@ if __name__ == "__main__":
     hindcast_source = args.hindcast_source
     start = args.start_year
     end = args.end_year
+    root_dir = args.root_dir
+
+    # Setting data directories to query from
+    MODIS_dir = '{}/MODIS_Pixelwise'.format(root_dir)
+    precip_dir = '{}/PrecipitationModel_Forecast_Data'.format(root_dir)
+    dem_dir = '{}/Topography'.format(root_dir)
 
     print('Generating samples using forecast data from model: {}, member: {}'.format(model, ens_num))
 
