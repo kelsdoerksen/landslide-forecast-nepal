@@ -18,7 +18,7 @@ import logging
 
 
 def get_args():
-    parser = argparse.ArgumentParser(description='Running UNet Pipeline on AQ Dataset')
+    parser = argparse.ArgumentParser(description='Running UNet Pipeline on Landslide Dataset')
     parser.add_argument('--epochs', '-e',  type=int, default=200, help='Number of epochs')
     parser.add_argument('--batch_size', '-b', type=int, default=32, help='Batch size')
     parser.add_argument('--learning-rate', '-l', type=float, default=0.001, help='Learning rate', dest='lr')
