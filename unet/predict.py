@@ -14,7 +14,7 @@ from losses import *
 from utils import *
 
 
-def predict(in_model, target, test_dataset, wandb_experiment, channels, seed, out_dir, device):
+def predict(in_model, test_dataset, wandb_experiment, channels, seed, out_dir, device):
     """
     Predict standard way (no dropout at test time)
     """

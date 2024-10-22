@@ -125,7 +125,6 @@ def train_model(model,
                 running_vloss += vloss
 
         avg_vloss = running_vloss / len(val_loader)
-        #scheduler.step(avg_vloss)
 
         logging.info('Validation MSE score: {}'.format(avg_vloss))
         try:
