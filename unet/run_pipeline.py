@@ -42,9 +42,7 @@ def get_args():
 
 
 if __name__ == '__main__':
-
     args = get_args()
-    channels = int(args.channels)
     seed = int(args.seed)
     model_type = args.model_type
     root_dir = args.root_dir
@@ -72,11 +70,7 @@ if __name__ == '__main__':
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     logging.info(f'Using device {device}')
-    unet = models.UNet(n_channels=channels, n_classes=1)
-
-    logging.info(f'Network:\n'
-                 f'\t{unet.n_channels} input channels\n'
-                 f'\t{unet.n_classes} output channels (classes)')
+    unet = models.UNet(n_channels=32, n_classes=1)
 
     if torch.cuda.is_available():
         unet.cuda()
@@ -121,5 +115,5 @@ if __name__ == '__main__':
         district_masks = district_masks)
 
     print('Running Test set...')
-    predict(trained_model, landslide_test_dataset, experiment, channels, seed, save_dir, device=device,
+    predict(trained_model, landslide_test_dataset, experiment, seed, save_dir, device=device,
             district_masks = district_masks)

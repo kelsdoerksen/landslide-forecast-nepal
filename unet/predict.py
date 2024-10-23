@@ -13,7 +13,7 @@ from operator import add
 from utils import *
 
 
-def predict(in_model, test_dataset, wandb_experiment, channels, seed, out_dir, device, district_masks):
+def predict(in_model, test_dataset, wandb_experiment, seed, out_dir, device, district_masks):
     """
     Predict standard way (no dropout at test time)
     """
@@ -23,7 +23,7 @@ def predict(in_model, test_dataset, wandb_experiment, channels, seed, out_dir, d
     threshold = 0.2
 
     # Setting model to eval mode
-    unet = models.UNet(n_channels=channels, n_classes=1)
+    unet = models.UNet(n_channels=32, n_classes=1)
     unet.load_state_dict(torch.load(in_model)['state_dict'])
     unet.eval()
 
