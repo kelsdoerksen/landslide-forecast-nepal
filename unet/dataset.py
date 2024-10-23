@@ -27,12 +27,12 @@ class LandslideDataset(Dataset):
             image_fns = [x for x in image_fns if "2023" not in x]
             label_fns = [x for x in label_fns if "2023" not in x]
             for fn in label_fns:
-                label_fns = [x for x in label_fns if fn[5:] not in x]
+                label_fns = [x for x in image_fns if fn[5:] not in x]
         else:
             image_fns = [x for x in image_fns if "2023" in x]
             label_fns = [x for x in label_fns if "2023" in x]
             for fn in label_fns:
-                label_fns = [x for x in label_fns if fn[5:] not in x]
+                label_fns = [x for x in image_fns if fn[5:] not in x]
 
         image_fn = image_fns[index]
         label_fn = label_fns[index]
