@@ -21,20 +21,13 @@ class LandslideDataset(Dataset):
 
     def __getitem__(self, index):
         image_fns = sort(self.image_fns)
-        label_fns = sort(self.label_fns)
-
-        for fn in image_fns:
-            label_fns = [x for x in label_fns if fn[6:] in x]
-
-        image_fns = sort(self.image_fns)
-        label_fns = sort(self.label_fns)
 
         if self.split == 'train':
             image_fns = [x for x in image_fns if "2023" not in x]
-            label_fns = [x for x in label_fns if "2023" not in x]
         else:
             image_fns = [x for x in image_fns if "2023" in x]
-            label_fns = [x for x in label_fns if "2023" in x]
+
+        label_fns = list(map(lambda x: x.replace('sample', 'label'), image_fns))
 
         image_fn = image_fns[index]
         label_fn = label_fns[index]
