@@ -4,7 +4,7 @@ Script to predict on test set after training model
 
 from dataset import *
 import numpy as np
-from model import *
+from model import models, unet_modules
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
