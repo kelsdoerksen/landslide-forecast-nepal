@@ -14,12 +14,14 @@ from losses import *
 from utils import *
 
 
-def predict(in_model, test_dataset, wandb_experiment, channels, seed, out_dir, device):
+def predict(in_model, test_dataset, wandb_experiment, channels, seed, out_dir, device, district_masks):
     """
     Predict standard way (no dropout at test time)
     """
     # Make deterministic
     make_deterministic(seed)
+
+    threshold = 0.2
 
     # Setting model to eval mode
     unet = models.UNet(n_channels=channels, n_classes=1)
@@ -29,8 +31,10 @@ def predict(in_model, test_dataset, wandb_experiment, channels, seed, out_dir, d
     # Data loader for test set
     test_loader = DataLoader(test_dataset, batch_size=10, shuffle=True)
 
-    loss_criterion = nn.MSELoss()
-    mse_score = 0
+    loss_criterion = nn.BCELoss()
+    bce_score = 0
+    precision = 0
+    recall = 0
     # iterate over the test set
     preds = []
     gt = []
@@ -41,26 +45,26 @@ def predict(in_model, test_dataset, wandb_experiment, channels, seed, out_dir, d
 
             # predict the mask
             outputs = unet(inputs)
-            test_mask = ~torch.isnan(labels)
 
             # Append first to preserve image shape for future plotting
             gt.append(labels.detach().numpy())
             preds.append(outputs.detach().numpy())
 
-            outputs = outputs[test_mask]
-            labels = labels[test_mask]
+            bce_score += loss_criterion(outputs, labels)
+            precision += precision_threshold(labels, inputs, threshold, district_masks)
+            recall += recall_threshold(labels, inputs, threshold, district_masks)
 
-            mse_score += loss_criterion(outputs, labels)
-
-    print('test set mse is: {}'.format(mse_score / len(test_loader)))
-    print('test set rmse is: {}'.format(np.sqrt((mse_score / len(test_loader)).detach().numpy())))
+    print('test set BCE is: {}'.format(bce_score / len(test_loader)))
+    print('test set Precision is: {}'.format(precision / len(test_loader)))
+    print('test set Recall is: {}'.format(recall / len(test_loader)))
 
     wandb_experiment.log({
-        'test set mse': mse_score / len(test_loader),
-        'test set rmse': np.sqrt((mse_score / len(test_loader)).detach().numpy())
+        'test set BCE': bce_score / len(test_loader),
+        'test set Precision': precision / len(test_loader),
+        'test set Recall': recall / len(test_loader)
     })
 
     for i in range(len(gt)):
-        np.save('{}/{}channels_{}_groundtruth_{}.npy'.format(out_dir, channels, target, i), gt[i])
-        np.save('{}/{}channels_{}_pred_{}.npy'.format(out_dir, channels, target, i), preds[i])
+        np.save('{}/groundtruth_{}.npy'.format(out_dir, i), gt[i])
+        np.save('{}/pred_{}.npy'.format(out_dir, i), preds[i])
 

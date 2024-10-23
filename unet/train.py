@@ -30,6 +30,7 @@ def train_model(model,
                 val_percent,
                 weight_decay: float = 0,
                 save_checkpoint: bool=True,
+                district_masks = None
                 ):
 
     # --- Split dataset into training and validation
@@ -43,6 +44,8 @@ def train_model(model,
     train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=True)
 
+    threshold = 0.2
+
     # --- Setting up optimizer
     if opt == 'rms':
         optimizer = optim.RMSprop(model.parameters(),
@@ -53,7 +56,7 @@ def train_model(model,
                                lr=learning_rate, weight_decay=weight_decay)
 
     # Setting up loss
-    criterion = nn.MSELoss()
+    criterion = nn.BCELoss()
 
     # --- Setting up schedulers
     #scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=5)  # goal: minimize MSE score.
@@ -66,6 +69,8 @@ def train_model(model,
         epoch_number += 1
         model.train()
         epoch_loss = 0
+        epoch_thr_precision = 0
+        epoch_thr_recall = 0
 
         for i, data in enumerate(train_loader):
             inputs, labels = data
@@ -73,16 +78,11 @@ def train_model(model,
             # Zero gradients for every batch
             optimizer.zero_grad()  # if set_to_none=True, sets gradients of all optimized torch.Tensors to None, will have a lower memory footprint, can modestly improve performance
 
-            # Filter out nans
-            mask = ~torch.isnan(labels)
-
             outputs = model(inputs)                 # predict on input
 
-            # Add mask before calculating loss to remove nans
-            outputs = outputs[mask]
-            labels = labels[mask]
-
             loss = criterion(outputs, labels)       # Calculate loss
+            thr_precision = precision_threshold(labels, outputs, threshold, district_masks)
+            thr_recall = precision_threshold(labels, outputs, threshold, district_masks)
 
             grad_scaler.scale(loss).backward()      # Compute partial derivative of the output f with respect to each of the input variables
             grad_scaler.step(optimizer)             # Updates value of parameters according to strategy
@@ -90,10 +90,13 @@ def train_model(model,
 
             global_step += 1
             epoch_loss += loss.item()
+            epoch_thr_precision += thr_precision
+            epoch_thr_recall += thr_recall
 
         experiment.log({
-            'train mse loss': epoch_loss/len(train_loader),
-            'train rmse': np.sqrt(epoch_loss/len(train_loader)),
+            'train BCE loss': epoch_loss/len(train_loader),
+            'train Precision': epoch_thr_precision/len(train_loader),
+            'train Recall': epoch_thr_recall/len(train_loader),
             'step': global_step,
             'epoch': epoch,
             'optimizer': opt
@@ -112,26 +115,32 @@ def train_model(model,
         model.eval()
         # Disable gradient computation and reduce memory consumption.
         running_vloss = 0.0
+        running_thr_precision = 0
+        running_thr_recall = 0
         with torch.no_grad():
             for k, vdata in enumerate(val_loader):
                 vinputs, vlabels = vdata
                 vinputs, vlabels = vinputs.to(device), vlabels.to(device)
-                val_mask = ~torch.isnan(vlabels)
                 voutputs = model(vinputs)
-                # Filter out nans
-                voutputs = voutputs[val_mask]
-                vlabels = vlabels[val_mask]
                 vloss = criterion(voutputs, vlabels)
+                v_prec = precision_threshold(vlabels, voutputs, threshold, district_masks)
+                v_rec = recall_threshold(labels, voutputs, threshold, district_masks)
+
                 running_vloss += vloss
+                running_thr_recall += v_rec
+                running_thr_precision += v_prec
 
         avg_vloss = running_vloss / len(val_loader)
+        avg_prec = running_thr_precision / len(val_loader)
+        avg_rec = running_thr_precision / len(val_loader)
 
-        logging.info('Validation MSE score: {}'.format(avg_vloss))
+        logging.info('Validation BCE score: {}'.format(avg_vloss))
         try:
             experiment.log({
                 'learning rate': optimizer.param_groups[0]['lr'],
-                'validation MSE loss': avg_vloss,
-                'validation RMSE': np.sqrt(avg_vloss),
+                'validation BCE loss': avg_vloss,
+                'validation Precision': avg_prec,
+                'validation Recall': avg_rec,
                 'step': global_step,
                 'epoch': epoch,
                 **histograms
@@ -149,7 +158,6 @@ def train_model(model,
                        out_model)
             logging.info(f'Checkpoint {epoch} saved!')
         '''
-
     # Saving model at end of epoch with experiment name
     out_model = '{}/{}_last_epoch.pth'.format(save_dir, experiment.name)
     Path(save_dir).mkdir(parents=True, exist_ok=True)

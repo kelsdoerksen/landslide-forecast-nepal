@@ -8,22 +8,6 @@ import numpy as np
 import torch
 
 
-# Generating district masks to use for the precision, recall
-district_masks = generate_district_masks('Nepal_Rasterized_GPMRes_PerDistrict.tif')
-
-# We can locate now here where all the ones in the district are
-for district in district_masks:
-  district_masks[district] = np.where(district_masks[district] == 1)
-
-# Want to change the list to be of pair type so we can compare more easily
-for district in district_masks:
-  points = []
-  for i in range(len(district_masks[district][0])):
-    points.append([district_masks[district][0][i],district_masks[district][1][i]])
-  district_masks[district] = points
-
-
-
 def precision_threshold(y_true, y_pred, threshold, d_masks):
     '''
     Custom Precision metric.
@@ -98,61 +82,57 @@ def precision_threshold(y_true, y_pred, threshold, d_masks):
     return precision_ratio
 
 
-def recall_threshold_all(threshold, masks):
-    def recall(y_true, y_pred):
-        '''
-        Recall metric. Computes the recall over the batch using
-        the threshold_value indicated
-        Needs to return type <class 'tensorflow.python.framework.ops.Tensor'>
-        '''
-        true_positives = 0
-        false_negatives = 0
-        threshold_value = torch.Tensor([threshold])
-        # Convert y_pred to 0s and 1s based on threshold
-        y_pred_t = (y_pred > threshold_value).float()
+def recall_threshold(y_true, y_pred, threshold, d_masks):
+    '''
+    Recall metric. Computes the recall over the batch using
+    the threshold_value indicated
+    Needs to return type <class 'tensorflow.python.framework.ops.Tensor'>
+    '''
+    true_positives = 0
+    false_negatives = 0
+    threshold_value = torch.Tensor([threshold])
+    # Convert y_pred to 0s and 1s based on threshold
+    y_pred_t = (y_pred > threshold_value).float()
 
-        # Convert y_pred, y_true to numpy arrays to be able to do some pythonic
-        # manipulation
-        y_pred = torch.Tensor.numpy(y_pred_t)
-        y_true = torch.Tensor.numpy(y_true)
+    # Convert y_pred, y_true to numpy arrays to be able to do some pythonic
+    # manipulation
+    y_pred = torch.Tensor.numpy(y_pred_t)
+    y_true = torch.Tensor.numpy(y_true)
 
-        # Compare to true prediction with masks
-        d_masks = masks
-        total_landslides = 0
-        for i in range(len(y_pred)):
-            # Get what districts are in label
-            district_pixels = []
-            landslides = np.where(y_true[i, :, :, 0] == 1)
-            points = []
-            for k in range(len(landslides[0])):
-                points.append([landslides[0][k], landslides[1][k]])
-            for district in d_masks:
-                if all(item in points for item in d_masks[district]):
-                    district_pixels.append(d_masks[district])
+    # Compare to true prediction with masks
+    total_landslides = 0
+    for i in range(len(y_pred)):
+        # Get what districts are in label
+        district_pixels = []
+        landslides = np.where(y_true[i, :, :, 0] == 1)
+        points = []
+        for k in range(len(landslides[0])):
+            points.append([landslides[0][k], landslides[1][k]])
+        for district in d_masks:
+            if all(item in points for item in d_masks[district]):
+                district_pixels.append(d_masks[district])
 
-            total_overlap = 0
-            for j in range(len(district_pixels)):
-                # iterate through the list of points containing the landslide aka true_location
-                true_location = district_pixels[j]
-                overlap = 0
-                for m in range(len(true_location)):
-                    if y_pred[i, true_location[m][0], true_location[m][1], 0] == 1:
-                        overlap += 1
-                # check if at least one pixel overlapped district
-                if overlap > 0:
-                    total_overlap += 1
+        total_overlap = 0
+        for j in range(len(district_pixels)):
+            # iterate through the list of points containing the landslide aka true_location
+            true_location = district_pixels[j]
+            overlap = 0
+            for m in range(len(true_location)):
+                if y_pred[i, true_location[m][0], true_location[m][1], 0] == 1:
+                    overlap += 1
+            # check if at least one pixel overlapped district
+            if overlap > 0:
+                total_overlap += 1
 
-            true_positives += total_overlap
-            total_landslides += len(district_pixels)
+        true_positives += total_overlap
+        total_landslides += len(district_pixels)
 
-        if total_landslides > true_positives:
-            false_negatives = total_landslides - true_positives
+    if total_landslides > true_positives:
+        false_negatives = total_landslides - true_positives
 
-        if true_positives == 0 and false_negatives == 0:
-            recall_ratio = 0
-        else:
-            recall_ratio = true_positives / (true_positives + false_negatives)
-        recall_ratio = torch.from_numpy(recall_ratio)
-        return recall_ratio
-
-    return recall
+    if true_positives == 0 and false_negatives == 0:
+        recall_ratio = 0
+    else:
+        recall_ratio = true_positives / (true_positives + false_negatives)
+    recall_ratio = torch.from_numpy(recall_ratio)
+    return recall_ratio

@@ -27,6 +27,8 @@ def get_args():
     parser.add_argument('--test-year', '-t', type=str, help='Test year for analysis (sets out of training)')
     parser.add_argument('--seed', help='Seed to set to make model deterministic',
                         required=True)
+    parser.add_argument('--root_dir', help='Specify root directory',
+                        required=True)
     parser.add_argument('--data_dir', help='Specify root data directory',
                         required=True)
     parser.add_argument('--save_dir', help='Specify root save directory',
@@ -55,7 +57,7 @@ if __name__ == '__main__':
     make_deterministic(seed)
 
     # Initializing logging in wandb for experiment
-    experiment = wandb.init(project='U-Net Test', resume='allow', anonymous='must')
+    experiment = wandb.init(project='landslide-prediction', resume='allow', anonymous='must')
     experiment.config.update(
         dict(epochs=args.epochs, batch_size=args.batch_size, learning_rate=args.lr,
              val_percent=0.1, save_checkpoint=True,)
@@ -65,7 +67,7 @@ if __name__ == '__main__':
     sample_dir = '{}/UNet_Samples_14Day_GPM/{}/ensemble_{}'.format(root_data_dir, ens, ens_num)
     label_dir = '{}/Binary_Landslide_Labels_14day'.format(root_data_dir)
 
-    # --- Making save directory TO UPDATE
+    # --- Making save directory
     save_dir = '{}/{}_ensemble_{}'.format(root_save_dir, ens, ens_num)
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)
@@ -90,6 +92,21 @@ if __name__ == '__main__':
     print('Grabbing testing data...')
     landslide_test_dataset = LandslideDataset(sample_dir, label_dir, 'test')
 
+    # --- Generating District Masks for Custom Metrics calculations
+    # Generating district masks to use for the precision, recall
+    district_masks = generate_district_masks('{}/Nepal_Rasterized_GPMRes_PerDistrict.tif'.format(root_dir))
+
+    # We can locate now here where all the ones in the district are
+    for district in district_masks:
+        district_masks[district] = np.where(district_masks[district] == 1)
+
+    # Want to change the list to be of pair type so we can compare more easily
+    for district in district_masks:
+        points = []
+        for i in range(len(district_masks[district][0])):
+            points.append([district_masks[district][0][i], district_masks[district][1][i]])
+        district_masks[district] = points
+
     print('Training model...')
     trained_model = train_model(
         model=unet,
@@ -102,7 +119,9 @@ if __name__ == '__main__':
         batch_size=args.batch_size,
         learning_rate=args.lr,
         opt = args.optimizer,
-        save_checkpoint=True)
+        save_checkpoint=True,
+        district_masks = district_masks)
 
     print('Running Test set...')
-    predict(trained_model, landslide_test_dataset, experiment, channels, seed, save_dir, device=device)
+    predict(trained_model, landslide_test_dataset, experiment, channels, seed, save_dir, device=device,
+            district_masks = district_masks)
