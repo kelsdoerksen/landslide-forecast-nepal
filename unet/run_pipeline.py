@@ -29,8 +29,6 @@ def get_args():
                         required=True)
     parser.add_argument('--root_dir', help='Specify root directory',
                         required=True)
-    parser.add_argument('--data_dir', help='Specify root data directory',
-                        required=True)
     parser.add_argument('--save_dir', help='Specify root save directory',
                         required=True),
     parser.add_argument('--val_percent', help='Validation percentage',
@@ -49,7 +47,7 @@ if __name__ == '__main__':
     channels = int(args.channels)
     seed = int(args.seed)
     model_type = args.model_type
-    root_data_dir = args.data_dir
+    root_dir = args.root_dir
     root_save_dir = args.save_dir
     ens = args.ensemble
     ens_num = args.ensemble_member
@@ -64,8 +62,8 @@ if __name__ == '__main__':
     )
 
     # --- Setting Directories
-    sample_dir = '{}/UNet_Samples_14Day_GPM/{}/ensemble_{}'.format(root_data_dir, ens, ens_num)
-    label_dir = '{}/Binary_Landslide_Labels_14day'.format(root_data_dir)
+    sample_dir = '{}/UNet_Samples_14Day_GPM/{}/ensemble_{}'.format(root_dir, ens, ens_num)
+    label_dir = '{}/Binary_Landslide_Labels_14day'.format(root_dir)
 
     # --- Making save directory
     save_dir = '{}/{}_ensemble_{}'.format(root_save_dir, ens, ens_num)
