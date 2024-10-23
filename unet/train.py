@@ -15,7 +15,6 @@ import wandb
 from torch import optim
 from pathlib import Path
 from predict import *
-from losses import *
 from utils import *
 
 def train_model(model,
