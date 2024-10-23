@@ -16,7 +16,6 @@ from model import models, unet_modules
 from dataset import *
 import logging
 from osgeo import gdal
-import
 
 
 def get_args():
