@@ -16,6 +16,7 @@ from torch import optim
 from pathlib import Path
 from predict import *
 from utils import *
+import random
 
 def train_model(model,
                 device,
@@ -35,7 +36,8 @@ def train_model(model,
     # --- Split dataset into training and validation
     n_val = int(len(dataset) * val_percent)
     n_train = len(dataset) - n_val
-    train_set, val_set = random_split(dataset, [n_train, n_val], generator=torch.Generator().manual_seed(0))
+    train_set, val_set = random_split(dataset, [n_train, n_val], generator=torch.Generator().
+                                      manual_seed(random.randint(0,1000)))
 
     # --- DataLoaders
     # The DataLoader pulls instances of data from the Dataset, collects them in batches,
