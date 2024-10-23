@@ -23,8 +23,11 @@ class LandslideDataset(Dataset):
         image_fns = sort(self.image_fns)
         label_fns = sort(self.label_fns)
 
-        for fn in label_fns:
-            label_fns = [x for x in image_fns if fn[5:] not in x]
+        for fn in image_fns:
+            label_fns = [x for x in label_fns if fn[6:] in x]
+
+        image_fns = sort(self.image_fns)
+        label_fns = sort(self.label_fns)
 
         if self.split == 'train':
             image_fns = [x for x in image_fns if "2023" not in x]
@@ -42,6 +45,10 @@ class LandslideDataset(Dataset):
         multichannel_image = self.transform(multichannel_image)
         multichannel_image = torch.transpose(multichannel_image, 0, 1)
         label_class = self.transform(label_class)
+
+        if label_class.shape != torch.Size([1, 60, 100]):
+            label_class = torch.transpose(label_class, 0, 1)
+            label_class = torch.transpose(label_class, 1, 2)
 
         return multichannel_image.float(), label_class.float()
 
