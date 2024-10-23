@@ -29,6 +29,9 @@ class LandslideDataset(Dataset):
             image_fns = [x for x in image_fns if "2023" in x]
             label_fns = [x for x in label_fns if "2023" in x]
 
+        import ipdb
+        ipdb.set_trace()
+        
         image_fn = image_fns[index]
         label_fn = label_fns[index]
         image_fp = os.path.join(self.image_dir, image_fn)

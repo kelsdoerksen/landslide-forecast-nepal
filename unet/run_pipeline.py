@@ -8,8 +8,8 @@ Pipeline script to:
 import torch
 import argparse
 import os
-from train import *
-from predict import *
+from train import train_model
+from predict import predict
 import wandb
 from utils import *
 from model import models, unet_modules
