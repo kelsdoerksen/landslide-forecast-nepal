@@ -44,7 +44,6 @@ def get_args():
 if __name__ == '__main__':
     args = get_args()
     seed = int(args.seed)
-    model_type = args.model_type
     root_dir = args.root_dir
     root_save_dir = args.save_dir
     ens = args.ensemble
