@@ -69,7 +69,7 @@ if __name__ == '__main__':
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     logging.info(f'Using device {device}')
-    unet = models.UNet(n_channels=32, n_classes=1)
+    unet = model.models.UNet(n_channels=32, n_classes=1)
 
     if torch.cuda.is_available():
         unet.cuda()
