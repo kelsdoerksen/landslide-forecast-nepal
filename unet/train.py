@@ -100,6 +100,8 @@ def train_model(model,
 
         experiment.log({
             'train BCE loss': epoch_loss/len(train_loader),
+            'train Precision': epoch_thr_precision/len(train_loader),
+            'train Recall': epoch_thr_recall/ len(train_loader),
             'step': global_step,
             'epoch': epoch,
             'optimizer': opt
@@ -140,14 +142,16 @@ def train_model(model,
                 running_thr_precision += v_prec
 
         avg_vloss = running_vloss / len(val_loader)
-        #avg_prec = running_thr_precision / len(val_loader)
-        #avg_rec = running_thr_precision / len(val_loader)
+        avg_prec = running_thr_precision / len(val_loader)
+        avg_rec = running_thr_precision / len(val_loader)
 
         logging.info('Validation BCE score: {}'.format(avg_vloss))
         try:
             experiment.log({
                 'learning rate': optimizer.param_groups[0]['lr'],
                 'validation BCE loss': avg_vloss,
+                'validation Precision': avg_prec,
+                'validation Recall': avg_rec,
                 'step': global_step,
                 'epoch': epoch,
                 **histograms

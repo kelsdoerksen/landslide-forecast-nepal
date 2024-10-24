@@ -77,7 +77,6 @@ def precision_threshold(y_true, y_pred, threshold, d_masks):
         precision_ratio = 0
     else:
         precision_ratio = true_positives / (true_positives + false_positives)
-    precision_ratio = torch.from_numpy(precision_ratio)
 
     return precision_ratio
 
@@ -134,5 +133,4 @@ def recall_threshold(y_true, y_pred, threshold, d_masks):
         recall_ratio = 0
     else:
         recall_ratio = true_positives / (true_positives + false_negatives)
-    recall_ratio = torch.from_numpy(recall_ratio)
     return recall_ratio
