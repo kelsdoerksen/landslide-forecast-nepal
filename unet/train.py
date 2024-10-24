@@ -83,8 +83,8 @@ def train_model(model,
 
             loss = criterion(outputs, labels)       # Calculate loss
 
-            # Apply sigmoid for probabilities
-            outputs_probs = nn.sigmoid(outputs)
+            # Apply sigmoid for probabilities for precision recall
+            outputs_probs = torch.sigmoid(outputs)
 
             thr_precision = precision_threshold(labels, outputs_probs, threshold, district_masks)
             thr_recall = precision_threshold(labels, outputs_probs, threshold, district_masks)
@@ -132,7 +132,7 @@ def train_model(model,
                 vloss = criterion(voutputs, vlabels)
 
                 # Apply sigmoid for probabilities
-                voutputs_probs = nn.sigmoid(voutputs)
+                voutputs_probs = torch.sigmoid(voutputs)
 
                 v_prec = precision_threshold(vlabels, voutputs_probs, threshold, district_masks)
                 v_rec = recall_threshold(labels, voutputs_probs, threshold, district_masks)
