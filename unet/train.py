@@ -86,8 +86,8 @@ def train_model(model,
             # Apply sigmoid for probabilities for precision recall
             outputs_probs = torch.sigmoid(outputs)
 
-            thr_precision = precision_threshold(labels, outputs_probs, threshold, district_masks)
-            thr_recall = precision_threshold(labels, outputs_probs, threshold, district_masks)
+            #thr_precision = precision_threshold(labels, outputs_probs, threshold, district_masks)
+            #thr_recall = precision_threshold(labels, outputs_probs, threshold, district_masks)
 
             grad_scaler.scale(loss).backward()      # Compute partial derivative of the output f with respect to each of the input variables
             grad_scaler.step(optimizer)             # Updates value of parameters according to strategy
@@ -95,13 +95,11 @@ def train_model(model,
 
             global_step += 1
             epoch_loss += loss.item()
-            epoch_thr_precision += thr_precision
-            epoch_thr_recall += thr_recall
+            #epoch_thr_precision += thr_precision
+            #epoch_thr_recall += thr_recall
 
         experiment.log({
             'train BCE loss': epoch_loss/len(train_loader),
-            'train Precision': epoch_thr_precision/len(train_loader),
-            'train Recall': epoch_thr_recall/len(train_loader),
             'step': global_step,
             'epoch': epoch,
             'optimizer': opt
@@ -134,24 +132,22 @@ def train_model(model,
                 # Apply sigmoid for probabilities
                 voutputs_probs = torch.sigmoid(voutputs)
 
-                v_prec = precision_threshold(vlabels, voutputs_probs, threshold, district_masks)
-                v_rec = recall_threshold(labels, voutputs_probs, threshold, district_masks)
+                #v_prec = precision_threshold(vlabels, voutputs_probs, threshold, district_masks)
+                #v_rec = recall_threshold(labels, voutputs_probs, threshold, district_masks)
 
                 running_vloss += vloss
-                running_thr_recall += v_rec
-                running_thr_precision += v_prec
+                #running_thr_recall += v_rec
+                #running_thr_precision += v_prec
 
         avg_vloss = running_vloss / len(val_loader)
-        avg_prec = running_thr_precision / len(val_loader)
-        avg_rec = running_thr_precision / len(val_loader)
+        #avg_prec = running_thr_precision / len(val_loader)
+        #avg_rec = running_thr_precision / len(val_loader)
 
         logging.info('Validation BCE score: {}'.format(avg_vloss))
         try:
             experiment.log({
                 'learning rate': optimizer.param_groups[0]['lr'],
                 'validation BCE loss': avg_vloss,
-                'validation Precision': avg_prec,
-                'validation Recall': avg_rec,
                 'step': global_step,
                 'epoch': epoch,
                 **histograms
