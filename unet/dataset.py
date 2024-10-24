@@ -43,7 +43,9 @@ class LandslideDataset(Dataset):
         multichannel_image = torch.transpose(multichannel_image, 0, 1)
         label_class = self.transform(label_class)
 
-        if label_class.shape != torch.Size([1, 100, 60]):
+        if multichannel_image.shape != torch.Size([32, 60, 100]):
+            multichannel_image = torch.transpose(multichannel_image, 1, 2)
+        if label_class.shape != torch.Size([1, 60, 100]):
             label_class = torch.transpose(label_class, 1, 2)
 
         return multichannel_image.float(), label_class.float()
