@@ -57,7 +57,7 @@ def train_model(model,
                                lr=learning_rate, weight_decay=weight_decay)
 
     # Setting up loss
-    criterion = nn.BCELoss()
+    criterion = nn.BCEWithLogitsLoss()
 
     # --- Setting up schedulers
     #scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=5)  # goal: minimize MSE score.
@@ -82,8 +82,12 @@ def train_model(model,
             outputs = model(inputs)                 # predict on input
 
             loss = criterion(outputs, labels)       # Calculate loss
-            thr_precision = precision_threshold(labels, outputs, threshold, district_masks)
-            thr_recall = precision_threshold(labels, outputs, threshold, district_masks)
+
+            # Apply sigmoid for probabilities
+            outputs_probs = nn.sigmoid(outputs)
+
+            thr_precision = precision_threshold(labels, outputs_probs, threshold, district_masks)
+            thr_recall = precision_threshold(labels, outputs_probs, threshold, district_masks)
 
             grad_scaler.scale(loss).backward()      # Compute partial derivative of the output f with respect to each of the input variables
             grad_scaler.step(optimizer)             # Updates value of parameters according to strategy
@@ -122,10 +126,16 @@ def train_model(model,
             for k, vdata in enumerate(val_loader):
                 vinputs, vlabels = vdata
                 vinputs, vlabels = vinputs.to(device), vlabels.to(device)
+
                 voutputs = model(vinputs)
+
                 vloss = criterion(voutputs, vlabels)
-                v_prec = precision_threshold(vlabels, voutputs, threshold, district_masks)
-                v_rec = recall_threshold(labels, voutputs, threshold, district_masks)
+
+                # Apply sigmoid for probabilities
+                voutputs_probs = nn.sigmoid(voutputs)
+
+                v_prec = precision_threshold(vlabels, voutputs_probs, threshold, district_masks)
+                v_rec = recall_threshold(labels, voutputs_probs, threshold, district_masks)
 
                 running_vloss += vloss
                 running_thr_recall += v_rec
