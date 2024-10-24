@@ -33,7 +33,7 @@ def precision_threshold(y_true, y_pred, threshold, d_masks):
     total_landslides = 0
     for i in range(len(y_pred)):
         non_landslide_districts = d_masks.copy()  # copy of landslides dict to manipulate
-        dummy_pred = np.copy(y_pred[i, :, :, 0])  # copy of y_pred to manipulate
+        dummy_pred = np.copy(y_pred[i, 0, :, ])  # copy of y_pred to manipulate
         # Get what districts are in label
         district_pixels = []
         landslides = np.where(y_true[i, :, :, 0] == 1)
@@ -104,7 +104,7 @@ def recall_threshold(y_true, y_pred, threshold, d_masks):
     for i in range(len(y_pred)):
         # Get what districts are in label
         district_pixels = []
-        landslides = np.where(y_true[i, :, :, 0] == 1)
+        landslides = np.where(y_true[i, 0, :, :] == 1)
         points = []
         for k in range(len(landslides[0])):
             points.append([landslides[0][k], landslides[1][k]])
