@@ -17,7 +17,11 @@ class LandslideDataset(Dataset):
         self.split = split
 
     def __len__(self):
-        return len(self.image_fns)
+        if self.split == 'train':
+            image_fns = [x for x in self.image_fns if "2023" not in x]
+        else:
+            image_fns = [x for x in self.image_fns if "2023" in x]
+        return len(image_fns)
 
     def __getitem__(self, index):
         image_fns = sort(self.image_fns)
