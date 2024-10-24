@@ -36,7 +36,7 @@ def precision_threshold(y_true, y_pred, threshold, d_masks):
         dummy_pred = np.copy(y_pred[i, 0, :, ])  # copy of y_pred to manipulate
         # Get what districts are in label
         district_pixels = []
-        landslides = np.where(y_true[i, :, :, 0] == 1)
+        landslides = np.where(y_true[i, 0, :, :] == 1)
         points = []
         for k in range(len(landslides[0])):
             points.append([landslides[0][k], landslides[1][k]])
@@ -51,7 +51,7 @@ def precision_threshold(y_true, y_pred, threshold, d_masks):
             true_location = district_pixels[j]
             overlap = 0
             for w in range(len(true_location)):
-                if y_pred[i, true_location[w][0], true_location[w][1], 0] == 1:
+                if y_pred[i, 0, true_location[w][0], true_location[w][1]] == 1:
                     overlap += 1
                     # set the overlapped pixel to 0 and see if we have any left over for FP
                     dummy_pred[true_location[w][0], true_location[w][1]] = 0
@@ -117,7 +117,7 @@ def recall_threshold(y_true, y_pred, threshold, d_masks):
             true_location = district_pixels[j]
             overlap = 0
             for m in range(len(true_location)):
-                if y_pred[i, true_location[m][0], true_location[m][1], 0] == 1:
+                if y_pred[i, 0, true_location[m][0], true_location[m][1]] == 1:
                     overlap += 1
             # check if at least one pixel overlapped district
             if overlap > 0:
