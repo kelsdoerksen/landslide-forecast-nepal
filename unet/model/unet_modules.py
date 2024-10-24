@@ -79,7 +79,6 @@ class Up(nn.Module):
 
 
 class OutConv(nn.Module):
-    # check this last output conv for the size
     def __init__(self,
                  in_channels,
                  out_channels):
