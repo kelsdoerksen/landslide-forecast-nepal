@@ -100,7 +100,7 @@ if __name__ == '__main__':
     label_dir = '{}/Binary_Landslide_Labels_14day'.format(root_dir)
 
     # --- Making save directory
-    save_dir = '{}/{}_ensemble_{}'.format(root_save_dir, ens, ens_num)
+    save_dir = '{}/{}_ensemble_{}/{}'.format(root_save_dir, ens, ens_num, experiment.id)
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)
 
