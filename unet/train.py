@@ -86,8 +86,7 @@ def train_model(model,
             # Apply sigmoid for probabilities for precision recall
             outputs_probs = torch.sigmoid(outputs)
 
-            thr_precision = precision_threshold(labels, outputs_probs, threshold, district_masks)
-            thr_recall = precision_threshold(labels, outputs_probs, threshold, district_masks)
+            thr_precision, thr_recall = precision_recall_threshold(labels, outputs_probs, threshold, district_masks)
 
             grad_scaler.scale(loss).backward()      # Compute partial derivative of the output f with respect to each of the input variables
             grad_scaler.step(optimizer)             # Updates value of parameters according to strategy
@@ -134,8 +133,7 @@ def train_model(model,
                 # Apply sigmoid for probabilities
                 voutputs_probs = torch.sigmoid(voutputs)
 
-                v_prec = precision_threshold(vlabels, voutputs_probs, threshold, district_masks)
-                v_rec = recall_threshold(labels, voutputs_probs, threshold, district_masks)
+                v_prec, v_rec = precision_recall_threshold(vlabels, voutputs_probs, threshold, district_masks)
 
                 running_vloss += vloss
                 running_thr_recall += v_rec

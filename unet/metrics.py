@@ -8,9 +8,9 @@ import numpy as np
 import torch
 
 
-def precision_threshold(y_true, y_pred, threshold, d_masks):
+def precision_recall_threshold(y_true, y_pred, threshold, d_masks):
     '''
-    Custom Precision metric.
+    Custom Precision-Recall metric.
     Computes the precision over the batch using
     the threshold_value indicated
     :param: y_true: label
@@ -73,14 +73,20 @@ def precision_threshold(y_true, y_pred, threshold, d_masks):
                         break
         false_positives += fp_count
 
+    if total_landslides > true_positives:
+        false_negatives = total_landslides - true_positives
+
     if false_positives == 0 and true_positives == 0:
         precision_ratio = 0
+        recall_ratio = 0
     else:
         precision_ratio = true_positives / (true_positives + false_positives)
+        recall_ratio = true_positives / (true_positives + false_negatives)
 
-    return precision_ratio
 
+    return precision_ratio, recall_ratio
 
+'''
 def recall_threshold(y_true, y_pred, threshold, d_masks):
     '''
     Recall metric. Computes the recall over the batch using
@@ -134,3 +140,4 @@ def recall_threshold(y_true, y_pred, threshold, d_masks):
     else:
         recall_ratio = true_positives / (true_positives + false_negatives)
     return recall_ratio
+'''
