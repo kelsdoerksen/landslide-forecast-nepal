@@ -20,6 +20,7 @@ def precision_recall_threshold(y_true, y_pred, threshold, d_masks):
     # Set true positive and false positive count to 0
     true_positives = 0
     false_positives = 0
+    false_negatives = 0
 
     threshold_value = torch.Tensor([threshold])
     # Convert y_pred to 0s and 1s based on threshold
