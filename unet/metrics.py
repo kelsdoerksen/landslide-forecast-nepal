@@ -86,7 +86,7 @@ def precision_recall_threshold(y_true, y_pred, threshold, d_masks):
 
     return precision_ratio, recall_ratio
 
-'''
+"""
 def recall_threshold(y_true, y_pred, threshold, d_masks):
     '''
     Recall metric. Computes the recall over the batch using
@@ -140,4 +140,4 @@ def recall_threshold(y_true, y_pred, threshold, d_masks):
     else:
         recall_ratio = true_positives / (true_positives + false_negatives)
     return recall_ratio
-'''
+"""
