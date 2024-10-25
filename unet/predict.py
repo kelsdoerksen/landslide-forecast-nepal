@@ -54,8 +54,9 @@ def predict(in_model, test_dataset, wandb_experiment, seed, out_dir, device, dis
             preds.append(outputs_probs.detach().numpy())
 
             bce_score += loss_criterion(outputs, labels)
-            #precision += precision_recall_threshold(labels, inputs, threshold, district_masks)
-            #recall += recall_threshold(labels, inputs, threshold, district_masks)
+            p, r = precision_recall_threshold(labels, inputs, threshold, district_masks)
+            precision += p
+            recall += r
 
     print('test set BCE is: {}'.format(bce_score / len(test_loader)))
 
