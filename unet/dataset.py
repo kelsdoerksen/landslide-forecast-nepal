@@ -30,7 +30,7 @@ class LandslideDataset(Dataset):
         years = [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023]
         monsoon_date_list = []
         for y in years:
-            monsoon_date_list.append(monsoon_dates(y))
+            monsoon_date_list.extend(monsoon_dates(y))
 
         monsoon_date_list = [x + '.npy' for x in monsoon_date_list]
         self.image_fns = ['sample_' + x for x in monsoon_date_list]
