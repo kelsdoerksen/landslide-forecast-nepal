@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/run_pipeline.py", line 105, in <module>
+    os.mkdir(save_dir)
+FileNotFoundError: [Errno 2] No such file or directory: '/users/kelsen/landslide-results/GPM/KMA_ensemble_1_c36jzr05'

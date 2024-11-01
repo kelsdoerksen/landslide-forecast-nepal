@@ -1,0 +1,52 @@
+{
+  "os": "macOS-10.16-x86_64-i386-64bit",
+  "python": "3.10.9",
+  "startedAt": "2024-11-01T17:31:20.005292Z",
+  "args": [
+    "--epochs",
+    "1",
+    "--batch_size",
+    "32",
+    "--learning-rate",
+    "0.001",
+    "--seed",
+    "45",
+    "--root_dir",
+    "/scratch-ssd/kelsen/landslide-data",
+    "--save_dir",
+    "/users/kelsen/landslide-results/GPM",
+    "--val_percent",
+    "0.1",
+    "--ensemble",
+    "KMA",
+    "--ensemble_member",
+    "1"
+  ],
+  "program": "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/run_pipeline.py",
+  "codePath": "unet/run_pipeline.py",
+  "git": {
+    "remote": "git@github.com:kelsdoerksen/landslide-forecast-nepal.git",
+    "commit": "43eb542310d04d6eaaa7c7bcdcfe60e8ce8c435f"
+  },
+  "email": "kelsey.doerksen@cs.ox.ac.uk",
+  "root": "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet",
+  "host": "MacBookPro",
+  "username": "kelseydoerksen",
+  "executable": "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/bin/python",
+  "codePathLocal": "run_pipeline.py",
+  "cpu_count": 4,
+  "cpu_count_logical": 8,
+  "disk": {
+    "/": {
+      "total": "499963174912",
+      "used": "404418920448"
+    }
+  },
+  "memory": {
+    "total": "17179869184"
+  },
+  "cpu": {
+    "count": 4,
+    "countLogical": 8
+  }
+}

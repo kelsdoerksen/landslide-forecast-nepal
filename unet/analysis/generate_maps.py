@@ -36,8 +36,8 @@ if __name__ == '__main__':
   gt = np.load('{}/groundtruth_0.npy'.format(save_dir))
   pred = np.load('{}/pred_0.npy'.format(save_dir))
 
-  gt0 = gt[0]
-  pred0 = pred[0]
+  gt0 = gt[2]
+  pred0 = pred[2]
 
   # Apply thresholding
   pred0_thresh = (pred0 >= float(threshold)).astype(np.uint8)
