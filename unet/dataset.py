@@ -32,9 +32,17 @@ class LandslideDataset(Dataset):
         for y in years:
             monsoon_date_list.extend(monsoon_dates(y))
 
-        monsoon_date_list = [x + '.npy' for x in monsoon_date_list]
-        self.image_fns = ['sample_' + x for x in monsoon_date_list]
-        self.label_fns = ['label_' + x for x in monsoon_date_list]
+        # Get list of dates from samples
+        fns = os.listdir(image_dir)
+        fns = [s.strip('sample_') for s in fns]
+        fns = [s.strip('.npy') for s in fns]
+
+        fns_monsoon = [x for x in fns if x in monsoon_date_list]
+
+        image_fns_monsoon = ['sample_' + x for x in fns_monsoon]
+        label_fns_monsoon = ['label_' + x for x in fns_monsoon]
+        self.image_fns = [x + '.npy' for x in image_fns_monsoon]
+        self.label_fns = [x + '.npy' for x in label_fns_monsoon]
 
     def __len__(self):
         if self.split == 'train':
