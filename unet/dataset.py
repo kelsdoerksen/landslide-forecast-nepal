@@ -7,14 +7,34 @@ from torchvision import transforms
 from numpy import load, sort
 import os
 import torch
+from datetime import date, timedelta
+
+
+def daterange(date1, date2):
+    date_list = []
+    for n in range(int((date2 - date1).days) + 1):
+        dt = date1 + timedelta(n)
+        date_list.append(dt.strftime("%Y-%m-%d"))
+    return date_list
+
+def monsoon_dates(year):
+    return daterange(date(int(year), 4, 1), date(int(year), 10, 31))
 
 class LandslideDataset(Dataset):
     def __init__(self, image_dir, label_dir, split):
         self.image_dir = image_dir
         self.label_dir = label_dir
-        self.image_fns = os.listdir(image_dir)
-        self.label_fns = os.listdir(label_dir)
         self.split = split
+
+        # Apply monsoon date bounds
+        years = [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023]
+        monsoon_date_list = []
+        for y in years:
+            monsoon_date_list.append(monsoon_dates(y))
+
+        monsoon_date_list = [x + '.npy' for x in monsoon_date_list]
+        self.image_fns = ['sample_' + x for x in monsoon_date_list]
+        self.label_fns = ['label_' + x for x in monsoon_date_list]
 
     def __len__(self):
         if self.split == 'train':

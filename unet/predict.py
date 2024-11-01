@@ -29,7 +29,7 @@ def predict(in_model, test_dataset, wandb_experiment, seed, out_dir, device, dis
     unetmodel.eval()
 
     # Data loader for test set
-    test_loader = DataLoader(test_dataset, batch_size=10, shuffle=True)
+    test_loader = DataLoader(test_dataset, batch_size=10, shuffle=False)
 
     loss_criterion = nn.BCEWithLogitsLoss()
     bce_score = 0
@@ -60,11 +60,21 @@ def predict(in_model, test_dataset, wandb_experiment, seed, out_dir, device, dis
 
     print('test set BCE is: {}'.format(bce_score / len(test_loader)))
 
+    # Writing things to file
     wandb_experiment.log({
         'test set BCE': bce_score / len(test_loader),
+        'test set Precision': precision / len(test_loader),
+        'test set Recall': recall / len(test_loader)
     })
+
 
     for i in range(len(gt)):
         np.save('{}/groundtruth_{}.npy'.format(out_dir, i), gt[i])
         np.save('{}/pred_{}.npy'.format(out_dir, i), preds[i])
+
+    with open('{}/model_testing_results.txt'.format(out_dir), 'w') as f:
+        f.write('Accuracy scores for each fold are: {}'.format(cv_scoring['test_accuracy']))
+        f.write('Average accuracy is: {}'.format(cv_scoring['test_accuracy'].mean()))
+        f.write('F1 scores for each fold are: {}'.format(cv_scoring['test_f1']))
+        f.write('Average F1 is: {}'.format(cv_scoring['test_f1'].mean()))
 
