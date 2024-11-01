@@ -73,8 +73,6 @@ def predict(in_model, test_dataset, wandb_experiment, seed, out_dir, device, dis
         np.save('{}/pred_{}.npy'.format(out_dir, i), preds[i])
 
     with open('{}/model_testing_results.txt'.format(out_dir), 'w') as f:
-        f.write('Accuracy scores for each fold are: {}'.format(cv_scoring['test_accuracy']))
-        f.write('Average accuracy is: {}'.format(cv_scoring['test_accuracy'].mean()))
-        f.write('F1 scores for each fold are: {}'.format(cv_scoring['test_f1']))
-        f.write('Average F1 is: {}'.format(cv_scoring['test_f1'].mean()))
+        f.write('Test set Precision is: {}'.format(precision / len(test_loader)))
+        f.write('Test set Recall is: {}'.format(recall / len(test_loader)))
 
