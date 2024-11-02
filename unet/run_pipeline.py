@@ -118,11 +118,11 @@ if __name__ == '__main__':
 
     # ---- Grabbing Training Data ----
     print('Grabbing training data...')
-    landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train')
+    landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', save_dir)
 
     # --- Grabbing Testing Data ----
     print('Grabbing testing data...')
-    landslide_test_dataset = LandslideDataset(sample_dir, label_dir, 'test')
+    landslide_test_dataset = LandslideDataset(sample_dir, label_dir, 'test', save_dir)
 
     # --- Generating District Masks for Custom Metrics calculations
     # Generating district masks to use for the precision, recall
