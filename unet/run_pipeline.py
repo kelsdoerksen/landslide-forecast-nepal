@@ -16,6 +16,7 @@ from model import models, unet_modules
 from dataset import *
 import logging
 from osgeo import gdal
+import random
 
 
 def get_args():
@@ -114,7 +115,7 @@ if __name__ == '__main__':
         unet.cuda()
     #unet.to(device=device)
 
-    set_seed(np.randint(0,1000))
+    set_seed(random.randint(0,1000))
 
     # ---- Grabbing Training Data ----
     print('Grabbing training data...')
