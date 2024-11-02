@@ -21,10 +21,11 @@ def monsoon_dates(year):
     return daterange(date(int(year), 4, 1), date(int(year), 10, 31))
 
 class LandslideDataset(Dataset):
-    def __init__(self, image_dir, label_dir, split):
+    def __init__(self, image_dir, label_dir, split, out_dir):
         self.image_dir = image_dir
         self.label_dir = label_dir
         self.split = split
+        self.out_dir = out_dir
 
         # Apply monsoon date bounds
         years = [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023]
@@ -58,6 +59,12 @@ class LandslideDataset(Dataset):
             image_fns = [x for x in image_fns if "2023" not in x]
         else:
             image_fns = [x for x in image_fns if "2023" in x]
+            # Save list of image_fns to file so we know what dates were used
+            image_fns_save = [s.strip('sample_') for s in image_fns]
+            image_fns_save = [s.strip('.npy') for s in image_fns]
+            with open('test_dates.txt', 'w') as f:
+                for line in image_fns_save:
+                    f.write('{}'.format(line))
 
         label_fns = list(map(lambda x: x.replace('sample', 'label'), image_fns))
 
