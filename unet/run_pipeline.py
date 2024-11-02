@@ -26,8 +26,6 @@ def get_args():
     parser.add_argument('--optimizer', '-o', type=str, default='adam', help='Model optimizer')
     parser.add_argument('--classes', '-c', type=int, default=1, help='Number of classes')
     parser.add_argument('--test-year', '-t', type=str, help='Test year for analysis (sets out of training)')
-    parser.add_argument('--seed', help='Seed to set to make model deterministic',
-                        required=True)
     parser.add_argument('--root_dir', help='Specify root directory',
                         required=True)
     parser.add_argument('--save_dir', help='Specify root save directory',
@@ -78,15 +76,19 @@ def generate_district_masks(file_name):
     return new_dict
 
 
+def set_seed(seed):
+    np.random.seed(seed)
+    random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+
+
 if __name__ == '__main__':
     args = get_args()
-    seed = int(args.seed)
     root_dir = args.root_dir
     root_save_dir = args.save_dir
     ens = args.ensemble
     ens_num = args.ensemble_member
-
-    make_deterministic(seed)
 
     # Initializing logging in wandb for experiment
     experiment = wandb.init(project='landslide-prediction', resume='allow', anonymous='must')
@@ -111,6 +113,8 @@ if __name__ == '__main__':
     if torch.cuda.is_available():
         unet.cuda()
     #unet.to(device=device)
+
+    set_seed(np.randint(0,1000))
 
     # ---- Grabbing Training Data ----
     print('Grabbing training data...')
@@ -151,5 +155,5 @@ if __name__ == '__main__':
         district_masks = district_masks)
 
     print('Running Test set...')
-    predict(trained_model, landslide_test_dataset, experiment, seed, save_dir, device=device,
+    predict(trained_model, landslide_test_dataset, experiment, save_dir, device=device,
             district_masks = district_masks)

@@ -14,12 +14,10 @@ from utils import *
 from metrics import *
 
 
-def predict(in_model, test_dataset, wandb_experiment, seed, out_dir, device, district_masks):
+def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_masks):
     """
     Predict standard way (no dropout at test time)
     """
-    # Make deterministic
-    make_deterministic(seed)
 
     threshold = 0.2
 
