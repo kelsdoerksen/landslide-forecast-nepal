@@ -9,6 +9,7 @@ import argparse
 from datetime import date, timedelta
 import os
 import pandas as pd
+from torch.nn.functional import threshold
 
 
 def get_args():
@@ -18,6 +19,8 @@ def get_args():
     parser.add_argument('--data_dir', help='Data directory',
                         required=True)
     parser.add_argument('--results_dir', help='Results directory',
+                        required=True)
+    parser.add_argument('--threshold', help='Prediction threshold',
                         required=True)
 
     return parser.parse_args()
@@ -174,6 +177,7 @@ if __name__ == '__main__':
     root_dir = args.root_dir
     data_dir = args.data_dir
     results_dir = args.results_dir
+    thr = args.threshold
 
     # Grab list of .npy groundtruth and predictions from results dir
     predictions = [f for f in os.listdir(results_dir) if 'pred' in f]
@@ -212,9 +216,11 @@ if __name__ == '__main__':
     # Generate results per date
     results_list = []
     for p in prediction_arrays:
-        results_list.append(pr_generation(prediction_arrays[p], groundtruth_arrays[p], 0.2, district_masks,
+        results_list.append(pr_generation(prediction_arrays[p], groundtruth_arrays[p], thr, district_masks,
                                           monsoon_dates[p]))
 
     # Combine everything into a dataframe
     results_df = pd.DataFrame(results_list)
 
+    # Save to csv
+    results_df.to_csv('precision_recall_2023_results_threshold_{}.csv'.format(thr))
