@@ -62,7 +62,7 @@ class LandslideDataset(Dataset):
             # Save list of image_fns to file so we know what dates were used
             image_fns_save = [s.strip('sample_') for s in image_fns]
             image_fns_save = [s.strip('.npy') for s in image_fns]
-            with open('test_dates.txt', 'w') as f:
+            with open('{}/test_dates.txt'.format(self.out_dir), 'w') as f:
                 for line in image_fns_save:
                     f.write('{}'.format(line))
 
