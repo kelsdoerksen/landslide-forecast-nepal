@@ -68,7 +68,7 @@ def generate_daily_labels(doy, landslide_df):
     return combined_label
 
 
-date_list = daterange(date(2016,1,1), date(2023,10,13))
+date_list = daterange(date(2023,10,13), date(2023,10,17))
 for d in date_list:
     print('Generating label for doy: {}'.format(d))
     generate_daily_labels(d, landslide_records)
