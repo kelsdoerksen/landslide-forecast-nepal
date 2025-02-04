@@ -1,0 +1,119 @@
+Grabbing training data...
+Grabbing testing data...
+Training model...
+/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/torch/cuda/amp/grad_scaler.py:126: UserWarning: torch.cuda.amp.GradScaler is enabled, but CUDA is not available.  Disabling.
+  warnings.warn(
+Training EPOCH 0:
+Training EPOCH 1:
+Training EPOCH 2:
+Training EPOCH 3:
+Training EPOCH 4:
+Training EPOCH 5:
+Training EPOCH 6:
+Training EPOCH 7:
+Training EPOCH 8:
+Training EPOCH 9:
+Training EPOCH 10:
+Training EPOCH 11:
+Training EPOCH 12:
+Training EPOCH 13:
+Training EPOCH 14:
+Training EPOCH 15:
+Training EPOCH 16:
+Training EPOCH 17:
+Training EPOCH 18:
+Training EPOCH 19:
+Training EPOCH 20:
+Training EPOCH 21:
+Training EPOCH 22:
+Training EPOCH 23:
+Training EPOCH 24:
+Training EPOCH 25:
+Training EPOCH 26:
+Training EPOCH 27:
+Training EPOCH 28:
+Training EPOCH 29:
+Training EPOCH 30:
+Training EPOCH 31:
+Training EPOCH 32:
+Training EPOCH 33:
+Training EPOCH 34:
+Training EPOCH 35:
+Training EPOCH 36:
+Training EPOCH 37:
+Training EPOCH 38:
+Training EPOCH 39:
+Training EPOCH 40:
+Training EPOCH 41:
+Training EPOCH 42:
+Training EPOCH 43:
+Training EPOCH 44:
+Training EPOCH 45:
+Training EPOCH 46:
+Training EPOCH 47:
+Training EPOCH 48:
+Training EPOCH 49:
+Training EPOCH 50:
+Training EPOCH 51:
+Training EPOCH 52:
+Training EPOCH 53:
+Training EPOCH 54:
+Training EPOCH 55:
+Training EPOCH 56:
+Training EPOCH 57:
+Training EPOCH 58:
+Training EPOCH 59:
+Training EPOCH 60:
+Training EPOCH 61:
+Training EPOCH 62:
+Training EPOCH 63:
+Training EPOCH 64:
+Training EPOCH 65:
+Training EPOCH 66:
+Training EPOCH 67:
+Training EPOCH 68:
+Training EPOCH 69:
+Training EPOCH 70:
+Training EPOCH 71:
+Training EPOCH 72:
+Training EPOCH 73:
+Training EPOCH 74:
+Training EPOCH 75:
+Training EPOCH 76:
+Training EPOCH 77:
+Training EPOCH 78:
+Training EPOCH 79:
+Training EPOCH 80:
+Training EPOCH 81:
+Training EPOCH 82:
+Training EPOCH 83:
+Training EPOCH 84:
+Training EPOCH 85:
+Training EPOCH 86:
+Training EPOCH 87:
+Training EPOCH 88:
+Training EPOCH 89:
+Training EPOCH 90:
+Training EPOCH 91:
+Training EPOCH 92:
+Training EPOCH 93:
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/run_pipeline.py", line 147, in <module>
+    trained_model = train_model(
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/train.py", line 76, in train_model
+    for i, data in enumerate(train_loader):
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 631, in __next__
+    data = self._next_data()
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 675, in _next_data
+    data = self._dataset_fetcher.fetch(index)  # may raise StopIteration
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/torch/utils/data/_utils/fetch.py", line 49, in fetch
+    data = self.dataset.__getitems__(possibly_batched_index)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/torch/utils/data/dataset.py", line 399, in __getitems__
+    return [self.dataset[self.indices[idx]] for idx in indices]
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/torch/utils/data/dataset.py", line 399, in <listcomp>
+    return [self.dataset[self.indices[idx]] for idx in indices]
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/dataset.py", line 75, in __getitem__
+    multichannel_image = load('{}'.format(image_fp), allow_pickle=True).astype('float32')
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/numpy/lib/npyio.py", line 427, in load
+    fid = stack.enter_context(open(os_fspath(file), "rb"))
+FileNotFoundError: [Errno 2] No such file or directory: '/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep/UNet_Samples_14Day_GPMv07/UKMO/ensemble_0/sample_2017-08-26.npy'

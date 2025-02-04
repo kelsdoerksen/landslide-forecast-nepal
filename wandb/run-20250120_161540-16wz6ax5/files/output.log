@@ -1,0 +1,8 @@
+Loading data...
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 780, in <module>
+    run_rf(X_train, y_train, X_test, y_test, X_val, y_val, results, experiment, model, test_y, tuning)
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 415, in run_rf
+    if not eval(tuning):
+  File "<string>", line 1, in <module>
+NameError: name 'Yes' is not defined

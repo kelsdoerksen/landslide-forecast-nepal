@@ -1,0 +1,33 @@
+Loading data...
+Tuning the model
+Tuning for iteration: 0
+Running grid search cv on training set...
+--- 3025.1594002246857 seconds to hyperparameter tune ---
+Tuning for iteration: 1
+Running grid search cv on training set...
+--- 2989.6776809692383 seconds to hyperparameter tune ---
+Tuning for iteration: 2
+Running grid search cv on training set...
+--- 3396.7231669425964 seconds to hyperparameter tune ---
+Max model stats after parameter tuning is: {'min_samples_leaf': 1, 'min_samples_split': 4, 'n_estimators': 300, 'accuracy': 0.8674818008339812, 'f1': 0.40076701821668265, 'best_model': GradientBoostingClassifier(min_samples_split=4, n_estimators=300,
+                           random_state=423)}
+Evaluating model...
+The hard predictions were right 81.70% of the time
+No Skill: ROC AUC=0.500
+RFC: ROC AUC=0.844
+No nan values in fscore
+The number of non-landslide events is: 11535
+The number of landslide events is: 2787
+Best Threshold=0.193904, F-Score=0.561
+Test set accuracy at threshold 0.19390429390121397: 0.8009356235162687
+Test set F1 at threshold 0.19390429390121397: 0.5607764597134494
+True Positive is 1820
+True Negative is 9651
+False Positive is 1884
+False Negative is 967
+False positive rate at best threshold is 0.16332899869960987
+True positive rate at best threshold is is 0.6530319339791891
+False negative rate at best threshold is is 0.34696806602081093
+True negative rate at best threshold is is 0.8366710013003901
+--------------------
+{'0': {'precision': 0.9089282350725184, 'recall': 0.8366710013003901, 'f1-score': 0.8713041123098452, 'support': 11535}, '1': {'precision': 0.49136069114470843, 'recall': 0.6530319339791891, 'f1-score': 0.5607764597134494, 'support': 2787}, 'accuracy': 0.8009356235162687, 'macro avg': {'precision': 0.7001444631086134, 'recall': 0.7448514676397896, 'f1-score': 0.7160402860116473, 'support': 14322}, 'weighted avg': {'precision': 0.8276713753513338, 'recall': 0.8009356235162687, 'f1-score': 0.8108767580446479, 'support': 14322}}

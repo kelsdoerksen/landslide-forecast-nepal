@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import (accuracy_score, confusion_matrix,
                              classification_report, precision_recall_curve,
                              auc, roc_auc_score,roc_curve)
-from sklearn.model_selection import cross_validate, GridSearchCV
+from sklearn.model_selection import cross_validate, GridSearchCV, train_test_split
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.utils import shuffle
 from sklearn.inspection import permutation_importance
@@ -18,10 +18,12 @@ from datetime import date, timedelta
 from sklearn.metrics import f1_score
 import wandb
 import argparse
-import xgboost as xgb
+from xgboost import XGBClassifier
 from sklearn.neural_network import MLPClassifier
 import joblib
 import pickle
+import random
+import time
 
 
 def get_args():
@@ -35,8 +37,10 @@ def get_args():
                                                   'to removing those features respectively, full is standard')
     parser.add_argument('--wandb_setting', help='Wandb experiment setting, offline or online')
     parser.add_argument('--test_forecast', help='Model to test forecast for 2023 based on ukmo training')
+    parser.add_argument('--parameter_tuning', help='Specify if tuning model hyperparameters', default=None)
 
     return parser.parse_args()
+
 
 
 def daterange(date1, date2):
@@ -284,7 +288,7 @@ def get_monsoon_season(year):
 
 def load_data(test_year, data_dir, experiment_type):
     """
-    Function to load in train, test datasets
+    Function to load in train, test, validation (for param tuning) datasets
     Specify test year, all other years used for training
     """
     year_split_dict = {
@@ -331,26 +335,46 @@ def load_data(test_year, data_dir, experiment_type):
     monsoon_test_list = daterange(date(int(test_year), 4, 1), date(int(test_year), 10, 31))
     monsoon_test = df_test[df_test['date'].isin(monsoon_test_list)]
 
-    # Shuffle
-    df_train = shuffle(monsoon_train)
     df_test = shuffle(monsoon_test)
-
-    # Drop Nans
-    df_train = df_train.dropna()
     df_test = df_test.dropna()
-
-    # Split into label and features, preserve date and location
-    y_train = df_train['label']
-    X_train = df_train.drop(columns=['label', 'Unnamed: 0'])
-
     y_test = df_test['label']
-    X_test = df_test.drop(columns=['label', 'Unnamed: 0'])
 
-    if 'Unnamed: 0.1' in X_train.columns:
-        X_train = X_train.drop(columns=['Unnamed: 0.1'])
-    if 'Unnamed: 0.1' in X_test.columns:
-        X_test = X_test.drop(columns=['Unnamed: 0.1'])
+    unwanted_cols = ['label', 'Unnamed: 0', 'Unnamed: 0.1']
+    X_test = df_test.drop(columns=unwanted_cols, errors='ignore')
 
+    if os.path.exists('{}/train_data_2016-2022.csv'.format(data_dir)):
+        train = pd.read_csv('{}/train_data_2016-2022.csv'.format(data_dir))
+        val = pd.read_csv('{}/val_data_2016-2022.csv'.format(data_dir))
+        X_train = train.drop(columns=['label'])
+        y_train = train[['label']]
+        X_val = val.drop(columns=['label'])
+        y_val = val[['label']]
+        return X_train, y_train, X_test, y_test, X_val, y_val
+    else:
+        # Shuffle
+        df_train = shuffle(monsoon_train)
+
+        # Drop Nans
+        df_train = df_train.dropna().reset_index()
+        df_train = df_train.drop(columns=['index'])
+
+        # Split into label and features, preserve date and location
+        ytrain = df_train['label']
+
+        # Drop any columns we don't want
+        Xtrain = df_train.drop(columns=unwanted_cols, errors='ignore')
+
+        # Split into train and validation for parameter tuning, use 15% for validation
+        X_train, X_val, y_train, y_val = train_test_split(Xtrain, ytrain, test_size=0.15,
+                                                          random_state=random.randint(1,1000), stratify=ytrain)
+
+        train_data = pd.concat([X_train, y_train])
+        train_data = train_data.rename(columns={0:'label'})
+        val_data = pd.concat([X_val, y_val])
+        val_data = val_data.rename(columns={0: 'label'})
+
+        #train_data.to_csv('{}/train_data_2016-2022.csv'.format(data_dir), index=False)
+        #val_data.to_csv('{}/val_data_2016-2022.csv'.format(data_dir), index=False)
 
     if experiment_type == 'no_hindcast':
         X_train = X_train.drop(X_train.filter(regex='tminus').columns, axis=1)
@@ -363,37 +387,32 @@ def load_data(test_year, data_dir, experiment_type):
         X_train = X_train.drop(X_train.filter(regex='ens').columns, axis=1)
         X_test = X_test.drop(X_test.filter(regex='ens').columns, axis=1)
 
-    return X_train, y_train, X_test, y_test
+    return X_train, y_train, X_test, y_test, X_val, y_val
 
 
-def run_rf(Xtrain, ytrain, Xtest, ytest, results_dir, wandb_exp, model_type, test_year):
+def run_rf(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wandb_exp, model_type, test_year, tuning):
     """
     Experiment for train and test set from all years, all regions
     """
-    # Create an instance of Random Forest
-    forest = RandomForestClassifier(criterion='gini',
-                                    random_state=87,
-                                    n_estimators=200,
-                                    n_jobs=-1,
-                                    class_weight='balanced')
 
     # Preserve date and location information for output
     info_cols = ['date', 'district']
     train_info = Xtrain[info_cols]
-    Xtrain = Xtrain.drop(columns=info_cols)
+    X_train = Xtrain.drop(columns=info_cols)
+
+    X_val = Xval.drop(columns=info_cols)
 
     if test_year == '2024':
-        Xtrain['label'] = ytrain
-        Xtrain = Xtrain.dropna()
-        Xtrain = Xtrain.reset_index()
-        Xtrain = shuffle(Xtrain)
-        ytrain=Xtrain['label']
-        Xtrain = Xtrain.drop(columns=['label', 'index'])
-        import ipdb
-        ipdb.set_trace()
+        forest = None   # putting this here for now but will update
+        X_train['label'] = ytrain
+        X_train = X_train.dropna()
+        X_train = X_train.reset_index()
+        X_train = shuffle(X_train)
+        ytrain=X_train['label']
+        X_train = X_train.drop(columns=['label', 'index'])
         print('Fitting model on all data including 2023 and returning')
         # Fit model and save
-        forest.fit(Xtrain, ytrain)
+        forest.fit(X_train, ytrain)
         # Save the model to file
         joblib.dump(forest, '{}/rf_model.joblib'.format(results_dir))
 
@@ -405,17 +424,80 @@ def run_rf(Xtrain, ytrain, Xtest, ytest, results_dir, wandb_exp, model_type, tes
     test_info = Xtest[info_cols]
     Xtest = Xtest.drop(columns=info_cols)
 
-    # Fit the model
-    print('Fitting model...')
-    forest.fit(Xtrain, ytrain)
+    if not tuning:
+        if not os.path.exists('{}/best_model.pkl'.format(data_dir)):
+            # Create an instance of Random Forest
+            forest = RandomForestClassifier(criterion='gini',
+                                            random_state=random.randint(1, 1000),
+                                            n_estimators=200,
+                                            n_jobs=-1,
+                                            class_weight='balanced')
+        else:
+            with open('{}/best_model.pkl'.format(data_dir), 'rb') as f:
+                forest = pickle.load(f)
+        print('No model hyperparameter tuning')
+        # Fit the model
+        print('Fitting model...')
+        forest.fit(X_train, ytrain)
+    else:
+        # Tune the model
+        model_state = 'tuned_best_params'
+        print('Tuning the model')
+        param_grid = {
+            'bootstrap': [True],
+            'max_depth': [3, 5, 7],
+            'min_samples_split': [4, 6, 8],
+            'n_estimators': [100, 200, 300]
+        }
 
-    # Save the model to file
-    joblib.dump(forest, '{}/rf_model.joblib'.format(results_dir))
+        tune_list = []
+        for i in range(3):
+            print('Tuning for iteration: {}'.format(i))
+            # Create an instance of Random Forest
+            forest = RandomForestClassifier(criterion='gini',
+                                            random_state=random.randint(1, 1000),
+                                            n_estimators=200,
+                                            n_jobs=-1,
+                                            class_weight='balanced')
+            # grid search cv
+            rf_cv = GridSearchCV(estimator=forest,
+                                 param_grid=param_grid,
+                                 scoring=['f1'],
+                                 refit='f1',
+                                 cv=3,
+                                 n_jobs=-1)
 
-    # saving as pickle too
-    with open("{}/rf_model.pkl".format(results_dir), "wb") as file:
-        pickle.dump(forest, file)
+            # Fit the grid search to the data
+            print('Running grid search cv on training set...')
+            start_time = time.time()
+            rf_cv.fit(X_train, y_train)
+            print("--- %s seconds to hyperparameter tune ---" % (time.time() - start_time))
 
+            # Set model to the best estimator from grid search
+            best_forest = rf_cv.best_estimator_
+
+            # Prediction on validation set with best forest
+            tuned_probs = best_forest.predict_proba(X_val)
+            accuracy = best_forest.score(X_val, y_val)
+            f1 = f1_score(y_val, (tuned_probs[:,1] >= 0.5)*1)
+
+            forest_dict = rf_cv.best_params_
+            forest_dict['accuracy'] = accuracy
+            forest_dict['f1'] = f1
+            forest_dict['best_model'] = best_forest
+            tune_list.append(forest_dict)
+
+        # Get max F1 and use this as our best model
+        max_dict = max(tune_list, key=lambda x: x['f1'])
+        print('Max model stats after parameter tuning is: {}'.format(max_dict))
+        # Save the model to file
+        joblib.dump(max_dict['best_model'], '{}/rf_model.joblib'.format(results))
+        # saving as pickle too
+        with open("{}/rf_model.pkl".format(results), "wb") as file:
+            pickle.dump(max_dict['best_model'], file)
+        forest = max_dict['best_model']
+
+    '''
     scoring = ['accuracy', 'f1']
     cv_scoring = cross_validate(forest, Xtrain, ytrain, scoring=scoring, cv=5)
     with open('{}/model_training_results.txt'.format(results_dir), 'w') as f:
@@ -423,10 +505,14 @@ def run_rf(Xtrain, ytrain, Xtest, ytest, results_dir, wandb_exp, model_type, tes
         f.write('Average accuracy is: {}'.format(cv_scoring['test_accuracy'].mean()))
         f.write('F1 scores for each fold are: {}'.format(cv_scoring['test_f1']))
         f.write('Average F1 is: {}'.format(cv_scoring['test_f1'].mean()))
+    '''
 
     # Measure model performance on test set
     print('Evaluating model...')
     probs = forest.predict_proba(Xtest)
+
+    acc_test = forest.score(Xtest, ytest)
+    f1_test = f1_score(ytest, (probs[:, 1] >= 0.5) * 1)
 
     # Re-indexing so we can put it all in a df
     test_info = test_info.reset_index().drop(columns=['index'])
@@ -445,58 +531,143 @@ def run_rf(Xtrain, ytrain, Xtest, ytest, results_dir, wandb_exp, model_type, tes
     # Plot roc_auc curve
     roc_auc(ytest, probs, results)
 
+    # Calculate Model Performance
     calc_model_performance(forest, ytest, probs, Xtest, results, wandb_exp, model_type)
 
     # Logging results to wandb
     # --- Logging metrics
     wandb_exp.log({
-        'CV accuracies': cv_scoring['test_accuracy'],
-        'Average CV accuracy': cv_scoring['test_accuracy'].mean(),
-        'Average CV F1': cv_scoring['test_f1'].mean()
-    })
-
-    # --- Logging plots
-    wandb_exp.log({
-        'roc': wandb.plot.roc_curve(ytest, probs)
+        'accuracy': acc_test,
+        'F1 at 0.5': f1_test,
+        'roc': wandb.plot.roc_curve(ytest, probs, classes_to_plot=[1]),
+        'pr': wandb.plot.pr_curve(ytest, probs, classes_to_plot=[1]),
+        'Model State': model_state
     })
 
 
-def run_gb(Xtrain, ytrain, Xtest, ytest, results_dir, wandb_exp, model_type):
+def run_gb(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wandb_exp, model_type, test_year, tuning):
     """
     Experiment for train and test set from all years, all regions
     """
-    # Create an instance of Random Forest
-    clf = GradientBoostingClassifier(random_state=48)
-
     # Preserve date and location information for output
     info_cols = ['date', 'district']
     train_info = Xtrain[info_cols]
-    test_info = Xtest[info_cols]
+    X_train = Xtrain.drop(columns=info_cols)
 
-    Xtrain = Xtrain.drop(columns=info_cols)
+    X_val = Xval.drop(columns=info_cols)
+
+    if test_year == '2024':
+        clf = None  # putting this here for now but will update
+        X_train['label'] = ytrain
+        X_train = X_train.dropna()
+        X_train = X_train.reset_index()
+        X_train = shuffle(X_train)
+        ytrain = X_train['label']
+        X_train = X_train.drop(columns=['label', 'index'])
+        print('Fitting model on all data including 2023 and returning')
+        # Fit model and save
+        clf.fit(X_train, ytrain)
+        # Save the model to file
+        joblib.dump(clf, '{}/gb_model.joblib'.format(results_dir))
+
+        # saving as pickle too
+        with open("{}/gb_model.pkl".format(results_dir), "wb") as file:
+            pickle.dump(clf, file)
+        return
+
+    test_info = Xtest[info_cols]
     Xtest = Xtest.drop(columns=info_cols)
 
-    # Fit the model
-    print('Fitting model...')
-    clf.fit(Xtrain, ytrain)
+    if not tuning:
+        if not os.path.exists('{}/best_model.pkl'.format(data_dir)):
+            # Create an instance of XGB
+            clf = GradientBoostingClassifier(random_state=random.randint(1, 1000))
+        else:
+            with open('{}/best_model.pkl'.format(data_dir), 'rb') as f:
+                clf = pickle.load(f)
+        print('No model hyperparameter tuning')
+        # Fit the model
+        print('Fitting model...')
+        clf.fit(X_train, ytrain)
+    else:
+        # Tune the model
+        model_state = 'tuned_best_params'
+        print('Tuning the model')
+        param_grid = {
+            'n_estimators': [100, 200, 300],
+            'min_samples_split': [2, 4, 6],
+            'min_samples_leaf': [1, 3, 5],
+        }
 
+        tune_list = []
+        for i in range(3):
+            print('Tuning for iteration: {}'.format(i))
+            # Create an instance of  clf
+            clf = GradientBoostingClassifier(random_state=random.randint(1, 1000))
+            # grid search cv
+            clf_cv = GridSearchCV(estimator=clf,
+                                  param_grid=param_grid,
+                                  scoring=['f1'],
+                                  refit='f1',
+                                  cv=3,
+                                  n_jobs=-1)
+
+            # Fit the grid search to the data
+            print('Running grid search cv on training set...')
+            start_time = time.time()
+            clf_cv.fit(X_train, y_train)
+            print("--- %s seconds to hyperparameter tune ---" % (time.time() - start_time))
+
+            # Set model to the best estimator from grid search
+            best_clf = clf_cv.best_estimator_
+
+            # Prediction on validation set with best XGB
+            tuned_probs = best_clf.predict_proba(X_val)
+            accuracy = best_clf.score(X_val, y_val)
+            f1 = f1_score(y_val, (tuned_probs[:, 1] >= 0.5) * 1)
+
+            clf_dict = clf_cv.best_params_
+            clf_dict['accuracy'] = accuracy
+            clf_dict['f1'] = f1
+            clf_dict['best_model'] = best_clf
+            tune_list.append(clf_dict)
+
+        # Get max F1 and use this as our best model
+        max_dict = max(tune_list, key=lambda x: x['f1'])
+        print('Max model stats after parameter tuning is: {}'.format(max_dict))
+        # Save the model to file
+        joblib.dump(max_dict['best_model'], '{}/gb_model.joblib'.format(results))
+        # saving as pickle too
+        with open("{}/gb_model.pkl".format(results), "wb") as file:
+            pickle.dump(max_dict['best_model'], file)
+        clf = max_dict['best_model']
+
+    '''
     scoring = ['accuracy', 'f1']
-    cv_scoring = cross_validate(clf, Xtrain, ytrain, scoring=scoring, cv=5)
+    cv_scoring = cross_validate(forest, Xtrain, ytrain, scoring=scoring, cv=5)
     with open('{}/model_training_results.txt'.format(results_dir), 'w') as f:
         f.write('Accuracy scores for each fold are: {}'.format(cv_scoring['test_accuracy']))
         f.write('Average accuracy is: {}'.format(cv_scoring['test_accuracy'].mean()))
         f.write('F1 scores for each fold are: {}'.format(cv_scoring['test_f1']))
         f.write('Average F1 is: {}'.format(cv_scoring['test_f1'].mean()))
+    '''
 
     # Measure model performance on test set
     print('Evaluating model...')
     probs = clf.predict_proba(Xtest)
 
+    acc_test = clf.score(Xtest, ytest)
+    f1_test = f1_score(ytest, (probs[:, 1] >= 0.5) * 1)
+
+    # Re-indexing so we can put it all in a df
+    test_info = test_info.reset_index().drop(columns=['index'])
+    ytest = ytest.reset_index().drop(columns=['index'])
+
     accuracy = clf.score(Xtest, ytest)
     print(f'The hard predictions were right {100 * accuracy:5.2f}% of the time')
 
     df_probs = pd.DataFrame()
-    df_probs['model soft predictions'] = probs[:,1]
+    df_probs['model soft predictions'] = probs[:, 1]
     df_probs['groundtruth'] = ytest
     df_probs['date'] = test_info['date']
     df_probs['district'] = test_info['district']
@@ -505,59 +676,146 @@ def run_gb(Xtrain, ytrain, Xtest, ytest, results_dir, wandb_exp, model_type):
     # Plot roc_auc curve
     roc_auc(ytest, probs, results)
 
+    # Calculate Model Performance
     calc_model_performance(clf, ytest, probs, Xtest, results, wandb_exp, model_type)
 
     # Logging results to wandb
     # --- Logging metrics
     wandb_exp.log({
-        'CV accuracies': cv_scoring['test_accuracy'],
-        'Average CV accuracy': cv_scoring['test_accuracy'].mean(),
-        'Average CV F1': cv_scoring['test_f1'].mean()
-    })
-
-    # --- Logging plots
-    wandb_exp.log({
-        'roc': wandb.plot.roc_curve(ytest, probs)
+        'accuracy': acc_test,
+        'F1 at 0.5': f1_test,
+        'roc': wandb.plot.roc_curve(ytest, probs, classes_to_plot=[1]),
+        'pr': wandb.plot.pr_curve(ytest, probs, classes_to_plot=[1]),
+        'Model State': model_state
     })
 
 
-def run_xgb(Xtrain, ytrain, Xtest, ytest, results_dir, wandb_exp, model_type):
+def run_xgb(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wandb_exp, model_type, test_year, tuning):
     """
     Experiment for train and test set from all years, all regions
     """
-    # Create an instance of XGB
-    clf = xgb.XGBRegressor(objective="reg:linear", random_state=42)
 
     # Preserve date and location information for output
     info_cols = ['date', 'district']
     train_info = Xtrain[info_cols]
-    test_info = Xtest[info_cols]
+    X_train = Xtrain.drop(columns=info_cols)
 
-    Xtrain = Xtrain.drop(columns=info_cols)
+    X_val = Xval.drop(columns=info_cols)
+
+    if test_year == '2024':
+        clf = None  # putting this here for now but will update
+        X_train['label'] = ytrain
+        X_train = X_train.dropna()
+        X_train = X_train.reset_index()
+        X_train = shuffle(X_train)
+        ytrain = X_train['label']
+        X_train = X_train.drop(columns=['label', 'index'])
+        print('Fitting model on all data including 2023 and returning')
+        # Fit model and save
+        clf.fit(X_train, ytrain)
+        # Save the model to file
+        joblib.dump(clf, '{}/xgb_model.joblib'.format(results_dir))
+
+        # saving as pickle too
+        with open("{}/xgb_model.pkl".format(results_dir), "wb") as file:
+            pickle.dump(clf, file)
+        return
+
+    test_info = Xtest[info_cols]
     Xtest = Xtest.drop(columns=info_cols)
 
-    # Fit the model
-    print('Fitting model...')
-    clf.fit(Xtrain, ytrain)
+    if not tuning:
+        if not os.path.exists('{}/best_model.pkl'.format(data_dir)):
+            # Create an instance of XGB
+            clf = XGBClassifier(random_state=random.randint(1, 1000), eta=0.05, max_depth=3, min_child_weight=0,
+                                     max_delta_step=2, subsample=1, tree_method='approx')
+        else:
+            with open('{}/best_model.pkl'.format(data_dir), 'rb') as f:
+                clf = pickle.load(f)
+        print('No model hyperparameter tuning')
+        # Fit the model
+        print('Fitting model...')
+        clf.fit(X_train, ytrain)
+    else:
+        # Tune the model
+        model_state = 'tuned_best_params'
+        print('Tuning the model')
+        param_grid = {
+            'eta': [0.01, 0.1, 0.2],
+            'max_depth': [3, 4, 5, 6],
+            'min_child_weight': [0, 1, 2],
+        }
 
+        tune_list = []
+        for i in range(3):
+            print('Tuning for iteration: {}'.format(i))
+            # Create an instance of  clf
+            clf = XGBClassifier(random_state=random.randint(1, 1000), eta=0.05, max_depth=3, min_child_weight=0,
+                                     max_delta_step=2, subsample=1, tree_method='approx')
+            # grid search cv
+            clf_cv = GridSearchCV(estimator=clf,
+                                 param_grid=param_grid,
+                                 scoring=['f1'],
+                                 refit='f1',
+                                 cv=3,
+                                 n_jobs=-1)
+
+            # Fit the grid search to the data
+            print('Running grid search cv on training set...')
+            start_time = time.time()
+            clf_cv.fit(X_train, y_train)
+            print("--- %s seconds to hyperparameter tune ---" % (time.time() - start_time))
+
+            # Set model to the best estimator from grid search
+            best_clf = clf_cv.best_estimator_
+
+            # Prediction on validation set with best XGB
+            tuned_probs = best_clf.predict_proba(X_val)
+            accuracy = best_clf.score(X_val, y_val)
+            f1 = f1_score(y_val, (tuned_probs[:, 1] >= 0.5) * 1)
+
+            clf_dict = clf_cv.best_params_
+            clf_dict['accuracy'] = accuracy
+            clf_dict['f1'] = f1
+            clf_dict['best_model'] = best_clf
+            tune_list.append(clf_dict)
+
+        # Get max F1 and use this as our best model
+        max_dict = max(tune_list, key=lambda x: x['f1'])
+        print('Max model stats after parameter tuning is: {}'.format(max_dict))
+        # Save the model to file
+        joblib.dump(max_dict['best_model'], '{}/xgb_model.joblib'.format(results))
+        # saving as pickle too
+        with open("{}/xgb_model.pkl".format(results), "wb") as file:
+            pickle.dump(max_dict['best_model'], file)
+        clf = max_dict['best_model']
+
+    '''
     scoring = ['accuracy', 'f1']
-    cv_scoring = cross_validate(clf, Xtrain, ytrain, scoring=scoring, cv=5)
+    cv_scoring = cross_validate(forest, Xtrain, ytrain, scoring=scoring, cv=5)
     with open('{}/model_training_results.txt'.format(results_dir), 'w') as f:
         f.write('Accuracy scores for each fold are: {}'.format(cv_scoring['test_accuracy']))
         f.write('Average accuracy is: {}'.format(cv_scoring['test_accuracy'].mean()))
         f.write('F1 scores for each fold are: {}'.format(cv_scoring['test_f1']))
         f.write('Average F1 is: {}'.format(cv_scoring['test_f1'].mean()))
+    '''
 
     # Measure model performance on test set
     print('Evaluating model...')
     probs = clf.predict_proba(Xtest)
 
+    acc_test = clf.score(Xtest, ytest)
+    f1_test = f1_score(ytest, (probs[:, 1] >= 0.5) * 1)
+
+    # Re-indexing so we can put it all in a df
+    test_info = test_info.reset_index().drop(columns=['index'])
+    ytest = ytest.reset_index().drop(columns=['index'])
 
     accuracy = clf.score(Xtest, ytest)
     print(f'The hard predictions were right {100 * accuracy:5.2f}% of the time')
 
     df_probs = pd.DataFrame()
-    df_probs['model soft predictions'] = probs[:,1]
+    df_probs['model soft predictions'] = probs[:, 1]
     df_probs['groundtruth'] = ytest
     df_probs['date'] = test_info['date']
     df_probs['district'] = test_info['district']
@@ -566,58 +824,144 @@ def run_xgb(Xtrain, ytrain, Xtest, ytest, results_dir, wandb_exp, model_type):
     # Plot roc_auc curve
     roc_auc(ytest, probs, results)
 
+    # Calculate Model Performance
     calc_model_performance(clf, ytest, probs, Xtest, results, wandb_exp, model_type)
 
     # Logging results to wandb
     # --- Logging metrics
     wandb_exp.log({
-        'CV accuracies': cv_scoring['test_accuracy'],
-        'Average CV accuracy': cv_scoring['test_accuracy'].mean(),
-        'Average CV F1': cv_scoring['test_f1'].mean()
-    })
-
-    # --- Logging plots
-    wandb_exp.log({
-        'roc': wandb.plot.roc_curve(ytest, probs)
+        'accuracy': acc_test,
+        'F1 at 0.5': f1_test,
+        'roc': wandb.plot.roc_curve(ytest, probs, classes_to_plot=[1]),
+        'pr': wandb.plot.pr_curve(ytest, probs, classes_to_plot=[1]),
+        'Model State': model_state
     })
 
 
-def run_mlp(Xtrain, ytrain, Xtest, ytest, results_dir, wandb_exp, model_type):
+def run_mlp(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wandb_exp, model_type, test_year, tuning):
     """
     Experiment for train and test set from all years, all regions
     """
-    # Create an instance of XGB
-    clf = MLPClassifier(random_state=48, max_iter=1000)
 
     # Preserve date and location information for output
     info_cols = ['date', 'district']
     train_info = Xtrain[info_cols]
-    test_info = Xtest[info_cols]
+    X_train = Xtrain.drop(columns=info_cols)
 
-    Xtrain = Xtrain.drop(columns=info_cols)
+    X_val = Xval.drop(columns=info_cols)
+
+    if test_year == '2024':
+        clf = None  # putting this here for now but will update
+        X_train['label'] = ytrain
+        X_train = X_train.dropna()
+        X_train = X_train.reset_index()
+        X_train = shuffle(X_train)
+        ytrain = X_train['label']
+        X_train = X_train.drop(columns=['label', 'index'])
+        print('Fitting model on all data including 2023 and returning')
+        # Fit model and save
+        clf.fit(X_train, ytrain)
+        # Save the model to file
+        joblib.dump(clf, '{}/mlp_model.joblib'.format(results_dir))
+
+        # saving as pickle too
+        with open("{}/mlp__model.pkl".format(results_dir), "wb") as file:
+            pickle.dump(clf, file)
+        return
+
+    test_info = Xtest[info_cols]
     Xtest = Xtest.drop(columns=info_cols)
 
-    # Fit the model
-    print('Fitting model...')
-    clf.fit(Xtrain, ytrain)
+    if not tuning:
+        if not os.path.exists('{}/best_model.pkl'.format(data_dir)):
+            # Create an instance of XGB
+            clf = MLPClassifier(random_state=random.randint(1, 1000))
+        else:
+            with open('{}/best_model.pkl'.format(data_dir), 'rb') as f:
+                clf = pickle.load(f)
+        print('No model hyperparameter tuning')
+        # Fit the model
+        print('Fitting model...')
+        clf.fit(X_train, ytrain)
+    else:
+        # Tune the model
+        model_state = 'tuned_best_params'
+        print('Tuning the model')
+        param_grid = {
+            'hidden_layer_sizes': [(100,), (150,), (200,)],
+            'activation': ['logistic', 'tanh', 'relu'],
+            'solver': ['lbfgs', 'sgd', 'adam'],
+        }
 
+        tune_list = []
+        for i in range(3):
+            print('Tuning for iteration: {}'.format(i))
+            # Create an instance of  clf
+            clf = MLPClassifier(random_state=random.randint(1, 1000))
+            # grid search cv
+            clf_cv = GridSearchCV(estimator=clf,
+                                  param_grid=param_grid,
+                                  scoring=['f1'],
+                                  refit='f1',
+                                  cv=3,
+                                  n_jobs=-1)
+
+            # Fit the grid search to the data
+            print('Running grid search cv on training set...')
+            start_time = time.time()
+            clf_cv.fit(X_train, y_train)
+            print("--- %s seconds to hyperparameter tune ---" % (time.time() - start_time))
+
+            # Set model to the best estimator from grid search
+            best_clf = clf_cv.best_estimator_
+
+            # Prediction on validation set with best MLP
+            tuned_probs = best_clf.predict_proba(X_val)
+            accuracy = best_clf.score(X_val, y_val)
+            f1 = f1_score(y_val, (tuned_probs[:, 1] >= 0.5) * 1)
+
+            clf_dict = clf_cv.best_params_
+            clf_dict['accuracy'] = accuracy
+            clf_dict['f1'] = f1
+            clf_dict['best_model'] = best_clf
+            tune_list.append(clf_dict)
+
+        # Get max F1 and use this as our best model
+        max_dict = max(tune_list, key=lambda x: x['f1'])
+        print('Max model stats after parameter tuning is: {}'.format(max_dict))
+        # Save the model to file
+        joblib.dump(max_dict['best_model'], '{}/mlp_model.joblib'.format(results))
+        # saving as pickle too
+        with open("{}/mlp_model.pkl".format(results), "wb") as file:
+            pickle.dump(max_dict['best_model'], file)
+        clf = max_dict['best_model']
+
+    '''
     scoring = ['accuracy', 'f1']
-    cv_scoring = cross_validate(clf, Xtrain, ytrain, scoring=scoring, cv=5)
+    cv_scoring = cross_validate(forest, Xtrain, ytrain, scoring=scoring, cv=5)
     with open('{}/model_training_results.txt'.format(results_dir), 'w') as f:
         f.write('Accuracy scores for each fold are: {}'.format(cv_scoring['test_accuracy']))
         f.write('Average accuracy is: {}'.format(cv_scoring['test_accuracy'].mean()))
         f.write('F1 scores for each fold are: {}'.format(cv_scoring['test_f1']))
         f.write('Average F1 is: {}'.format(cv_scoring['test_f1'].mean()))
+    '''
 
     # Measure model performance on test set
     print('Evaluating model...')
     probs = clf.predict_proba(Xtest)
 
+    acc_test = clf.score(Xtest, ytest)
+    f1_test = f1_score(ytest, (probs[:, 1] >= 0.5) * 1)
+
+    # Re-indexing so we can put it all in a df
+    test_info = test_info.reset_index().drop(columns=['index'])
+    ytest = ytest.reset_index().drop(columns=['index'])
+
     accuracy = clf.score(Xtest, ytest)
     print(f'The hard predictions were right {100 * accuracy:5.2f}% of the time')
 
     df_probs = pd.DataFrame()
-    df_probs['model soft predictions'] = probs[:,1]
+    df_probs['model soft predictions'] = probs[:, 1]
     df_probs['groundtruth'] = ytest
     df_probs['date'] = test_info['date']
     df_probs['district'] = test_info['district']
@@ -626,19 +970,17 @@ def run_mlp(Xtrain, ytrain, Xtest, ytest, results_dir, wandb_exp, model_type):
     # Plot roc_auc curve
     roc_auc(ytest, probs, results)
 
+    # Calculate Model Performance
     calc_model_performance(clf, ytest, probs, Xtest, results, wandb_exp, model_type)
 
     # Logging results to wandb
     # --- Logging metrics
     wandb_exp.log({
-        'CV accuracies': cv_scoring['test_accuracy'],
-        'Average CV accuracy': cv_scoring['test_accuracy'].mean(),
-        'Average CV F1': cv_scoring['test_f1'].mean()
-    })
-
-    # --- Logging plots
-    wandb_exp.log({
-        'roc': wandb.plot.roc_curve(ytest, probs)
+        'accuracy': acc_test,
+        'F1 at 0.5': f1_test,
+        'roc': wandb.plot.roc_curve(ytest, probs, classes_to_plot=[1]),
+        'pr': wandb.plot.pr_curve(ytest, probs, classes_to_plot=[1]),
+        'Model State': model_state
     })
 
 def run_trained_ukmo(root_directory, results_dir, wandb_exp, model_type, forecast_model_testing):
@@ -708,8 +1050,9 @@ if __name__ == '__main__':
     exp = args.experiment_type
     wandb_setting = args.wandb_setting
     test_forecast = args.test_forecast
+    tuning = args.parameter_tuning
 
-    root_dir = '/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
+    root_dir = '/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
 
     # Set up wandb experiment for tracking
     experiment = wandb.init(project='landslide-prediction',
@@ -718,10 +1061,10 @@ if __name__ == '__main__':
 
     # Make results directory
     if wandb_setting == 'offline':
-        results = '{}/Results/{}_ForecastModel{}_EnsembleNum{}'.format(root_dir, wandb.run.id,
+        results = '{}/Results/{}/{}_ForecastModel_{}_EnsembleNum{}'.format(root_dir, hindcast_model, wandb.run.id,
                                                                        forecast_model, ensemble_num)
     else:
-        results = '{}/Results/{}_ForecastModel{}_EnsembleNum{}'.format(root_dir, experiment.name,
+        results = '{}/Results/{}/{}_ForecastModel_{}_EnsembleNum{}'.format(root_dir, hindcast_model, experiment.name,
                                                                        forecast_model, ensemble_num)
     os.mkdir(results)
 
@@ -732,20 +1075,17 @@ if __name__ == '__main__':
     else:
         # Load data
         print('Loading data...')
-        X_train, y_train, X_test, y_test = load_data(test_y, '{}/LabelledData_{}/{}/ensemble_{}'.format(root_dir,
-                                                                                                        hindcast_model,
-                                                                                                        forecast_model,
-                                                                                                        ensemble_num),
-                                                     exp)
+        data_dir = '{}/LabelledData_{}/{}/ensemble_{}'.format(root_dir, hindcast_model, forecast_model, ensemble_num)
+        X_train, y_train, X_test, y_test, X_val, y_val = load_data(test_y, data_dir, exp)
 
         if model == 'rf':
-            run_rf(X_train, y_train, X_test, y_test, results, experiment, model, test_y)
+            run_rf(data_dir, X_train, y_train, X_test, y_test, X_val, y_val, results, experiment, model, test_y, tuning)
 
         if model == 'gb':
-            run_gb(X_train, y_train, X_test, y_test, results, experiment, model)
+            run_gb(data_dir, X_train, y_train, X_test, y_test, X_val, y_val, results, experiment, model, test_y, tuning)
 
         if model == 'xgb':
-            run_xgb(X_train, y_train, X_test, y_test, results, experiment, model)
+            run_xgb(data_dir, X_train, y_train, X_test, y_test, X_val, y_val, results, experiment, model, test_y, tuning)
 
         if model == 'mlp':
-            run_mlp(X_train, y_train, X_test, y_test, results, experiment, model)
+            run_mlp(data_dir, X_train, y_train, X_test, y_test, X_val, y_val, results, experiment, model, test_y, tuning)

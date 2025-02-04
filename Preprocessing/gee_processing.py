@@ -21,7 +21,7 @@ parser.add_argument("--gee_data",
 parser.add_argument("--query_year",
                     help='Yeah to query data for')
 
-root_dir = '/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
+root_dir = '/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
 
 # Initialize ee
 ee.Initialize(opt_url='https://earthengine-highvolume.googleapis.com')
@@ -51,6 +51,11 @@ def getResult(index, point):
         num_imgs = 48
         save_folder = 'GPM'
 
+    if point['gee_collection'] == 'NASA/GPM_L3/IMERG_V07':
+        band = 'precipitation'
+        num_imgs = 48
+        save_folder = 'GPMv07'
+
     # Define polygon over Nepal based on extent provided by Geo
     aoi = ee.Geometry.Polygon([[
         [79.05, 25.05],
@@ -68,16 +73,21 @@ def getResult(index, point):
     arr_imgs_list = []
     for i in range(num_imgs):
         print('Running for image: {}'.format(i))
-        img = ee.Image(img_list.get(i)).select([band])
-        arr_img = geemap.ee_to_numpy(img, region=aoi)[:,:,0]
-        arr_imgs_list.append(arr_img)
+        try:
+            img = ee.Image(img_list.get(i)).select([band])
+            arr_img = geemap.ee_to_numpy(img, region=aoi)[:,:,0]
+            arr_imgs_list.append(arr_img)
+        except TypeError as e:
+            continue
 
     daily_mean = np.mean(arr_imgs_list, axis=0)
     if point['gee_collection'] == 'JAXA/GPM_L3/GSMaP/v8/operational':
         save_folder = 'GSMaP'
     if point['gee_collection'] == 'NASA/GPM_L3/IMERG_V06':
-        save_folder = 'GPM'
-    np.save('{}/{}_Mean_Pixelwise/{}.npy'.format(root_dir, save_folder, point['start_date']), daily_mean)
+        save_folder = 'GPMv06'
+    if point['gee_collection'] == 'NASA/GPM_L3/IMERG_V07':
+        save_folder = 'GPMv07'
+    np.save('{}/{}_Mean_Pixelwise/{}_{}.npy'.format(root_dir, save_folder, save_folder, point['start_date']), daily_mean)
 
 
 def getRequests(query_year, gee_data):
@@ -88,8 +98,8 @@ def getRequests(query_year, gee_data):
     :param: gee_data: full name of GEE data collection
     """
     # --- Calculating  daily mean ---
-    start_date = date(int(query_year), 1, 1)
-    end_date = date(int(query_year) + 1, 1, 1)
+    start_date = date(int(query_year), 4, 1)
+    end_date = date(int(query_year) , 10, 30)
 
     # Get list of days over the query year
     dates_list = daterange(start_date, end_date)

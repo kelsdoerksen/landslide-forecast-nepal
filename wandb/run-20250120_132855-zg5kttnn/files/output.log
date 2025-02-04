@@ -1,0 +1,103 @@
+Loading data...
+> [0;32m/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py[0m(349)[0;36mload_data[0;34m()[0m
+[0;32m    348 [0;31m    [0;31m# Split into train and validation for parameter tuning[0m[0;34m[0m[0;34m[0m[0m
+[0m[0;32m--> 349 [0;31m    [0mpercent_val[0m [0;34m=[0m [0mint[0m[0;34m([0m[0mlen[0m[0;34m([0m[0mdf_train[0m[0;34m)[0m[0;34m*[0m[0;36m.15[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[0;32m    350 [0;31m    [0mdf_val[0m [0;34m=[0m [0mdf_train[0m[0;34m.[0m[0miloc[0m[0;34m[[0m[0mpercent_val[0m[0;34m:[0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
+[0m
+      Unnamed: 0  precip_rate_tminus_0  precip_rate_tminus_1  ...  label        date    district
+2065           0              2.669754             40.436192  ...    0.0  2020-06-06  Dadeldhura
+2468           0              0.000000              0.317944  ...    0.0  2017-06-03     Dailekh
+5433           0             11.225958             41.742554  ...    0.0  2020-06-14  Kanchanpur
+2635           0              0.000000              0.532500  ...    0.0  2018-05-15        Dang
+7047           0              0.138352              0.137216  ...    0.0  2021-10-12  Makawanpur
+...          ...                   ...                   ...  ...    ...         ...         ...
+6674           0              0.204167              3.373611  ...    0.0  2017-09-25   Kathmandu
+6688           0             13.244102             10.215741  ...    0.0  2020-09-01   Mahottari
+13601          0              0.247889              6.767111  ...    0.0  2018-05-07      Tanahu
+1297           0              1.321875              2.738750  ...    0.0  2020-08-17        Bara
+12190          0              1.308562              6.870937  ...    0.0  2018-07-23     Sarlahi
+
+[82159 rows x 63 columns]
+       index Unnamed: 0  precip_rate_tminus_0  ...  label        date    district
+0       2065          0              2.669754  ...    0.0  2020-06-06  Dadeldhura
+1       2468          0              0.000000  ...    0.0  2017-06-03     Dailekh
+2       5433          0             11.225958  ...    0.0  2020-06-14  Kanchanpur
+3       2635          0              0.000000  ...    0.0  2018-05-15        Dang
+4       7047          0              0.138352  ...    0.0  2021-10-12  Makawanpur
+...      ...        ...                   ...  ...    ...         ...         ...
+82154   6674          0              0.204167  ...    0.0  2017-09-25   Kathmandu
+82155   6688          0             13.244102  ...    0.0  2020-09-01   Mahottari
+82156  13601          0              0.247889  ...    0.0  2018-05-07      Tanahu
+82157   1297          0              1.321875  ...    0.0  2020-08-17        Bara
+82158  12190          0              1.308562  ...    0.0  2018-07-23     Sarlahi
+
+[82159 rows x 64 columns]
+      Unnamed: 0  precip_rate_tminus_0  precip_rate_tminus_1  ...  label        date    district
+0              0              2.669754             40.436192  ...    0.0  2020-06-06  Dadeldhura
+1              0              0.000000              0.317944  ...    0.0  2017-06-03     Dailekh
+2              0             11.225958             41.742554  ...    0.0  2020-06-14  Kanchanpur
+3              0              0.000000              0.532500  ...    0.0  2018-05-15        Dang
+4              0              0.138352              0.137216  ...    0.0  2021-10-12  Makawanpur
+...          ...                   ...                   ...  ...    ...         ...         ...
+82154          0              0.204167              3.373611  ...    0.0  2017-09-25   Kathmandu
+82155          0             13.244102             10.215741  ...    0.0  2020-09-01   Mahottari
+82156          0              0.247889              6.767111  ...    0.0  2018-05-07      Tanahu
+82157          0              1.321875              2.738750  ...    0.0  2020-08-17        Bara
+82158          0              1.308562              6.870937  ...    0.0  2018-07-23     Sarlahi
+
+[82159 rows x 63 columns]
+12323
+82159
+12323.85
+8215.9
+      Unnamed: 0  precip_rate_tminus_0  precip_rate_tminus_1  ...  label        date    district
+0              0              2.669754             40.436192  ...    0.0  2020-06-06  Dadeldhura
+1              0              0.000000              0.317944  ...    0.0  2017-06-03     Dailekh
+2              0             11.225958             41.742554  ...    0.0  2020-06-14  Kanchanpur
+3              0              0.000000              0.532500  ...    0.0  2018-05-15        Dang
+4              0              0.138352              0.137216  ...    0.0  2021-10-12  Makawanpur
+...          ...                   ...                   ...  ...    ...         ...         ...
+12318          0             30.096150             29.675813  ...    0.0  2019-07-23       Kaski
+12319          0             17.064940             20.779742  ...    1.0  2021-05-19       Kaski
+12320          0             16.617500             20.383750  ...    0.0  2021-05-20   Bhaktapur
+12321          0              0.828581              8.689518  ...    0.0  2021-09-21        Mugu
+12322          0             23.591363             19.105359  ...    0.0  2021-08-06    Sindhuli
+
+[12323 rows x 63 columns]
+      Unnamed: 0  precip_rate_tminus_0  precip_rate_tminus_1  ...  label        date     district
+12323          0              0.023218              0.022037  ...    0.0  2018-04-26    Mahottari
+12324          0              0.565156              1.938958  ...    0.0  2022-10-07        Jhapa
+12325          0              0.281312              0.861000  ...    0.0  2019-08-18  Okhaldhunga
+12326          0              5.374687              1.719115  ...    0.0  2019-07-20   Kapilbastu
+12327          0              0.276458              0.174653  ...    0.0  2022-09-22      Khotang
+...          ...                   ...                   ...  ...    ...         ...          ...
+82154          0              0.204167              3.373611  ...    0.0  2017-09-25    Kathmandu
+82155          0             13.244102             10.215741  ...    0.0  2020-09-01    Mahottari
+82156          0              0.247889              6.767111  ...    0.0  2018-05-07       Tanahu
+82157          0              1.321875              2.738750  ...    0.0  2020-08-17         Bara
+82158          0              1.308562              6.870937  ...    0.0  2018-07-23      Sarlahi
+
+[69836 rows x 63 columns]
+*** SyntaxError: unmatched ')'
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 773, in <module>
+    # Load data
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 349, in load_data
+    df_train = df_train.iloc[percent_val:]
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 349, in load_data
+    df_train = df_train.iloc[percent_val:]
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/bdb.py", line 115, in dispatch_line
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit
+
+If you suspect this is an IPython 8.9.0 bug, please report it at:
+    https://github.com/ipython/ipython/issues
+or send an email to the mailing list at ipython-dev@python.org
+
+You can print a more detailed traceback right now with "%tb", or use "%debug"
+to interactively debug it.
+
+Extra-detailed tracebacks for bug-reporting purposes can be enabled via:
+    %config Application.verbose_crash=True

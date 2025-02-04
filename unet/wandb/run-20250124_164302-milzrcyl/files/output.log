@@ -1,0 +1,156 @@
+Grabbing training data...
+Grabbing testing data...
+Training model...
+/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/torch/cuda/amp/grad_scaler.py:126: UserWarning: torch.cuda.amp.GradScaler is enabled, but CUDA is not available.  Disabling.
+  warnings.warn(
+Training EPOCH 0:
+> [0;32m/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/metrics.py[0m(82)[0;36mprecision_recall_threshold[0;34m()[0m
+[0;32m     81 [0;31m    [0mipdb[0m[0;34m.[0m[0mset_trace[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[0;32m---> 82 [0;31m    [0;32mif[0m [0mfalse_positives[0m [0;34m==[0m [0;36m0[0m [0;32mand[0m [0mtrue_positives[0m [0;34m==[0m [0;36m0[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0m[0;32m     83 [0;31m        [0mprecision_ratio[0m [0;34m=[0m [0;36m0[0m[0;34m[0m[0;34m[0m[0m
+[0m
+32
+279
+0
+*** NameError: name 'true_negatives' is not defined
+array([[[[1., 1., 1., ..., 1., 0., 1.],
+         [1., 1., 1., ..., 1., 1., 1.],
+         [1., 0., 1., ..., 0., 1., 0.],
+         ...,
+         [1., 1., 1., ..., 1., 1., 1.],
+         [1., 1., 1., ..., 1., 1., 1.],
+         [1., 1., 1., ..., 1., 1., 1.]]],
+
+
+       [[[1., 1., 1., ..., 1., 1., 1.],
+         [1., 1., 1., ..., 1., 1., 1.],
+         [1., 1., 0., ..., 1., 1., 1.],
+         ...,
+         [1., 1., 1., ..., 1., 1., 1.],
+         [1., 1., 1., ..., 1., 1., 1.],
+         [1., 1., 1., ..., 1., 1., 1.]]],
+
+
+       [[[1., 1., 1., ..., 1., 1., 1.],
+         [1., 1., 1., ..., 1., 1., 1.],
+         [1., 1., 1., ..., 0., 1., 0.],
+         ...,
+         [1., 1., 1., ..., 1., 1., 1.],
+         [1., 1., 1., ..., 1., 1., 1.],
+         [1., 1., 1., ..., 1., 1., 1.]]],
+
+
+       ...,
+
+
+       [[[1., 0., 1., ..., 1., 1., 0.],
+         [1., 1., 1., ..., 1., 1., 0.],
+         [1., 1., 1., ..., 1., 1., 1.],
+         ...,
+         [1., 1., 1., ..., 1., 1., 1.],
+         [1., 1., 1., ..., 1., 1., 1.],
+         [1., 1., 1., ..., 1., 1., 1.]]],
+
+
+       [[[1., 1., 0., ..., 1., 1., 1.],
+         [1., 1., 1., ..., 1., 1., 1.],
+         [1., 0., 1., ..., 1., 1., 1.],
+         ...,
+         [1., 1., 1., ..., 1., 1., 1.],
+         [1., 1., 1., ..., 1., 1., 1.],
+         [1., 1., 1., ..., 1., 1., 1.]]],
+
+
+       [[[1., 1., 1., ..., 1., 1., 1.],
+         [1., 1., 1., ..., 1., 1., 0.],
+         [1., 1., 1., ..., 1., 1., 1.],
+         ...,
+         [1., 1., 1., ..., 1., 1., 1.],
+         [1., 1., 1., ..., 1., 1., 1.],
+         [1., 1., 1., ..., 1., 1., 1.]]]], dtype=float32)
+(32, 1, 60, 100)
+(32, 1, 60, 100)
+array([[[[0., 0., 0., ..., 0., 0., 0.],
+         [0., 0., 0., ..., 0., 0., 0.],
+         [0., 0., 0., ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0., ..., 0., 0., 0.],
+         [0., 0., 0., ..., 0., 0., 0.],
+         [0., 0., 0., ..., 0., 0., 0.]]],
+
+
+       [[[0., 0., 0., ..., 0., 0., 0.],
+         [0., 0., 0., ..., 0., 0., 0.],
+         [0., 0., 0., ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0., ..., 0., 0., 0.],
+         [0., 0., 0., ..., 0., 0., 0.],
+         [0., 0., 0., ..., 0., 0., 0.]]],
+
+
+       [[[0., 0., 0., ..., 0., 0., 0.],
+         [0., 0., 0., ..., 0., 0., 0.],
+         [0., 0., 0., ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0., ..., 0., 0., 0.],
+         [0., 0., 0., ..., 0., 0., 0.],
+         [0., 0., 0., ..., 0., 0., 0.]]],
+
+
+       ...,
+
+
+       [[[0., 0., 0., ..., 0., 0., 0.],
+         [0., 0., 0., ..., 0., 0., 0.],
+         [0., 0., 0., ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0., ..., 0., 0., 0.],
+         [0., 0., 0., ..., 0., 0., 0.],
+         [0., 0., 0., ..., 0., 0., 0.]]],
+
+
+       [[[0., 0., 0., ..., 0., 0., 0.],
+         [0., 0., 0., ..., 0., 0., 0.],
+         [0., 0., 0., ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0., ..., 0., 0., 0.],
+         [0., 0., 0., ..., 0., 0., 0.],
+         [0., 0., 0., ..., 0., 0., 0.]]],
+
+
+       [[[0., 0., 0., ..., 0., 0., 0.],
+         [0., 0., 0., ..., 0., 0., 0.],
+         [0., 0., 0., ..., 0., 0., 0.],
+         ...,
+         [0., 0., 0., ..., 0., 0., 0.],
+         [0., 0., 0., ..., 0., 0., 0.],
+         [0., 0., 0., ..., 0., 0., 0.]]]], dtype=float32)
+0.8971061093247589
+1.0
+0
+32
+279
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/run_pipeline.py", line 147, in <module>
+    trained_model = train_model(
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/train.py", line 89, in train_model
+    thr_precision, thr_recall = precision_recall_threshold(labels, outputs_probs, threshold, district_masks)
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/metrics.py", line 82, in precision_recall_threshold
+    if false_positives == 0 and true_positives == 0:
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/metrics.py", line 82, in precision_recall_threshold
+    if false_positives == 0 and true_positives == 0:
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/bdb.py", line 115, in dispatch_line
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit
+
+If you suspect this is an IPython 8.30.0 bug, please report it at:
+    https://github.com/ipython/ipython/issues
+or send an email to the mailing list at ipython-dev@python.org
+
+You can print a more detailed traceback right now with "%tb", or use "%debug"
+to interactively debug it.
+
+Extra-detailed tracebacks for bug-reporting purposes can be enabled via:
+    %config Application.verbose_crash=True

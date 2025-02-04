@@ -1,0 +1,33 @@
+Loading data...
+Tuning the model
+Tuning for iteration: 0
+Running grid search cv on training set...
+--- 551.3194072246552 seconds to hyperparameter tune ---
+Tuning for iteration: 1
+Running grid search cv on training set...
+--- 580.7112348079681 seconds to hyperparameter tune ---
+Tuning for iteration: 2
+Running grid search cv on training set...
+--- 565.0394959449768 seconds to hyperparameter tune ---
+Max model stats after parameter tuning is: {'bootstrap': True, 'max_depth': 7, 'min_samples_split': 4, 'n_estimators': 100, 'accuracy': 0.7247854077253219, 'f1': 0.485069008782936, 'best_model': RandomForestClassifier(class_weight='balanced', max_depth=7,
+                       min_samples_split=4, n_jobs=-1, random_state=293)}
+Evaluating model...
+The hard predictions were right 72.88% of the time
+No Skill: ROC AUC=0.500
+RFC: ROC AUC=0.817
+No nan values in fscore
+The number of non-landslide events is: 9428
+The number of landslide events is: 2738
+Best Threshold=0.629760, F-Score=0.564
+Test set accuracy at threshold 0.6297600446407859: 0.7940161104718066
+Test set F1 at threshold 0.6297600446407859: 0.5643254520166899
+True Positive is 1623
+True Negative is 8037
+False Positive is 1391
+False Negative is 1115
+False positive rate at best threshold is 0.14753924480271532
+True positive rate at best threshold is is 0.5927684441197955
+False negative rate at best threshold is is 0.40723155588020454
+True negative rate at best threshold is is 0.8524607551972847
+--------------------
+{'0': {'precision': 0.8781687062937062, 'recall': 0.8524607551972847, 'f1-score': 0.8651237890204521, 'support': 9428}, '1': {'precision': 0.5384870603848706, 'recall': 0.5927684441197955, 'f1-score': 0.5643254520166899, 'support': 2738}, 'accuracy': 0.7940161104718066, 'macro avg': {'precision': 0.7083278833392884, 'recall': 0.72261459965854, 'f1-score': 0.714724620518571, 'support': 12166}, 'weighted avg': {'precision': 0.8017221875941837, 'recall': 0.7940161104718066, 'f1-score': 0.7974280922658654, 'support': 12166}}

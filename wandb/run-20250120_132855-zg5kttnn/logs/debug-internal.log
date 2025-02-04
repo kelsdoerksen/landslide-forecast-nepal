@@ -1,0 +1,20 @@
+{"time":"2025-01-20T13:28:55.830718-08:00","level":"INFO","msg":"using version","core version":"0.18.5"}
+{"time":"2025-01-20T13:28:55.830869-08:00","level":"INFO","msg":"created symlink","path":"/Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20250120_132855-zg5kttnn/logs/debug-core.log"}
+{"time":"2025-01-20T13:28:55.962474-08:00","level":"INFO","msg":"created new stream","id":"zg5kttnn"}
+{"time":"2025-01-20T13:28:55.962571-08:00","level":"INFO","msg":"stream: started","id":"zg5kttnn"}
+{"time":"2025-01-20T13:28:55.962758-08:00","level":"INFO","msg":"handler: started","stream_id":{"value":"zg5kttnn"}}
+{"time":"2025-01-20T13:28:55.963399-08:00","level":"INFO","msg":"sender: started","stream_id":"zg5kttnn"}
+{"time":"2025-01-20T13:28:55.963419-08:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"zg5kttnn"}}
+{"time":"2025-01-20T13:28:56.387041-08:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-01-20T14:32:12.096732-08:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/kelsey-doerksen/landslide-prediction/zg5kttnn/file_stream\": read tcp 192.168.1.6:59635->35.186.228.49:443: read: connection reset by peer"}
+{"time":"2025-01-20T14:50:11.795022-08:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/kelsey-doerksen/landslide-prediction/zg5kttnn/file_stream\": read tcp 192.168.1.6:59887->35.186.228.49:443: read: connection reset by peer"}
+{"time":"2025-01-20T15:04:11.773693-08:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/kelsey-doerksen/landslide-prediction/zg5kttnn/file_stream\": read tcp 192.168.1.6:60118->35.186.228.49:443: read: connection reset by peer"}
+{"time":"2025-01-20T15:37:26.781501-08:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/kelsey-doerksen/landslide-prediction/zg5kttnn/file_stream\": read tcp 192.168.1.6:60559->35.186.228.49:443: read: connection reset by peer"}
+{"time":"2025-01-20T16:14:35.525062-08:00","level":"INFO","msg":"stream: closing","id":"zg5kttnn"}
+{"time":"2025-01-20T16:14:35.525176-08:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-01-20T16:14:35.526266-08:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-01-20T16:14:36.040623-08:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-01-20T16:14:36.182383-08:00","level":"INFO","msg":"handler: closed","stream_id":{"value":"zg5kttnn"}}
+{"time":"2025-01-20T16:14:36.18242-08:00","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"zg5kttnn"}}
+{"time":"2025-01-20T16:14:36.18246-08:00","level":"INFO","msg":"sender: closed","stream_id":"zg5kttnn"}
+{"time":"2025-01-20T16:14:36.182726-08:00","level":"INFO","msg":"stream: closed","id":"zg5kttnn"}

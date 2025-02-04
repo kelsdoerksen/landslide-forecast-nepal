@@ -1,0 +1,5 @@
+Loading data...
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 1063, in <module>
+    run_mlp(X_train, y_train, X_test, y_test, results, experiment, model, tuning)
+TypeError: run_mlp() missing 4 required positional arguments: 'wandb_exp', 'model_type', 'test_year', and 'tuning'

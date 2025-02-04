@@ -1,0 +1,34 @@
+Loading data...
+Tuning the model
+Tuning for iteration: 0
+Running grid search cv on training set...
+--- 475.2349419593811 seconds to hyperparameter tune ---
+Tuning for iteration: 1
+Running grid search cv on training set...
+--- 454.0767240524292 seconds to hyperparameter tune ---
+Tuning for iteration: 2
+Running grid search cv on training set...
+--- 430.49788999557495 seconds to hyperparameter tune ---
+Max model stats after parameter tuning is: {'bootstrap': True, 'max_depth': 7, 'min_samples_split': 8, 'n_estimators': 300, 'accuracy': 0.7332013014570661, 'f1': 0.48596347778686294, 'best_model': RandomForestClassifier(class_weight='balanced', max_depth=7,
+                       min_samples_split=8, n_estimators=300, n_jobs=-1,
+                       random_state=431)}
+Evaluating model...
+The hard predictions were right 77.73% of the time
+No Skill: ROC AUC=0.500
+RFC: ROC AUC=0.841
+No nan values in fscore
+The number of non-landslide events is: 11535
+The number of landslide events is: 2787
+Best Threshold=0.519875, F-Score=0.560
+Test set accuracy at threshold 0.5198749631119706: 0.7892054182376763
+Test set F1 at threshold 0.5198749631119706: 0.5604891541709127
+True Positive is 1925
+True Negative is 9378
+False Positive is 2157
+False Negative is 862
+False positive rate at best threshold is 0.1869960988296489
+True positive rate at best threshold is is 0.6907068532472193
+False negative rate at best threshold is is 0.30929314675278075
+True negative rate at best threshold is is 0.8130039011703512
+--------------------
+{'0': {'precision': 0.9158203125, 'recall': 0.8130039011703512, 'f1-score': 0.8613547646383467, 'support': 11535}, '1': {'precision': 0.4715825575698187, 'recall': 0.6907068532472193, 'f1-score': 0.5604891541709127, 'support': 2787}, 'accuracy': 0.7892054182376763, 'macro avg': {'precision': 0.6937014350349093, 'recall': 0.7518553772087853, 'f1-score': 0.7109219594046297, 'support': 14322}, 'weighted avg': {'precision': 0.8293735436834648, 'recall': 0.7892054182376763, 'f1-score': 0.8028076024841266, 'support': 14322}}

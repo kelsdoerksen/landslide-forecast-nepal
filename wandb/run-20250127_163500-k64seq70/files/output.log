@@ -1,0 +1,7 @@
+Loading data...
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 908, in <module>
+    X_train, y_train, X_test, y_test, X_val, y_val = load_data(test_y, data_dir, exp)
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 392, in load_data
+    return X_train, y_train, X_test, y_test, X_val, y_val
+UnboundLocalError: local variable 'X_train' referenced before assignment

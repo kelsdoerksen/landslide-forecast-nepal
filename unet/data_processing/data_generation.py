@@ -6,6 +6,7 @@ import numpy as np
 from PIL import Image
 from datetime import datetime, timedelta, date
 import argparse
+import os
 
 
 def get_args():
@@ -37,8 +38,8 @@ def load_modis(doy):
     Load modis array based on year
     """
     year = doy[0:4]
-    if int(year) > 2021:
-        query_year = '2021'
+    if int(year) > 2023:
+        query_year = '2023'
     else:
         query_year = year
 
@@ -155,8 +156,10 @@ def generate_sample(doy, ens_model, ens_num, hindcast):
     except IndexError:
         return None
     # Save array
-    np.save('{}/UNet_Samples_14Day_{}/{}/ensemble_{}/sample_{}.npy'.format(root_dir, hindcast, ens_model, ens_num, doy),
-            sample_array)
+    save_dir = '{}/UNet_Samples_14Day_{}/{}/ensemble_{}'.format(root_dir, hindcast, ens_model, ens_num)
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+    np.save('{}/sample_{}.npy'.format(save_dir, doy),sample_array)
 
 
 def daterange(date1, date2):
@@ -192,13 +195,5 @@ if __name__ == "__main__":
     for date in date_list:
         print('Generating sample for DOY: {}'.format(date))
         generate_sample(date, model, ens_num, hindcast_source)
-
-
-
-
-
-
-
-
 
 

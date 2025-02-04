@@ -1,0 +1,16 @@
+{"time":"2025-01-27T16:32:00.311973Z","level":"INFO","msg":"using version","core version":"0.18.5"}
+{"time":"2025-01-27T16:32:00.312087Z","level":"INFO","msg":"created symlink","path":"/Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20250127_163200-exyuuvvp/logs/debug-core.log"}
+{"time":"2025-01-27T16:32:00.44318Z","level":"INFO","msg":"created new stream","id":"exyuuvvp"}
+{"time":"2025-01-27T16:32:00.443391Z","level":"INFO","msg":"stream: started","id":"exyuuvvp"}
+{"time":"2025-01-27T16:32:00.443454Z","level":"INFO","msg":"handler: started","stream_id":{"value":"exyuuvvp"}}
+{"time":"2025-01-27T16:32:00.444023Z","level":"INFO","msg":"sender: started","stream_id":"exyuuvvp"}
+{"time":"2025-01-27T16:32:00.444067Z","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"exyuuvvp"}}
+{"time":"2025-01-27T16:32:03.43712Z","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-01-27T16:32:07.55783Z","level":"INFO","msg":"stream: closing","id":"exyuuvvp"}
+{"time":"2025-01-27T16:32:07.559444Z","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-01-27T16:32:07.561584Z","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-01-27T16:32:08.177849Z","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-01-27T16:32:08.366456Z","level":"INFO","msg":"handler: closed","stream_id":{"value":"exyuuvvp"}}
+{"time":"2025-01-27T16:32:08.366554Z","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"exyuuvvp"}}
+{"time":"2025-01-27T16:32:08.366792Z","level":"INFO","msg":"sender: closed","stream_id":"exyuuvvp"}
+{"time":"2025-01-27T16:32:08.366901Z","level":"INFO","msg":"stream: closed","id":"exyuuvvp"}

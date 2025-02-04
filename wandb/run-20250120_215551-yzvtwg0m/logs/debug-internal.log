@@ -1,0 +1,16 @@
+{"time":"2025-01-20T21:55:51.516487-08:00","level":"INFO","msg":"using version","core version":"0.18.5"}
+{"time":"2025-01-20T21:55:51.516575-08:00","level":"INFO","msg":"created symlink","path":"/Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20250120_215551-yzvtwg0m/logs/debug-core.log"}
+{"time":"2025-01-20T21:55:51.642294-08:00","level":"INFO","msg":"created new stream","id":"yzvtwg0m"}
+{"time":"2025-01-20T21:55:51.642379-08:00","level":"INFO","msg":"stream: started","id":"yzvtwg0m"}
+{"time":"2025-01-20T21:55:51.642573-08:00","level":"INFO","msg":"handler: started","stream_id":{"value":"yzvtwg0m"}}
+{"time":"2025-01-20T21:55:51.643117-08:00","level":"INFO","msg":"sender: started","stream_id":"yzvtwg0m"}
+{"time":"2025-01-20T21:55:51.643222-08:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"yzvtwg0m"}}
+{"time":"2025-01-20T21:55:52.100625-08:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-01-20T22:14:21.550792-08:00","level":"INFO","msg":"stream: closing","id":"yzvtwg0m"}
+{"time":"2025-01-20T22:14:21.551216-08:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-01-20T22:14:21.554658-08:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-01-20T22:14:22.536065-08:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-01-20T22:14:22.811613-08:00","level":"INFO","msg":"handler: closed","stream_id":{"value":"yzvtwg0m"}}
+{"time":"2025-01-20T22:14:22.811767-08:00","level":"INFO","msg":"sender: closed","stream_id":"yzvtwg0m"}
+{"time":"2025-01-20T22:14:22.811758-08:00","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"yzvtwg0m"}}
+{"time":"2025-01-20T22:14:22.812415-08:00","level":"INFO","msg":"stream: closed","id":"yzvtwg0m"}

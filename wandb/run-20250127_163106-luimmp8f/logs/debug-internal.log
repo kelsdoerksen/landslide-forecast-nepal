@@ -1,0 +1,17 @@
+{"time":"2025-01-27T16:31:06.530842Z","level":"INFO","msg":"using version","core version":"0.18.5"}
+{"time":"2025-01-27T16:31:06.530908Z","level":"INFO","msg":"created symlink","path":"/Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20250127_163106-luimmp8f/logs/debug-core.log"}
+{"time":"2025-01-27T16:31:06.65285Z","level":"INFO","msg":"created new stream","id":"luimmp8f"}
+{"time":"2025-01-27T16:31:06.65294Z","level":"INFO","msg":"stream: started","id":"luimmp8f"}
+{"time":"2025-01-27T16:31:06.653104Z","level":"INFO","msg":"sender: started","stream_id":"luimmp8f"}
+{"time":"2025-01-27T16:31:06.65306Z","level":"INFO","msg":"handler: started","stream_id":{"value":"luimmp8f"}}
+{"time":"2025-01-27T16:31:06.653026Z","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"luimmp8f"}}
+{"time":"2025-01-27T16:31:07.143589Z","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-01-27T16:31:07.290906Z","level":"INFO","msg":"stream: closing","id":"luimmp8f"}
+{"time":"2025-01-27T16:31:07.290976Z","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-01-27T16:31:07.291542Z","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-01-27T16:31:13.937808Z","level":"ERROR","msg":"open /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20250127_163106-luimmp8f/files/requirements.txt: no such file or directory","task":"DefaultUploadTask{FileKind: 1, Path: /Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20250127_163106-luimmp8f/files/requirements.txt, Name: requirements.txt, Url: https://storage.googleapis.com/wandb-production.appspot.com/kelsey-doerksen/landslide-prediction/luimmp8f/requirements.txt?Expires=1738081873&GoogleAccessId=gorilla-files-url-signer-man%40wandb-production.iam.gserviceaccount.com&Signature=kSycQTg2CKl0270US2PzG60h4VfITBwa0FxcdJRS%2Ft19uB%2Bf4dE7f4tsoHuZ7gkVyvxX9NiXuFr6qKTHnoC9PpCizJXKUcXaZ%2BcUsrl%2BmoIOJivJaPcf%2BhfbfVw4RnG9Bmpu3COq7m2qnvEYNXVaLtxArH5b5E4npW5JXW0VNaIXwrvqpZPU00zdZ8QyZetHpOqwCE6XZjN2A4rC6WkL%2FEQLr%2BInos2848cJultoGu2fzuUPI1pLXtMOcsItcn8sqqW%2BhdD85Q8UqV1pSvmh%2FUC6ECFmEpwEDtb5ZAxqrJz4m9n%2B0m%2BIX7Oh4wr0GRXQNs1NTZn2zIE7ELznrbkPNg%3D%3D, Size: 0}"}
+{"time":"2025-01-27T16:31:13.93936Z","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-01-27T16:31:14.467425Z","level":"INFO","msg":"handler: closed","stream_id":{"value":"luimmp8f"}}
+{"time":"2025-01-27T16:31:14.467533Z","level":"INFO","msg":"sender: closed","stream_id":"luimmp8f"}
+{"time":"2025-01-27T16:31:14.467493Z","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"luimmp8f"}}
+{"time":"2025-01-27T16:31:14.468037Z","level":"INFO","msg":"stream: closed","id":"luimmp8f"}

@@ -19,7 +19,8 @@ def get_args():
     return parser.parse_args()
 
 
-root_dir = '/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
+root_dir = '/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
+# root_dir = '/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep/2024_Season_Retro'
 
 district_dict = {
     'Bhojpur': 1, 'Dhankuta': 2, 'Ilam': 3, 'Jhapa': 4, 'Khotang': 5, 'Morang': 6, 'Okhaldhunga': 7,
@@ -51,7 +52,7 @@ def convert_npy_to_precip(nepal_im, data_dir, precip_source, results_dir):
         for f in os.listdir(data_dir):
             if f == '.DS_Store':
                 continue
-            if precip_source in ['GPM', 'GSMaP']:
+            if precip_source in ['GPM', 'GPMv07', 'GSMaP']:
                 result = re.search('{}_(.*).npy'.format(precip_source), f)
             else:
                 result = re.search('doy_(.*).npy', f)
@@ -93,8 +94,8 @@ if __name__ == "__main__":
 
     nepal_tiff = Image.open('{}/District_Labels.tif'.format(root_dir))
 
-    forecast = ['KMA', 'NCEP', 'UKMO']
-    hindcast = ['GPM', 'GSMaP']
+    forecast = ['KMA', 'NCEP', 'UKMO', 'ecmwf']
+    hindcast = ['GPMv06', 'GPMv07', 'GSMaP']
 
     if precip_source in forecast:
         data_dir = '{}/PrecipitationModel_Forecast_Data/Subseasonal/{}/ensemble_member_{}'.format(root_dir,
@@ -102,6 +103,10 @@ if __name__ == "__main__":
                                                                                                   ens_num)
         save_dir = '{}/PrecipitationModel_Forecast_Data/Subseasonal/{}/DistrictLevel/ensemble_member_{}'.format(
             root_dir, precip_source, ens_num)
+        '''
+        data_dir = '{}/ecmwf'.format(root_dir)
+        save_dir = '{}/ecmwf/Subseasonal/DistrictLevel'.format(root_dir)
+        '''
     else:
         data_dir = '{}/{}_Mean_Pixelwise'.format(root_dir, precip_source)
         save_dir = '{}/{}_Mean_Pixelwise/Subseasonal/DistrictLevel'.format(root_dir, precip_source)

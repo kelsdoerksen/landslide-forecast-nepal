@@ -1,0 +1,158 @@
+Loading data...
+Tuning the model
+Running grid search cv on training set...
+--- 409.06288480758667 seconds to hyperparameter tune ---
+> [0;32m/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py[0m(472)[0;36mrun_rf[0;34m()[0m
+[0;32m    471 [0;31m    [0;31m# Save the model to file[0m[0;34m[0m[0;34m[0m[0m
+[0m[0;32m--> 472 [0;31m    [0mjoblib[0m[0;34m.[0m[0mdump[0m[0;34m([0m[0mforest[0m[0;34m,[0m [0;34m'{}/rf_model.joblib'[0m[0;34m.[0m[0mformat[0m[0;34m([0m[0mresults_dir[0m[0;34m)[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[0;32m    473 [0;31m    [0;31m# saving as pickle too[0m[0;34m[0m[0;34m[0m[0m
+[0m
+       precip_rate_tminus_0  precip_rate_tminus_1  precip_rate_tminus_2  ...  KMA_ens_1_precip_total_cumulative_precipitation        date         district
+64605              0.000000              0.562731              0.000000  ...                                     1.058973e+05  2019-10-09        Mahottari
+71487            108.227934              2.080476              0.057341  ...                                     3.853972e+06  2018-06-26          Surkhet
+68454              6.386786             17.752098             27.969508  ...                                     2.015807e+05  2018-09-22  Kabhrepalanchok
+67497             60.535780              7.340625             15.179062  ...                                     2.229388e+06  2017-07-08          Baglung
+65407              3.004474             11.991030              2.455219  ...                                     5.140544e+05  2021-08-04         Udayapur
+...                     ...                   ...                   ...  ...                                              ...         ...              ...
+12980              0.000000              0.000000              0.000000  ...                                     1.469731e+06  2017-04-27        Rupandehi
+65477             21.246944             19.430833              6.150278  ...                                     1.687716e+06  2019-07-23        Kathmandu
+42737              0.678125              9.650000              0.290625  ...                                     3.499438e+05  2019-05-04          Syangja
+65739              0.000000              0.000000              0.000000  ...                                     4.104471e+06  2018-06-21          Surkhet
+54985              0.531935              0.311581              0.191306  ...                                     1.673638e+05  2022-04-25            Humla
+
+[69835 rows x 61 columns]
+64605    0.0
+71487    1.0
+68454    0.0
+67497    0.0
+65407    0.0
+        ...
+12980    0.0
+65477    0.0
+42737    0.0
+65739    1.0
+54985    0.0
+Name: label, Length: 69835, dtype: float64
+       precip_rate_tminus_0  precip_rate_tminus_1  ...  KMA_ens_1_precip_min_precip_rate  KMA_ens_1_precip_total_cumulative_precipitation
+81257              0.000000              0.511030  ...                         48.438470                                     2.205051e+05
+63471             37.132629              3.124675  ...                       4463.107000                                     2.593147e+06
+51446              1.057174              1.295201  ...                       2624.883300                                     1.257855e+06
+6557              16.407929             22.341210  ...                        312.891300                                     4.750348e+05
+12078              0.000000              0.903137  ...                        661.658700                                     6.410239e+05
+...                     ...                   ...  ...                               ...                                              ...
+52514             40.436192             61.633843  ...                        367.092600                                     9.159542e+05
+54736              0.000000              0.000000  ...                         65.032585                                     5.716621e+04
+17488              8.299731             38.254865  ...                         99.265390                                     4.456761e+05
+4108               8.631522              1.208043  ...                       4240.236000                                     1.732358e+06
+11968            132.842150             57.627429  ...                      11221.859000                                     4.669335e+06
+
+[12324 rows x 59 columns]
+GridSearchCV(cv=3,
+             estimator=RandomForestClassifier(class_weight='balanced',
+                                              n_estimators=200, n_jobs=-1,
+                                              random_state=729),
+             n_jobs=-1,
+             param_grid={'bootstrap': [True], 'max_depth': [3, 5, 7],
+                         'min_samples_split': [4, 6, 8],
+                         'n_estimators': [100, 200, 300]},
+             refit='f1', scoring=['f1'])
+*** AttributeError: 'GridSearchCV' object has no attribute 'best_parameters_'
+{'bootstrap': True, 'max_depth': 7, 'min_samples_split': 4, 'n_estimators': 300}
+array([[0.78041317, 0.21958683],
+       [0.61998428, 0.38001572],
+       [0.60697225, 0.39302775],
+       ...,
+       [0.77449713, 0.22550287],
+       [0.34000445, 0.65999555],
+       [0.8836292 , 0.1163708 ]])
+array([0.21958683, 0.38001572, 0.39302775, ..., 0.22550287, 0.65999555,
+       0.1163708 ])
+array([ True,  True,  True, ...,  True,  True,  True])
+array([ True,  True,  True, ...,  True,  True,  True])
+array([1, 1, 1, ..., 1, 1, 1])
+0.33689482470784643
+0.33689482470784643
+0.3481942284430621
+0.2505854800936768
+0.5039664022398508
+0.5035812672176309
+0.4767042667974497
+0.33689482470784643
+0.34276489081485256
+0.5124302384576357
+0.5073830279309731
+*** NameError: name 'precision' is not defined
+*** NameError: name 'precision_score' is not defined
+0.3673469387755102
+0.2036326942482341
+0.3235187861271676
+0.3673469387755102
+0.4001751313485114
+0.4720738222438077
+0.5911602209944752
+/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/sklearn/metrics/_classification.py:1344: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 due to no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+0.0
+0.20259010139544223
+0.5911602209944752
+*** ValueError: The feature names should match those that were passed during fit.
+Feature names unseen at fit time:
+- date
+- district
+       precip_rate_tminus_0  precip_rate_tminus_1  precip_rate_tminus_2  ...  KMA_ens_1_precip_total_cumulative_precipitation        date    district
+81257              0.000000              0.511030              0.556782  ...                                     2.205051e+05  2019-04-25      Salyan
+63471             37.132629              3.124675              2.548377  ...                                     2.593147e+06  2020-08-23       Dolpa
+51446              1.057174              1.295201              3.427201  ...                                     1.257855e+06  2021-09-19     Mustang
+6557              16.407929             22.341210             40.671210  ...                                     4.750348e+05  2019-05-18     Lamjung
+12078              0.000000              0.903137              1.404118  ...                                     6.410239e+05  2022-04-23       Rolpa
+...                     ...                   ...                   ...  ...                                              ...         ...         ...
+52514             40.436192             61.633843              2.003352  ...                                     9.159542e+05  2020-06-05  Dadeldhura
+54736              0.000000              0.000000              0.000000  ...                                     5.716621e+04  2019-04-20      Siraha
+17488              8.299731             38.254865              0.469892  ...                                     4.456761e+05  2022-05-13     Kailali
+4108               8.631522              1.208043              1.727826  ...                                     1.732358e+06  2018-06-29    Chitawan
+11968            132.842150             57.627429             16.586388  ...                                     4.669335e+06  2021-06-29   Rupandehi
+
+[12324 rows x 61 columns]
+*** KeyError: "['date', 'district'] not found in axis"
+       precip_rate_tminus_0  precip_rate_tminus_1  ...  KMA_ens_1_precip_min_precip_rate  KMA_ens_1_precip_total_cumulative_precipitation
+81257              0.000000              0.511030  ...                         48.438470                                     2.205051e+05
+63471             37.132629              3.124675  ...                       4463.107000                                     2.593147e+06
+51446              1.057174              1.295201  ...                       2624.883300                                     1.257855e+06
+6557              16.407929             22.341210  ...                        312.891300                                     4.750348e+05
+12078              0.000000              0.903137  ...                        661.658700                                     6.410239e+05
+...                     ...                   ...  ...                               ...                                              ...
+52514             40.436192             61.633843  ...                        367.092600                                     9.159542e+05
+54736              0.000000              0.000000  ...                         65.032585                                     5.716621e+04
+17488              8.299731             38.254865  ...                         99.265390                                     4.456761e+05
+4108               8.631522              1.208043  ...                       4240.236000                                     1.732358e+06
+11968            132.842150             57.627429  ...                      11221.859000                                     4.669335e+06
+
+[12324 rows x 59 columns]
+0.741236611489776
+*** AttributeError: 'RandomForestClassifier' object has no attribute 'best_params_'
+{'bootstrap': True, 'max_depth': 7, 'min_samples_split': 4, 'n_estimators': 300}
+*** TypeError: unhashable type: 'slice'
+*** SyntaxError: invalid syntax
+{'bootstrap': True, 'max_depth': 7, 'min_samples_split': 4, 'n_estimators': 300, 'hi': 1}
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 796, in <module>
+    results = '{}/Results/{}/{}_ForecastModel_{}_EnsembleNum{}'.format(root_dir, hindcast_model, wandb.run.id,
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 472, in run_rf
+    print("--- %s seconds to hyperparameter tune ---" % (time.time() - start_time))
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 472, in run_rf
+    print("--- %s seconds to hyperparameter tune ---" % (time.time() - start_time))
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/bdb.py", line 115, in dispatch_line
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit
+
+If you suspect this is an IPython 8.9.0 bug, please report it at:
+    https://github.com/ipython/ipython/issues
+or send an email to the mailing list at ipython-dev@python.org
+
+You can print a more detailed traceback right now with "%tb", or use "%debug"
+to interactively debug it.
+
+Extra-detailed tracebacks for bug-reporting purposes can be enabled via:
+    %config Application.verbose_crash=True

@@ -1,0 +1,37 @@
+Grabbing training data...
+Grabbing testing data...
+Training model...
+/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/torch/cuda/amp/grad_scaler.py:126: UserWarning: torch.cuda.amp.GradScaler is enabled, but CUDA is not available.  Disabling.
+  warnings.warn(
+Training EPOCH 0:
+> [0;32m/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/metrics.py[0m(37)[0;36mprecision_recall_threshold[0;34m()[0m
+[0;32m     36 [0;31m[0;34m[0m[0m
+[0m[0;32m---> 37 [0;31m    [0mtotal_landslides[0m [0;34m=[0m [0;36m0[0m[0;34m[0m[0;34m[0m[0m
+[0m[0;32m     38 [0;31m    [0;32mfor[0m [0mi[0m [0;32min[0m [0mrange[0m[0;34m([0m[0mlen[0m[0;34m([0m[0my_pred[0m[0;34m)[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0m
+*** RecursionError: maximum recursion depth exceeded while calling a Python object
+(60, 100)
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/run_pipeline.py", line 147, in <module>
+    trained_model = train_model(
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/train.py", line 89, in train_model
+    thr_precision, thr_recall = precision_recall_threshold(labels, outputs_probs, threshold, district_masks)
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/metrics.py", line 37, in precision_recall_threshold
+    total_landslides = 0
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/metrics.py", line 37, in precision_recall_threshold
+    total_landslides = 0
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/bdb.py", line 115, in dispatch_line
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit
+
+If you suspect this is an IPython 8.30.0 bug, please report it at:
+    https://github.com/ipython/ipython/issues
+or send an email to the mailing list at ipython-dev@python.org
+
+You can print a more detailed traceback right now with "%tb", or use "%debug"
+to interactively debug it.
+
+Extra-detailed tracebacks for bug-reporting purposes can be enabled via:
+    %config Application.verbose_crash=True

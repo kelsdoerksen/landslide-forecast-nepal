@@ -1,0 +1,34 @@
+{"time":"2025-01-29T21:55:07.653661Z","level":"INFO","msg":"using version","core version":"0.18.5"}
+{"time":"2025-01-29T21:55:07.653779Z","level":"INFO","msg":"created symlink","path":"/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/wandb/run-20250129_215507-9m0i49mf/logs/debug-core.log"}
+{"time":"2025-01-29T21:55:07.788924Z","level":"INFO","msg":"created new stream","id":"9m0i49mf"}
+{"time":"2025-01-29T21:55:07.789054Z","level":"INFO","msg":"stream: started","id":"9m0i49mf"}
+{"time":"2025-01-29T21:55:07.789685Z","level":"INFO","msg":"sender: started","stream_id":"9m0i49mf"}
+{"time":"2025-01-29T21:55:07.789815Z","level":"INFO","msg":"handler: started","stream_id":{"value":"9m0i49mf"}}
+{"time":"2025-01-29T21:55:07.789651Z","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"9m0i49mf"}}
+{"time":"2025-01-29T21:55:08.352644Z","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-01-30T01:05:53.786927Z","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/kelsey-doerksen/landslide-prediction/9m0i49mf/file_stream\": write tcp 192.168.0.84:49277->35.186.228.49:443: write: broken pipe"}
+{"time":"2025-01-30T02:54:06.844411Z","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/kelsey-doerksen/landslide-prediction/9m0i49mf/file_stream\": dial tcp 35.186.228.49:443: connect: operation timed out"}
+{"time":"2025-01-30T02:54:08.987104Z","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/kelsey-doerksen/landslide-prediction/9m0i49mf/file_stream\": dial tcp: lookup api.wandb.ai: no such host"}
+{"time":"2025-01-30T02:54:10.243528Z","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/graphql\": read tcp 192.168.0.84:49208->35.186.228.49:443: read: can't assign requested address"}
+{"time":"2025-01-30T02:54:12.586754Z","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/graphql\": dial tcp: lookup api.wandb.ai: no such host"}
+{"time":"2025-01-30T02:54:13.96603Z","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/kelsey-doerksen/landslide-prediction/9m0i49mf/file_stream\": dial tcp: lookup api.wandb.ai: no such host"}
+{"time":"2025-01-30T02:54:16.796725Z","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/graphql\": dial tcp: lookup api.wandb.ai: no such host"}
+{"time":"2025-01-30T02:54:22.595377Z","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/kelsey-doerksen/landslide-prediction/9m0i49mf/file_stream\": dial tcp: lookup api.wandb.ai: no such host"}
+{"time":"2025-01-30T02:54:26.652398Z","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/graphql\": dial tcp: lookup api.wandb.ai: no such host"}
+{"time":"2025-01-30T02:54:40.339859Z","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/kelsey-doerksen/landslide-prediction/9m0i49mf/file_stream\": dial tcp: lookup api.wandb.ai: no such host"}
+{"time":"2025-01-30T03:19:42.847724Z","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/graphql\": dial tcp: lookup api.wandb.ai: no such host"}
+{"time":"2025-01-30T03:39:35.828508Z","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/graphql\": read tcp 192.168.0.84:49538->35.186.228.49:443: read: connection reset by peer"}
+{"time":"2025-01-30T03:48:30.208396Z","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/graphql\": read tcp 192.168.0.84:49573->35.186.228.49:443: read: connection reset by peer"}
+{"time":"2025-01-30T04:55:01.06719Z","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/graphql\": read tcp 192.168.0.84:49593->35.186.228.49:443: read: connection reset by peer"}
+{"time":"2025-01-30T05:55:39.699539Z","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/graphql\": read tcp 192.168.0.84:49641->35.186.228.49:443: read: connection reset by peer"}
+{"time":"2025-01-30T07:01:48.343237Z","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/graphql\": read tcp 192.168.0.84:49666->35.186.228.49:443: read: connection reset by peer"}
+{"time":"2025-01-30T08:02:08.820905Z","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/graphql\": read tcp 192.168.0.84:49717->35.186.228.49:443: read: connection reset by peer"}
+{"time":"2025-01-30T09:02:56.944051Z","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/graphql\": read tcp 192.168.0.84:49757->35.186.228.49:443: read: connection reset by peer"}
+{"time":"2025-01-30T09:13:52.852511Z","level":"INFO","msg":"stream: closing","id":"9m0i49mf"}
+{"time":"2025-01-30T09:13:52.852817Z","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-01-30T09:13:52.861654Z","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-01-30T09:13:53.664983Z","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-01-30T09:13:54.01666Z","level":"INFO","msg":"handler: closed","stream_id":{"value":"9m0i49mf"}}
+{"time":"2025-01-30T09:13:54.018941Z","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"9m0i49mf"}}
+{"time":"2025-01-30T09:13:54.02132Z","level":"INFO","msg":"sender: closed","stream_id":"9m0i49mf"}
+{"time":"2025-01-30T09:13:54.021361Z","level":"INFO","msg":"stream: closed","id":"9m0i49mf"}

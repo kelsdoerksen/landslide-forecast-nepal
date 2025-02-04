@@ -4,41 +4,30 @@ confusion matrix metrics to plot further
 """
 
 import numpy as np
-import gdal
+from PIL import Image
 import argparse
 from datetime import date, timedelta
 import os
 import pandas as pd
-from torch.nn.functional import threshold
 
 
 def get_args():
     parser = argparse.ArgumentParser(description='Running UNet Pipeline on Landslide Dataset')
     parser.add_argument('--root_dir', help='Specify root directory',
                         required=True)
-    parser.add_argument('--data_dir', help='Data directory',
-                        required=True)
     parser.add_argument('--results_dir', help='Results directory',
-                        required=True)
-    parser.add_argument('--threshold', help='Prediction threshold',
                         required=True)
 
     return parser.parse_args()
 
-def daterange(date1, date2):
-    date_list = []
-    for n in range(int((date2 - date1).days) + 1):
-        dt = date1 + timedelta(n)
-        date_list.append(dt.strftime("%Y-%m-%d"))
-    return date_list
 
 def generate_district_masks(file_name):
     '''
     Create the masks for each district from Nepal raster
     '''
     # Load in Nepal District file
-    ds = gdal.Open('{}'.format(file_name))
-    array = ds.GetRasterBand(1).ReadAsArray()
+    im = Image.open('{}'.format(file_name))
+    array = np.array(im)
 
     # Create dict to match pixel values
     district_dict = {'Bhojpur': 1, 'Dhankuta': 2, 'Ilam': 3, 'Jhapa': 4, 'Khotang': 5, 'Morang': 6, 'Okhaldhunga': 7,
@@ -68,25 +57,25 @@ def generate_district_masks(file_name):
     return new_dict
 
 
-def pr_generation(y_true, y_pred, threshold, d_masks, doy):
+def pr_generation(y_true, y_pred, threshold, d_masks):
     '''
     Custom Precision-Recall metric.
     Computes the precision over the batch using
     the threshold_value indicated
     :param: y_true: label
     :param: y_pred: model prediction
+    :param: d_masks: dictionary of
     '''
-
-    results_dict = {}
-
     # Set true positive and false positive count to 0
     true_positives = 0
     false_positives = 0
     false_negatives = 0
 
     threshold_value = threshold
-    # Convert y_pred to 0s and 1s based on threshold
-    y_pred = (y_pred > threshold_value).float()
+    y_pred = y_pred[0]
+    y_true = y_true[0]
+
+    y_pred = (y_pred > threshold_value)*1
 
     total_landslides = 0
     for i in range(len(y_pred)):
@@ -141,7 +130,20 @@ def pr_generation(y_true, y_pred, threshold, d_masks, doy):
         precision_ratio = true_positives / (true_positives + false_positives)
         recall_ratio = true_positives / (true_positives + false_negatives)
 
-    F1 = (precision_ratio*recall_ratio)/(precision_ratio+recall_ratio)
+    if false_negatives == 0:
+        fnr = 0
+    else:
+        fnr = false_negatives / (false_negatives + true_positives)
+
+    if false_positives == 0:
+        fpr = 0
+    else:
+        true_negatives = (77*len(y_true)) - total_landslides   # Number of Districts minus the landslides that actually occurred
+        fpr = false_positives / (false_positives + true_negatives)
+
+    F1 = (true_positives) / (true_positives + (0.5*(false_positives+false_negatives)))
+
+    results_dict = {}
 
     # Add all results to dictionary to return
     results_dict['threshold'] = threshold
@@ -151,33 +153,92 @@ def pr_generation(y_true, y_pred, threshold, d_masks, doy):
     results_dict['FP'] = false_positives
     results_dict['FN'] = false_negatives
     results_dict['F1'] = F1
-    results_dict['date'] = doy
+    results_dict['FNR'] = fnr
+    results_dict['FPR'] = fpr
 
     return results_dict
 
 
-def valid_monsoon_dates(sample_dir):
-    """
-    Get list of valid monsoon dates
-    from list of available samples for run
-    """
-    monsoon_2023 = daterange(date(2023, 4, 1), date(2023, 10, 31))
-    sample_fns = os.listdir(sample_dir)
-    fns = [s.strip('sample_') for s in sample_fns]
-    fns = [s.strip('.npy') for s in fns]
+def pr_generation_timeseries(y_true, y_pred, threshold, d_masks):
+    '''
+    Custom Precision-Recall metric.
+    Computes the precision over the batch using
+    the threshold_value indicated
+    :param: y_true: label
+    :param: y_pred: model prediction
+    :param: d_masks: dictionary of
+    '''
+    # Set true positive and false positive count to 0
+    true_positives = 0
+    false_positives = 0
+    false_negatives = 0
 
-    valid_monsoon_dates = [x for x in fns if x in monsoon_2023]
-    # Sort dates
-    valid_monsoon_dates.sort()
-    return valid_monsoon_dates
+    threshold_value = threshold
+    y_pred = y_pred[0]
+    y_true = y_true[0]
+
+    y_pred = (y_pred > threshold_value)*1
+
+    total_landslides = 0
+    f1_score = []
+    for i in range(len(y_pred)):
+        non_landslide_districts = d_masks.copy()  # copy of landslides dict to manipulate
+        dummy_pred = np.copy(y_pred[i, 0, :, ])  # copy of y_pred to manipulate
+        # Get what districts are in label
+        district_pixels = []
+        landslides = np.where(y_true[i, 0, :, :] == 1)
+        points = []
+        for k in range(len(landslides[0])):
+            points.append([landslides[0][k], landslides[1][k]])
+        for district in d_masks:
+            if all(item in points for item in d_masks[district]):
+                district_pixels.append(d_masks[district])
+                non_landslide_districts.pop(district)
+
+        total_overlap = 0
+        for j in range(len(district_pixels)):
+            # iterate through the list of points containing the landslide aka true_location
+            true_location = district_pixels[j]
+            overlap = 0
+            for w in range(len(true_location)):
+                if y_pred[i, 0, true_location[w][0], true_location[w][1]] == 1:
+                    overlap += 1
+                    # set the overlapped pixel to 0 and see if we have any left over for FP
+                    dummy_pred[true_location[w][0], true_location[w][1]] = 0
+            # check if at least one pixel overlapped district
+            if overlap > 0:
+                total_overlap += 1
+
+        true_positives += total_overlap
+        total_landslides += len(district_pixels)
+
+        fp_count = 0
+        # Check if any predictions don't overlap our districts
+        if np.amax(dummy_pred) > 0:
+            # We have FPs, check how many incorrect landslides we "predicted"
+            for d in non_landslide_districts:
+                for point in non_landslide_districts[d]:
+                    if dummy_pred[point[0], point[1]] == 1:
+                        fp_count = + 1
+                        break
+        false_positives += fp_count
+
+        if total_landslides > true_positives:
+            false_negatives = total_landslides - true_positives
+
+        try:
+            F1 = (true_positives) / (true_positives + (0.5*(false_positives+false_negatives)))
+        except ZeroDivisionError as e:
+            F1 = 0
+        f1_score.append(F1)
+
+    return f1_score
 
 
 if __name__ == '__main__':
     args = get_args()
     root_dir = args.root_dir
-    data_dir = args.data_dir
     results_dir = args.results_dir
-    thr = args.threshold
 
     # Grab list of .npy groundtruth and predictions from results dir
     predictions = [f for f in os.listdir(results_dir) if 'pred' in f]
@@ -210,17 +271,43 @@ if __name__ == '__main__':
             points.append([district_masks[district][0][i], district_masks[district][1][i]])
         district_masks[district] = points
 
-    # Want to get the list of dates for the samples in order
-    monsoon_dates = valid_monsoon_dates(data_dir)
+    def timeseries_f1_plots(thr):
+        """
+        Generate time series of F1 score to see overtime
+        """
+        results_list = []
+        results_list.append(pr_generation_timeseries(np.array([groundtruth_arrays]), np.array([prediction_arrays]),
+                                          thr, district_masks))
+        return results_list
 
     # Generate results per date
-    results_list = []
-    for p in prediction_arrays:
-        results_list.append(pr_generation(prediction_arrays[p], groundtruth_arrays[p], thr, district_masks,
-                                          monsoon_dates[p]))
+    def get_results_avg(t):
+        results_list = []
+        results_list.append(pr_generation(np.array([groundtruth_arrays]), np.array([prediction_arrays]),
+                                              t, district_masks))
+        results_df = pd.DataFrame(results_list)
+        return results_df.mean()
 
-    # Combine everything into a dataframe
-    results_df = pd.DataFrame(results_list)
+    '''
+    # Running for 
+    thr = [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1]
+    thr_results = []
+    for t in thr:
+        thr_results.append(get_results_avg(t))
+
+    df = pd.DataFrame(thr_results)
 
     # Save to csv
-    results_df.to_csv('precision_recall_2023_results_threshold_{}.csv'.format(thr))
+    df.to_csv('{}/analysis_2023_results.csv'.format(results_dir))
+    '''
+    # Running for date
+    f1_dates = timeseries_f1_plots(0.1)
+    df_f1 = pd.DataFrame()
+    df_f1['f1'] = f1_dates[0]
+
+    with open('{}/test_dates.txt'.format(results_dir), 'r') as file:
+        text = file.read()
+    substrings = ['sample' + part.strip() for part in text.split('sample') if part.strip()]
+    doys = [s.replace('sample_', '') for s in substrings]
+    df_f1['doy'] = doys
+    df_f1.to_csv('{}/2023_timeseries.csv'.format(results_dir))

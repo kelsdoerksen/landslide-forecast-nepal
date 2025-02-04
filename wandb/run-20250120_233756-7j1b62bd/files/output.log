@@ -1,0 +1,35 @@
+Loading data...
+Tuning the model
+Tuning for iteration: 0
+Running grid search cv on training set...
+--- 328.60363388061523 seconds to hyperparameter tune ---
+Tuning for iteration: 1
+Running grid search cv on training set...
+--- 316.08726024627686 seconds to hyperparameter tune ---
+Tuning for iteration: 2
+Running grid search cv on training set...
+--- 321.6658728122711 seconds to hyperparameter tune ---
+Max model stats after parameter tuning is: {'bootstrap': True, 'max_depth': 7, 'min_samples_split': 8, 'n_estimators': 200, 'accuracy': 0.7357189224277831, 'f1': 0.49667748416009894, 'best_model': RandomForestClassifier(class_weight='balanced', max_depth=7,
+                       min_samples_split=8, n_estimators=200, n_jobs=-1,
+                       random_state=776)}
+Evaluating model...
+The hard predictions were right 76.13% of the time
+No Skill: ROC AUC=0.500
+RFC: ROC AUC=0.832
+/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py:143: RuntimeWarning: invalid value encountered in divide
+  fscore = (2 * precision * recall) / (precision + recall)
+The number of non-landslide events is: 9428
+The number of landslide events is: 2738
+Best Threshold=0.581316, F-Score=0.582
+Test set accuracy at threshold 0.5813158409275203: 0.7942626993259905
+Test set F1 at threshold 0.5813158409275203: 0.5824854045037531
+True Positive is 1746
+True Negative is 7917
+False Positive is 1511
+False Negative is 992
+False positive rate at best threshold is 0.1602672889266016
+True positive rate at best threshold is is 0.6376917457998539
+False negative rate at best threshold is is 0.3623082542001461
+True negative rate at best threshold is is 0.8397327110733984
+--------------------
+{'0': {'precision': 0.8886519250196431, 'recall': 0.8397327110733984, 'f1-score': 0.8635000272672738, 'support': 9428}, '1': {'precision': 0.5360761436905127, 'recall': 0.6376917457998539, 'f1-score': 0.5824854045037531, 'support': 2738}, 'accuracy': 0.7942626993259905, 'macro avg': {'precision': 0.7123640343550779, 'recall': 0.7387122284366261, 'f1-score': 0.7229927158855134, 'support': 12166}, 'weighted avg': {'precision': 0.809303536948037, 'recall': 0.7942626993259905, 'f1-score': 0.8002567232128172, 'support': 12166}}

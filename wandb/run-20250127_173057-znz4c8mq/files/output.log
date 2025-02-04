@@ -1,0 +1,50 @@
+Loading data...
+Tuning the model
+Tuning for iteration: 0
+Running grid search cv on training set...
+--- 422.9096608161926 seconds to hyperparameter tune ---
+Tuning for iteration: 1
+Running grid search cv on training set...
+/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/sklearn/neural_network/_multilayer_perceptron.py:541: ConvergenceWarning: lbfgs failed to converge (status=2):
+ABNORMAL_TERMINATION_IN_LNSRCH.
+
+Increase the number of iterations (max_iter) or scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+  self.n_iter_ = _check_optimize_result("lbfgs", opt_res, self.max_iter)
+--- 397.5336661338806 seconds to hyperparameter tune ---
+Tuning for iteration: 2
+Running grid search cv on training set...
+--- 420.5539472103119 seconds to hyperparameter tune ---
+Max model stats after parameter tuning is: {'activation': 'relu', 'hidden_layer_sizes': (150,), 'solver': 'lbfgs', 'accuracy': 0.16255565764364974, 'f1': 0.27418070444104137, 'best_model': MLPClassifier(hidden_layer_sizes=(150,), random_state=498, solver='lbfgs')}
+Evaluating model...
+The hard predictions were right 20.48% of the time
+No Skill: ROC AUC=0.500
+RFC: ROC AUC=0.507
+No nan values in fscore
+The number of non-landslide events is: 11535
+The number of landslide events is: 2787
+Best Threshold=1.000000, F-Score=0.329
+Test set accuracy at threshold 1.0: 0.20506912442396313
+Test set F1 at threshold 1.0: 0.32867503980187507
+True Positive is 2787
+True Negative is 150
+False Positive is 11385
+False Negative is 0
+False positive rate at best threshold is 0.9869960988296489
+True positive rate at best threshold is is 1.0
+False negative rate at best threshold is is 0.0
+True negative rate at best threshold is is 0.013003901170351105
+--------------------
+{'0': {'precision': 1.0, 'recall': 0.013003901170351105, 'f1-score': 0.025673940949935813, 'support': 11535}, '1': {'precision': 0.1966553767993226, 'recall': 1.0, 'f1-score': 0.32867503980187507, 'support': 2787}, 'accuracy': 0.20506912442396313, 'macro avg': {'precision': 0.5983276883996613, 'recall': 0.5065019505851756, 'f1-score': 0.17717449037590544, 'support': 14322}, 'weighted avg': {'precision': 0.843672569134179, 'recall': 0.20506912442396313, 'f1-score': 0.08463666001852643, 'support': 14322}}
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 1063, in <module>
+    run_mlp(data_dir, X_train, y_train, X_test, y_test, X_val, y_val, results, experiment, model, test_y, tuning)
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 909, in run_mlp
+    test_info = Xtest[info_cols]
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/pandas/core/frame.py", line 3811, in __getitem__
+    indexer = self.columns._get_indexer_strict(key, "columns")[1]
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/pandas/core/indexes/base.py", line 6113, in _get_indexer_strict
+    self._raise_if_missing(keyarr, indexer, axis_name)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/pandas/core/indexes/base.py", line 6173, in _raise_if_missing
+    raise KeyError(f"None of [{key}] are in the [{axis_name}]")
+KeyError: "None of [Index(['date', 'district'], dtype='object')] are in the [columns]"

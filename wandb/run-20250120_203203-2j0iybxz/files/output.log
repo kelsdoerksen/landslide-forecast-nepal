@@ -1,0 +1,29 @@
+Loading data...
+Tuning the model
+Tuning for iteration: 0
+Running grid search cv on training set...
+--- 377.13631200790405 seconds to hyperparameter tune ---
+Tuning for iteration: 1
+Running grid search cv on training set...
+--- 358.7516460418701 seconds to hyperparameter tune ---
+Tuning for iteration: 2
+Running grid search cv on training set...
+--- 343.86684703826904 seconds to hyperparameter tune ---
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 817, in <module>
+    run_rf(data_dir, X_train, y_train, X_test, y_test, X_val, y_val, results, experiment, model, test_y, tuning)
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 491, in run_rf
+    json_data = json.dumps(max_dict, indent=4)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/json/encoder.py", line 201, in encode
+    chunks = list(chunks)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/json/encoder.py", line 431, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/json/encoder.py", line 438, in _iterencode
+    o = _default(o)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/json/encoder.py", line 179, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type RandomForestClassifier is not JSON serializable

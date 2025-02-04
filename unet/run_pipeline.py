@@ -37,6 +37,8 @@ def get_args():
                         required=True)
     parser.add_argument('--ensemble_member', help='Ensemble Member.',
                         required=True)
+    parser.add_argument('--tags', help='wandb tag',
+                        required=True)
 
     return parser.parse_args()
 
@@ -90,16 +92,17 @@ if __name__ == '__main__':
     root_save_dir = args.save_dir
     ens = args.ensemble
     ens_num = args.ensemble_member
+    tag = args.tags
 
     # Initializing logging in wandb for experiment
     experiment = wandb.init(project='landslide-prediction', resume='allow', anonymous='must')
     experiment.config.update(
         dict(epochs=args.epochs, batch_size=args.batch_size, learning_rate=args.lr,
-             val_percent=0.1, save_checkpoint=True,)
+             val_percent=0.1, save_checkpoint=True,tags=[tag])
     )
 
     # --- Setting Directories
-    sample_dir = '{}/UNet_Samples_14Day_GPM/{}/ensemble_{}'.format(root_dir, ens, ens_num)
+    sample_dir = '{}/UNet_Samples_14Day_GPMv07/{}/ensemble_{}'.format(root_dir, ens, ens_num)
     label_dir = '{}/Binary_Landslide_Labels_14day'.format(root_dir)
 
     # --- Making save directory

@@ -9,6 +9,7 @@ import argparse
 def get_args():
     parser = argparse.ArgumentParser(description='Generating Confusion Matrix')
     parser.add_argument('--run', help='Wandb run name')
+    parser.add_argument('--root_dir', help='Root Directory of data')
     return parser.parse_args()
 
 
@@ -34,8 +35,12 @@ def make_gif(folder, target):
 if __name__ == '__main__':
     args = get_args()
     run_dir = args.run
-    root_dir = '/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep/Results'
-    results_dir = '{}/{}'.format(root_dir, run_dir)
+    root_dir = args.root_dir
+
+    if not run_dir:
+        results_dir = '{}'.format(root_dir)
+    else:
+        results_dir = '{}/{}'.format(root_dir, run_dir)
 
     # Run gif maker for what we want to generate
     targets = ['precipitation', 'F1', 'prediction', 'confusion_matrix']

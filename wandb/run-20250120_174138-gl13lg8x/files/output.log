@@ -1,0 +1,54 @@
+Loading data...
+> [0;32m/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py[0m(363)[0;36mload_data[0;34m()[0m
+[0;32m    362 [0;31m[0;34m[0m[0m
+[0m[0;32m--> 363 [0;31m    [0;32mif[0m [0mexperiment_type[0m [0;34m==[0m [0;34m'no_hindcast'[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0m[0;32m    364 [0;31m        [0mX_train[0m [0;34m=[0m [0mX_train[0m[0;34m.[0m[0mdrop[0m[0;34m([0m[0mX_train[0m[0;34m.[0m[0mfilter[0m[0;34m([0m[0mregex[0m[0;34m=[0m[0;34m'tminus'[0m[0;34m)[0m[0;34m.[0m[0mcolumns[0m[0;34m,[0m [0maxis[0m[0;34m=[0m[0;36m1[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m
+       index  precip_rate_tminus_0  precip_rate_tminus_1  ...  KMA_ens_1_precip_total_cumulative_precipitation        date    district
+28701   8221              0.507090              4.038785  ...                                     1.091624e+06  2018-05-21     Mustang
+9131    8613              0.000000              0.000000  ...                                     1.220288e+06  2021-04-27       Palpa
+34391   9014             12.278750              1.552222  ...                                     2.753002e+06  2022-06-23      Parbat
+13598  14195              5.416403             14.238706  ...                                     3.424985e+05  2018-06-12    Udayapur
+25338   8244              2.623715              5.885493  ...                                     3.012814e+06  2017-06-13     Mustang
+...      ...                   ...                   ...  ...                                              ...         ...         ...
+7940   11260             19.393229              4.328958  ...                                     5.291665e+06  2017-07-23     Rukum_W
+12780    421              5.137500             18.475312  ...                                     2.410525e+06  2022-06-30     Baglung
+40000   6843             32.274999              5.259091  ...                                     1.465126e+06  2020-08-19  Makawanpur
+29308   7658              2.755826              1.015319  ...                                     3.660590e+06  2022-07-13     Mustang
+79540   3145              2.251389              1.816389  ...                                     4.591244e+05  2020-08-17    Dhanusha
+
+[69835 rows x 62 columns]
+28701    0.0
+9131     0.0
+34391    0.0
+13598    0.0
+25338    0.0
+        ...
+7940     0.0
+12780    0.0
+40000    0.0
+29308    1.0
+79540    0.0
+Name: label, Length: 69835, dtype: float64
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 775, in <module>
+    X_train, y_train, X_test, y_test, X_val, y_val = load_data(test_y, '{}/LabelledData_{}/{}/ensemble_{}'.
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 363, in load_data
+    if experiment_type == 'no_hindcast':
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 363, in load_data
+    if experiment_type == 'no_hindcast':
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/bdb.py", line 115, in dispatch_line
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit
+
+If you suspect this is an IPython 8.9.0 bug, please report it at:
+    https://github.com/ipython/ipython/issues
+or send an email to the mailing list at ipython-dev@python.org
+
+You can print a more detailed traceback right now with "%tb", or use "%debug"
+to interactively debug it.
+
+Extra-detailed tracebacks for bug-reporting purposes can be enabled via:
+    %config Application.verbose_crash=True

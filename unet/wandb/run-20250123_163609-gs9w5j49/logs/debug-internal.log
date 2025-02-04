@@ -1,0 +1,17 @@
+{"time":"2025-01-23T16:36:09.225235Z","level":"INFO","msg":"using version","core version":"0.18.5"}
+{"time":"2025-01-23T16:36:09.225335Z","level":"INFO","msg":"created symlink","path":"/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/wandb/run-20250123_163609-gs9w5j49/logs/debug-core.log"}
+{"time":"2025-01-23T16:36:09.359546Z","level":"INFO","msg":"created new stream","id":"gs9w5j49"}
+{"time":"2025-01-23T16:36:09.359639Z","level":"INFO","msg":"stream: started","id":"gs9w5j49"}
+{"time":"2025-01-23T16:36:09.359973Z","level":"INFO","msg":"handler: started","stream_id":{"value":"gs9w5j49"}}
+{"time":"2025-01-23T16:36:09.360126Z","level":"INFO","msg":"sender: started","stream_id":"gs9w5j49"}
+{"time":"2025-01-23T16:36:09.360145Z","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"gs9w5j49"}}
+{"time":"2025-01-23T16:36:10.507951Z","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-01-23T18:06:41.098046Z","level":"INFO","msg":"api: retrying HTTP error","status":502,"url":"https://api.wandb.ai/files/kelsey-doerksen/landslide-prediction/gs9w5j49/file_stream"}
+{"time":"2025-01-23T19:01:03.820791Z","level":"INFO","msg":"stream: closing","id":"gs9w5j49"}
+{"time":"2025-01-23T19:01:03.821371Z","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-01-23T19:01:03.827209Z","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-01-23T19:01:06.905246Z","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-01-23T19:01:07.49841Z","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"gs9w5j49"}}
+{"time":"2025-01-23T19:01:07.49847Z","level":"INFO","msg":"sender: closed","stream_id":"gs9w5j49"}
+{"time":"2025-01-23T19:01:07.498354Z","level":"INFO","msg":"handler: closed","stream_id":{"value":"gs9w5j49"}}
+{"time":"2025-01-23T19:01:07.498912Z","level":"INFO","msg":"stream: closed","id":"gs9w5j49"}

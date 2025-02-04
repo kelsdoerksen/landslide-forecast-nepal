@@ -1,0 +1,60 @@
+Loading data...
+/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py:346: DtypeWarning: Columns (59,60) have mixed types. Specify dtype option on import or set low_memory=False.
+  train = pd.read_csv('{}/train_data_2016-2022.csv'.format(data_dir))
+/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py:347: DtypeWarning: Columns (59,60) have mixed types. Specify dtype option on import or set low_memory=False.
+  val = pd.read_csv('{}/val_data_2016-2022.csv'.format(data_dir))
+> [0;32m/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py[0m(350)[0;36mload_data[0;34m()[0m
+[0;32m    349 [0;31m        [0mipdb[0m[0;34m.[0m[0mset_trace[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[0;32m--> 350 [0;31m        [0mX_train[0m [0;34m=[0m [0mtrain[0m[0;34m.[0m[0mdrop[0m[0;34m([0m[0mcolumns[0m[0;34m=[0m[0;34m[[0m[0;34m'label'[0m[0;34m][0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[0;32m    351 [0;31m        [0my_train[0m [0;34m=[0m [0mtrain[0m[0;34m[[0m[0;34m[[0m[0;34m'label'[0m[0;34m][0m[0;34m][0m[0;34m[0m[0;34m[0m[0m
+[0m
+        precip_rate_tminus_0  precip_rate_tminus_1  precip_rate_tminus_2  ...        date         district  label
+0                   0.000000              0.562731              0.000000  ...  2019-10-09        Mahottari    NaN
+1                 108.227934              2.080476              0.057341  ...  2018-06-26          Surkhet    NaN
+2                   6.386786             17.752098             27.969508  ...  2018-09-22  Kabhrepalanchok    NaN
+3                  60.535780              7.340625             15.179062  ...  2017-07-08          Baglung    NaN
+4                   3.004474             11.991030              2.455219  ...  2021-08-04         Udayapur    NaN
+...                      ...                   ...                   ...  ...         ...              ...    ...
+139665                   NaN                   NaN                   NaN  ...         NaN              NaN    0.0
+139666                   NaN                   NaN                   NaN  ...         NaN              NaN    0.0
+139667                   NaN                   NaN                   NaN  ...         NaN              NaN    0.0
+139668                   NaN                   NaN                   NaN  ...         NaN              NaN    1.0
+139669                   NaN                   NaN                   NaN  ...         NaN              NaN    0.0
+
+[139670 rows x 62 columns]
+       precip_rate_tminus_0  precip_rate_tminus_1  precip_rate_tminus_2  ...        date  district  label
+0                  0.000000              0.511030              0.556782  ...  2019-04-25    Salyan    NaN
+1                 37.132629              3.124675              2.548377  ...  2020-08-23     Dolpa    NaN
+2                  1.057174              1.295201              3.427201  ...  2021-09-19   Mustang    NaN
+3                 16.407929             22.341210             40.671210  ...  2019-05-18   Lamjung    NaN
+4                  0.000000              0.903137              1.404118  ...  2022-04-23     Rolpa    NaN
+...                     ...                   ...                   ...  ...         ...       ...    ...
+24643                   NaN                   NaN                   NaN  ...         NaN       NaN    0.0
+24644                   NaN                   NaN                   NaN  ...         NaN       NaN    0.0
+24645                   NaN                   NaN                   NaN  ...         NaN       NaN    0.0
+24646                   NaN                   NaN                   NaN  ...         NaN       NaN    0.0
+24647                   NaN                   NaN                   NaN  ...         NaN       NaN    0.0
+
+[24648 rows x 62 columns]
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 813, in <module>
+    X_train, y_train, X_test, y_test, X_val, y_val = load_data(test_y, data_dir, exp)
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 350, in load_data
+    X_train = train.drop(columns=['label'])
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 350, in load_data
+    X_train = train.drop(columns=['label'])
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/bdb.py", line 115, in dispatch_line
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit
+
+If you suspect this is an IPython 8.9.0 bug, please report it at:
+    https://github.com/ipython/ipython/issues
+or send an email to the mailing list at ipython-dev@python.org
+
+You can print a more detailed traceback right now with "%tb", or use "%debug"
+to interactively debug it.
+
+Extra-detailed tracebacks for bug-reporting purposes can be enabled via:
+    %config Application.verbose_crash=True

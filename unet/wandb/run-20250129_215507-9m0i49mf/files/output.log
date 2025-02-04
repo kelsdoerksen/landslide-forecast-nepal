@@ -1,0 +1,139 @@
+Grabbing training data...
+Grabbing testing data...
+Training model...
+/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/torch/cuda/amp/grad_scaler.py:126: UserWarning: torch.cuda.amp.GradScaler is enabled, but CUDA is not available.  Disabling.
+  warnings.warn(
+Training EPOCH 0:
+Training EPOCH 1:
+Training EPOCH 2:
+Training EPOCH 3:
+Training EPOCH 4:
+Training EPOCH 5:
+Training EPOCH 6:
+Training EPOCH 7:
+Training EPOCH 8:
+Training EPOCH 9:
+Training EPOCH 10:
+Training EPOCH 11:
+Training EPOCH 12:
+Training EPOCH 13:
+Training EPOCH 14:
+Training EPOCH 15:
+Training EPOCH 16:
+Training EPOCH 17:
+Training EPOCH 18:
+Training EPOCH 19:
+Training EPOCH 20:
+Training EPOCH 21:
+Training EPOCH 22:
+Training EPOCH 23:
+Training EPOCH 24:
+Training EPOCH 25:
+Training EPOCH 26:
+Training EPOCH 27:
+Training EPOCH 28:
+Training EPOCH 29:
+Training EPOCH 30:
+Training EPOCH 31:
+Training EPOCH 32:
+Training EPOCH 33:
+Training EPOCH 34:
+Training EPOCH 35:
+Training EPOCH 36:
+Training EPOCH 37:
+Training EPOCH 38:
+Training EPOCH 39:
+Training EPOCH 40:
+Training EPOCH 41:
+Training EPOCH 42:
+Training EPOCH 43:
+Training EPOCH 44:
+Training EPOCH 45:
+Training EPOCH 46:
+Training EPOCH 47:
+Training EPOCH 48:
+Training EPOCH 49:
+Training EPOCH 50:
+Training EPOCH 51:
+Training EPOCH 52:
+Training EPOCH 53:
+Training EPOCH 54:
+Training EPOCH 55:
+Training EPOCH 56:
+Training EPOCH 57:
+Training EPOCH 58:
+Training EPOCH 59:
+Training EPOCH 60:
+Training EPOCH 61:
+Training EPOCH 62:
+Training EPOCH 63:
+Training EPOCH 64:
+Training EPOCH 65:
+Training EPOCH 66:
+Training EPOCH 67:
+Training EPOCH 68:
+Training EPOCH 69:
+Training EPOCH 70:
+Training EPOCH 71:
+Training EPOCH 72:
+Training EPOCH 73:
+Training EPOCH 74:
+Training EPOCH 75:
+Training EPOCH 76:
+Training EPOCH 77:
+Training EPOCH 78:
+Training EPOCH 79:
+Training EPOCH 80:
+Training EPOCH 81:
+Training EPOCH 82:
+Training EPOCH 83:
+Training EPOCH 84:
+Training EPOCH 85:
+Training EPOCH 86:
+Training EPOCH 87:
+Training EPOCH 88:
+Training EPOCH 89:
+Training EPOCH 90:
+Training EPOCH 91:
+Training EPOCH 92:
+Training EPOCH 93:
+Training EPOCH 94:
+Training EPOCH 95:
+Training EPOCH 96:
+Training EPOCH 97:
+Training EPOCH 98:
+Training EPOCH 99:
+Training EPOCH 100:
+Training EPOCH 101:
+Training EPOCH 102:
+Training EPOCH 103:
+Training EPOCH 104:
+Training EPOCH 105:
+Training EPOCH 106:
+Training EPOCH 107:
+Training EPOCH 108:
+Training EPOCH 109:
+Training EPOCH 110:
+Training EPOCH 111:
+Training EPOCH 112:
+Training EPOCH 113:
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/run_pipeline.py", line 147, in <module>
+    trained_model = train_model(
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/train.py", line 91, in train_model
+    grad_scaler.scale(loss).backward()      # Compute partial derivative of the output f with respect to each of the input variables
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/torch/_tensor.py", line 522, in backward
+    torch.autograd.backward(
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/torch/autograd/__init__.py", line 266, in backward
+    Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/run_pipeline.py", line 147, in <module>
+    trained_model = train_model(
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/train.py", line 91, in train_model
+    grad_scaler.scale(loss).backward()      # Compute partial derivative of the output f with respect to each of the input variables
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/torch/_tensor.py", line 522, in backward
+    torch.autograd.backward(
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/torch/autograd/__init__.py", line 266, in backward
+    Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+KeyboardInterrupt

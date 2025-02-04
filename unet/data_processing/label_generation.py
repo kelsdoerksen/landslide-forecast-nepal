@@ -8,7 +8,7 @@ from datetime import datetime, timedelta, date
 import pandas as pd
 
 # Setting data directories to query from
-root_dir = '/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
+root_dir = '/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
 
 # Loading landslide records and Nepal District Array
 landslide_records = pd.read_csv('{}/Wards_with_Bipad_events_one_to_many_landslides_only.csv'.format(root_dir))
@@ -68,7 +68,7 @@ def generate_daily_labels(doy, landslide_df):
     return combined_label
 
 
-date_list = daterange(date(2016,1,1), date(2023,10,13))
+date_list = daterange(date(2023,10,13), date(2023,10,17))
 for d in date_list:
     print('Generating label for doy: {}'.format(d))
     generate_daily_labels(d, landslide_records)

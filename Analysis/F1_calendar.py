@@ -13,7 +13,9 @@ import argparse
 
 def get_args():
     parser = argparse.ArgumentParser(description='Generating Confusion Matrix')
-    parser.add_argument('--run', help='Wandb run name')
+    parser.add_argument('--run', default=None, help='Wandb run name')
+    parser.add_argument('--root_dir', help='Root Directory of data')
+    parser.add_argument('--test_year', help='Year of test')
     return parser.parse_args()
 
 
@@ -31,7 +33,7 @@ def f1_score_gen(df, decision_threshold):
     return f1
 
 
-def generate_f1_fig(df, save_dir):
+def generate_f1_fig(df, year, save_dir):
     """
     Generate f1 score figure
     """
@@ -39,7 +41,7 @@ def generate_f1_fig(df, save_dir):
     date_list = df['date'].unique()
     sorted_dates = sorted(date_list)
 
-    f1_all = f1_score_gen(df, 0.20)
+    f1_all = f1_score_gen(df, 0.19)
     if not os.path.exists('{}/F1'.format(save_dir)):
         os.mkdir('{}/F1'.format(save_dir))
 
@@ -48,11 +50,12 @@ def generate_f1_fig(df, save_dir):
     start_dates = []
     end_dates = []
 
-    may = sorted_dates.index("2023-05-01")
-    june = sorted_dates.index("2023-06-01")
-    july = sorted_dates.index("2023-07-01")
-    aug = sorted_dates.index("2023-08-01")
-    sept = sorted_dates.index("2023-09-01")
+    #apr = sorted_dates.index("{}-04-01".format(year))
+    may = sorted_dates.index("{}-05-01".format(year))
+    june = sorted_dates.index("{}-06-01".format(year))
+    july = sorted_dates.index("{}-07-01".format(year))
+    aug = sorted_dates.index("{}-08-01".format(year))
+    sept = sorted_dates.index("{}-09-01".format(year))
 
     for date in sorted_dates:
         # subset date
@@ -63,6 +66,13 @@ def generate_f1_fig(df, save_dir):
         end_dates.append(end)
         f1 = f1_score_gen(df_subset, 0.2)
         f1_scores.append(f1)
+
+    df = pd.DataFrame()
+    df['f1'] = f1_scores
+    df['doy'] = sorted_dates
+    df.to_csv('{}/f1_timeseries.csv'.format(save_dir))
+
+    '''
 
     for i in range(len(f1_scores)):
         fig, ax = plt.subplots()
@@ -76,16 +86,23 @@ def generate_f1_fig(df, save_dir):
         plt.ylabel('F1 Score')
         plt.savefig('{}/F1/{}_F1.png'.format(save_dir, sorted_dates[i]))
         plt.close()
+    '''
 
 
 if __name__ == '__main__':
     args = get_args()
     run_dir = args.run
+    root_dir = args.root_dir
+    year = args.test_year
 
-    root_dir = '/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
-    results = '{}/Results/{}'.format(root_dir, run_dir)
-    prediction_df = pd.read_csv('{}/predictions_and_groundtruth.csv'.format(results))
-    generate_f1_fig(prediction_df, results)
+    if not run_dir:
+        results = '{}/FullSeason_Results'.format(root_dir)
+        prediction_df = pd.read_csv('{}/predictions_and_groundtruth_trainsource_gpm.csv'.format(results))
+    else:
+        results = '{}/{}'.format(root_dir, run_dir)
+        prediction_df = pd.read_csv('{}/predictions_and_groundtruth.csv'.format(results))
+
+    generate_f1_fig(prediction_df, year, results)
 
 
 

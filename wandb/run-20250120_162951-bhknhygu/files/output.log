@@ -1,0 +1,7 @@
+Loading data...
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 774, in <module>
+    X_train, y_train, X_test, y_test, X_val, y_val = load_data(test_y, '{}/LabelledData_{}/{}/ensemble_{}'.
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 357, in load_data
+    random_state=random.randint(a, b) (1,1000),
+NameError: name 'a' is not defined

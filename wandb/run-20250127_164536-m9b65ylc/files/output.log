@@ -1,0 +1,23 @@
+Loading data...
+Tuning the model
+Tuning for iteration: 0
+Running grid search cv on training set...
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 918, in <module>
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 682, in run_xgb
+    clf_cv.fit(X_train, y_train)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/sklearn/model_selection/_search.py", line 874, in fit
+    self._run_search(evaluate_candidates)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/sklearn/model_selection/_search.py", line 1388, in _run_search
+    evaluate_candidates(ParameterGrid(self.param_grid))
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/sklearn/model_selection/_search.py", line 821, in evaluate_candidates
+    out = parallel(
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/sklearn/utils/parallel.py", line 63, in __call__
+    return super().__call__(iterable_with_config)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/joblib/parallel.py", line 2007, in __call__
+    return output if self.return_generator else list(output)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/joblib/parallel.py", line 1650, in _get_outputs
+    yield from self._retrieve()
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/joblib/parallel.py", line 1762, in _retrieve
+    time.sleep(0.01)
+KeyboardInterrupt

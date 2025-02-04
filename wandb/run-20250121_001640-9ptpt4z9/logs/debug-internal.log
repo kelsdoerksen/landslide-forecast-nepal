@@ -1,0 +1,21 @@
+{"time":"2025-01-21T00:16:40.017821-08:00","level":"INFO","msg":"using version","core version":"0.18.5"}
+{"time":"2025-01-21T00:16:40.017902-08:00","level":"INFO","msg":"created symlink","path":"/Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20250121_001640-9ptpt4z9/logs/debug-core.log"}
+{"time":"2025-01-21T00:16:40.13531-08:00","level":"INFO","msg":"created new stream","id":"9ptpt4z9"}
+{"time":"2025-01-21T00:16:40.135388-08:00","level":"INFO","msg":"stream: started","id":"9ptpt4z9"}
+{"time":"2025-01-21T00:16:40.135491-08:00","level":"INFO","msg":"sender: started","stream_id":"9ptpt4z9"}
+{"time":"2025-01-21T00:16:40.135461-08:00","level":"INFO","msg":"handler: started","stream_id":{"value":"9ptpt4z9"}}
+{"time":"2025-01-21T00:16:40.135467-08:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"9ptpt4z9"}}
+{"time":"2025-01-21T00:16:40.527008-08:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-01-21T00:18:11.023406-08:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/kelsey-doerksen/landslide-prediction/9ptpt4z9/file_stream\": read tcp 192.168.1.6:58075->35.186.228.49:443: read: connection reset by peer"}
+{"time":"2025-01-21T00:20:41.038663-08:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/kelsey-doerksen/landslide-prediction/9ptpt4z9/file_stream\": read tcp 192.168.1.6:58103->35.186.228.49:443: read: connection reset by peer"}
+{"time":"2025-01-21T00:24:41.033549-08:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/kelsey-doerksen/landslide-prediction/9ptpt4z9/file_stream\": read tcp 192.168.1.6:58193->35.186.228.49:443: read: connection reset by peer"}
+{"time":"2025-01-21T00:35:11.044208-08:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/kelsey-doerksen/landslide-prediction/9ptpt4z9/file_stream\": read tcp 192.168.1.6:58312->35.186.228.49:443: read: connection reset by peer"}
+{"time":"2025-01-21T00:37:41.061688-08:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/kelsey-doerksen/landslide-prediction/9ptpt4z9/file_stream\": read tcp 192.168.1.6:58341->35.186.228.49:443: read: connection reset by peer"}
+{"time":"2025-01-21T00:40:14.059527-08:00","level":"INFO","msg":"stream: closing","id":"9ptpt4z9"}
+{"time":"2025-01-21T00:40:14.059629-08:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-01-21T00:40:14.060447-08:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-01-21T00:40:14.970308-08:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-01-21T00:40:15.132177-08:00","level":"INFO","msg":"handler: closed","stream_id":{"value":"9ptpt4z9"}}
+{"time":"2025-01-21T00:40:15.132318-08:00","level":"INFO","msg":"sender: closed","stream_id":"9ptpt4z9"}
+{"time":"2025-01-21T00:40:15.132196-08:00","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"9ptpt4z9"}}
+{"time":"2025-01-21T00:40:15.13254-08:00","level":"INFO","msg":"stream: closed","id":"9ptpt4z9"}

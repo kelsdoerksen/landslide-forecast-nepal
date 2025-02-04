@@ -1,0 +1,19 @@
+{"time":"2025-01-21T08:33:49.954553-08:00","level":"INFO","msg":"using version","core version":"0.18.5"}
+{"time":"2025-01-21T08:33:49.954657-08:00","level":"INFO","msg":"created symlink","path":"/Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20250121_083349-kvvqze2u/logs/debug-core.log"}
+{"time":"2025-01-21T08:33:50.076052-08:00","level":"INFO","msg":"created new stream","id":"kvvqze2u"}
+{"time":"2025-01-21T08:33:50.076104-08:00","level":"INFO","msg":"stream: started","id":"kvvqze2u"}
+{"time":"2025-01-21T08:33:50.076132-08:00","level":"INFO","msg":"handler: started","stream_id":{"value":"kvvqze2u"}}
+{"time":"2025-01-21T08:33:50.076221-08:00","level":"INFO","msg":"sender: started","stream_id":"kvvqze2u"}
+{"time":"2025-01-21T08:33:50.076124-08:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"kvvqze2u"}}
+{"time":"2025-01-21T08:33:50.443425-08:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-01-21T08:35:20.904475-08:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/kelsey-doerksen/landslide-prediction/kvvqze2u/file_stream\": read tcp 192.168.1.6:50166->35.186.228.49:443: read: connection reset by peer"}
+{"time":"2025-01-21T08:46:35.950649-08:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/kelsey-doerksen/landslide-prediction/kvvqze2u/file_stream\": read tcp 192.168.1.6:50629->35.186.228.49:443: read: connection reset by peer"}
+{"time":"2025-01-21T08:59:50.869259-08:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/kelsey-doerksen/landslide-prediction/kvvqze2u/file_stream\": read tcp 192.168.1.6:51411->35.186.228.49:443: read: connection reset by peer"}
+{"time":"2025-01-21T09:02:43.15075-08:00","level":"INFO","msg":"stream: closing","id":"kvvqze2u"}
+{"time":"2025-01-21T09:02:43.150828-08:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-01-21T09:02:43.15226-08:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-01-21T09:02:43.96334-08:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-01-21T09:02:44.156429-08:00","level":"INFO","msg":"handler: closed","stream_id":{"value":"kvvqze2u"}}
+{"time":"2025-01-21T09:02:44.156538-08:00","level":"INFO","msg":"sender: closed","stream_id":"kvvqze2u"}
+{"time":"2025-01-21T09:02:44.1565-08:00","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"kvvqze2u"}}
+{"time":"2025-01-21T09:02:44.157188-08:00","level":"INFO","msg":"stream: closed","id":"kvvqze2u"}

@@ -1,0 +1,24 @@
+Loading data...
+/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py:346: DtypeWarning: Columns (59,60) have mixed types. Specify dtype option on import or set low_memory=False.
+  train = pd.read_csv('{}/train_data_2016-2022.csv'.format(data_dir))
+/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py:347: DtypeWarning: Columns (59,60) have mixed types. Specify dtype option on import or set low_memory=False.
+  val = pd.read_csv('{}/val_data_2016-2022.csv'.format(data_dir))
+Tuning the model
+Tuning for iteration: 0
+Running grid search cv on training set...
+/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/sklearn/utils/multiclass.py:357: RuntimeWarning: invalid value encountered in cast
+  if xp.any(data != data.astype(int)):
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 815, in <module>
+    run_rf(data_dir, X_train, y_train, X_test, y_test, X_val, y_val, results, experiment, model, test_y, tuning)
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 472, in run_rf
+    rf_cv.fit(X_train, y_train)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/sklearn/model_selection/_search.py", line 785, in fit
+    cv_orig = check_cv(self.cv, y, classifier=is_classifier(estimator))
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/sklearn/model_selection/_split.py", line 2445, in check_cv
+    and (type_of_target(y, input_name="y") in ("binary", "multiclass"))
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/sklearn/utils/multiclass.py", line 358, in type_of_target
+    _assert_all_finite(data, input_name=input_name)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/sklearn/utils/validation.py", line 161, in _assert_all_finite
+    raise ValueError(msg_err)
+ValueError: Input y contains NaN.

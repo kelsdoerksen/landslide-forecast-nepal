@@ -1,0 +1,92 @@
+_wandb:
+    value:
+        cli_version: 0.18.5
+        m: []
+        python_version: 3.10.16
+        t:
+            "1":
+                - 5
+                - 6
+                - 53
+                - 55
+            "2":
+                - 5
+                - 6
+                - 53
+                - 55
+            "3":
+                - 23
+                - 55
+            "4": 3.10.16
+            "5": 0.18.5
+            "8":
+                - 5
+            "12": 0.18.5
+            "13": darwin-x86_64
+        visualize:
+            pr:
+                panel_config:
+                    fieldSettings:
+                        class: class
+                        x: recall
+                        "y": precision
+                    panelDefId: wandb/area-under-curve/v0
+                    stringSettings:
+                        title: Precision v. Recall
+                    transform:
+                        name: tableWithLeafColNames
+                    userQuery:
+                        queryFields:
+                            - args:
+                                - name: runSets
+                                  value: ${runSets}
+                              fields:
+                                - fields: []
+                                  name: id
+                                - fields: []
+                                  name: name
+                                - fields: []
+                                  name: _defaultColorIndex
+                                - args:
+                                    - name: tableKey
+                                      value: pr_table
+                                  fields: []
+                                  name: summaryTable
+                              name: runSets
+                panel_type: Vega2
+            roc:
+                panel_config:
+                    fieldSettings:
+                        class: class
+                        x: fpr
+                        "y": tpr
+                    panelDefId: wandb/area-under-curve/v0
+                    stringSettings:
+                        title: ROC
+                        x-axis-title: False positive rate
+                        y-axis-title: True positive rate
+                    transform:
+                        name: tableWithLeafColNames
+                    userQuery:
+                        queryFields:
+                            - args:
+                                - name: runSets
+                                  value: ${runSets}
+                              fields:
+                                - fields: []
+                                  name: id
+                                - fields: []
+                                  name: name
+                                - fields: []
+                                  name: _defaultColorIndex
+                                - args:
+                                    - name: tableKey
+                                      value: roc_table
+                                  fields: []
+                                  name: summaryTable
+                              name: runSets
+                panel_type: Vega2
+model:
+    value: mlp
+test_year:
+    value: "2023"

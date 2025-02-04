@@ -1,0 +1,43 @@
+Loading data...
+Tuning the model
+Running grid search cv on training set...
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/joblib/parallel.py", line 938, in retrieve
+    self._output.extend(job.get(timeout=self.timeout))
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/joblib/_parallel_backends.py", line 542, in wrap_future_result
+    return future.result(timeout=timeout)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/concurrent/futures/_base.py", line 453, in result
+    self._condition.wait(timeout)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/threading.py", line 320, in wait
+    waiter.acquire()
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 816, in <module>
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 473, in run_rf
+    print("--- %s seconds to hyperparameter tune ---" % (time.time() - start_time))
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/sklearn/model_selection/_search.py", line 874, in fit
+    self._run_search(evaluate_candidates)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/sklearn/model_selection/_search.py", line 1388, in _run_search
+    evaluate_candidates(ParameterGrid(self.param_grid))
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/sklearn/model_selection/_search.py", line 821, in evaluate_candidates
+    out = parallel(
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/sklearn/utils/parallel.py", line 63, in __call__
+    return super().__call__(iterable_with_config)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/joblib/parallel.py", line 1061, in __call__
+    self.retrieve()
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/joblib/parallel.py", line 960, in retrieve
+    backend.abort_everything(ensure_ready=ensure_ready)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/joblib/_parallel_backends.py", line 561, in abort_everything
+    self._workers.terminate(kill_workers=True)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/joblib/executor.py", line 74, in terminate
+    self.shutdown(kill_workers=kill_workers)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/joblib/externals/loky/process_executor.py", line 1185, in shutdown
+    executor_manager_thread.join()
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/threading.py", line 1096, in join
+    self._wait_for_tstate_lock()
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/threading.py", line 1116, in _wait_for_tstate_lock
+    if lock.acquire(block, timeout):
+KeyboardInterrupt

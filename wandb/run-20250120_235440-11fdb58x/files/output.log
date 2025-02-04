@@ -1,0 +1,33 @@
+Loading data...
+Tuning the model
+Tuning for iteration: 0
+Running grid search cv on training set...
+--- 370.7731201648712 seconds to hyperparameter tune ---
+Tuning for iteration: 1
+Running grid search cv on training set...
+--- 439.7848381996155 seconds to hyperparameter tune ---
+Tuning for iteration: 2
+Running grid search cv on training set...
+--- 473.16191005706787 seconds to hyperparameter tune ---
+Max model stats after parameter tuning is: {'bootstrap': True, 'max_depth': 7, 'min_samples_split': 8, 'n_estimators': 100, 'accuracy': 0.7360237472612905, 'f1': 0.4888463117558505, 'best_model': RandomForestClassifier(class_weight='balanced', max_depth=7,
+                       min_samples_split=8, n_jobs=-1, random_state=627)}
+Evaluating model...
+The hard predictions were right 77.20% of the time
+No Skill: ROC AUC=0.500
+RFC: ROC AUC=0.840
+No nan values in fscore
+The number of non-landslide events is: 11535
+The number of landslide events is: 2787
+Best Threshold=0.521988, F-Score=0.562
+Test set accuracy at threshold 0.521987694561884: 0.7878787878787878
+Test set F1 at threshold 0.521987694561884: 0.5616161616161616
+True Positive is 1946
+True Negative is 9338
+False Positive is 2197
+False Negative is 841
+False positive rate at best threshold is 0.1904638058084092
+True positive rate at best threshold is is 0.6982418371008252
+False negative rate at best threshold is is 0.30175816289917473
+True negative rate at best threshold is is 0.8095361941915908
+--------------------
+{'0': {'precision': 0.9173789173789174, 'recall': 0.8095361941915908, 'f1-score': 0.8600902643455834, 'support': 11535}, '1': {'precision': 0.46970794110547914, 'recall': 0.6982418371008252, 'f1-score': 0.5616161616161616, 'support': 2787}, 'accuracy': 0.7878787878787878, 'macro avg': {'precision': 0.6935434292421983, 'recall': 0.753889015646208, 'f1-score': 0.7108532129808725, 'support': 14322}, 'weighted avg': {'precision': 0.8302640583596412, 'recall': 0.7878787878787878, 'f1-score': 0.8020084793779185, 'support': 14322}}

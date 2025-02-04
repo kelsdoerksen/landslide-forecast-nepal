@@ -1,0 +1,18 @@
+{"time":"2025-01-20T23:20:52.241304-08:00","level":"INFO","msg":"using version","core version":"0.18.5"}
+{"time":"2025-01-20T23:20:52.241388-08:00","level":"INFO","msg":"created symlink","path":"/Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20250120_232052-4qyt9zm2/logs/debug-core.log"}
+{"time":"2025-01-20T23:20:52.360965-08:00","level":"INFO","msg":"created new stream","id":"4qyt9zm2"}
+{"time":"2025-01-20T23:20:52.361067-08:00","level":"INFO","msg":"stream: started","id":"4qyt9zm2"}
+{"time":"2025-01-20T23:20:52.361194-08:00","level":"INFO","msg":"handler: started","stream_id":{"value":"4qyt9zm2"}}
+{"time":"2025-01-20T23:20:52.361134-08:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"4qyt9zm2"}}
+{"time":"2025-01-20T23:20:52.361354-08:00","level":"INFO","msg":"sender: started","stream_id":"4qyt9zm2"}
+{"time":"2025-01-20T23:20:52.815085-08:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-01-20T23:35:38.242573-08:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/kelsey-doerksen/landslide-prediction/4qyt9zm2/file_stream\": read tcp 192.168.1.6:57404->35.186.228.49:443: read: connection reset by peer"}
+{"time":"2025-01-20T23:35:40.351281-08:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/kelsey-doerksen/landslide-prediction/4qyt9zm2/file_stream\": read tcp 192.168.1.6:57405->35.186.228.49:443: read: connection reset by peer"}
+{"time":"2025-01-20T23:37:50.427614-08:00","level":"INFO","msg":"stream: closing","id":"4qyt9zm2"}
+{"time":"2025-01-20T23:37:50.427667-08:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-01-20T23:37:50.428675-08:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-01-20T23:37:51.359873-08:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-01-20T23:37:51.64164-08:00","level":"INFO","msg":"handler: closed","stream_id":{"value":"4qyt9zm2"}}
+{"time":"2025-01-20T23:37:51.641807-08:00","level":"INFO","msg":"sender: closed","stream_id":"4qyt9zm2"}
+{"time":"2025-01-20T23:37:51.641741-08:00","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"4qyt9zm2"}}
+{"time":"2025-01-20T23:37:51.64241-08:00","level":"INFO","msg":"stream: closed","id":"4qyt9zm2"}

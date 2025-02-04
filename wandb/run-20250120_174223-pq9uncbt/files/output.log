@@ -1,0 +1,265 @@
+Loading data...
+> [0;32m/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py[0m(363)[0;36mload_data[0;34m()[0m
+[0;32m    362 [0;31m[0;34m[0m[0m
+[0m[0;32m--> 363 [0;31m    [0;32mif[0m [0mexperiment_type[0m [0;34m==[0m [0;34m'no_hindcast'[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0m[0;32m    364 [0;31m        [0mX_train[0m [0;34m=[0m [0mX_train[0m[0;34m.[0m[0mdrop[0m[0;34m([0m[0mX_train[0m[0;34m.[0m[0mfilter[0m[0;34m([0m[0mregex[0m[0;34m=[0m[0;34m'tminus'[0m[0;34m)[0m[0;34m.[0m[0mcolumns[0m[0;34m,[0m [0maxis[0m[0;34m=[0m[0;36m1[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m
+       precip_rate_tminus_0  precip_rate_tminus_1  precip_rate_tminus_2  ...  KMA_ens_1_precip_total_cumulative_precipitation        date       district
+11285              0.010435              0.007870              0.000000  ...                                    124725.624336  2018-10-02       Chitawan
+17801              0.101420              0.581676              0.307244  ...                                    368643.247680  2021-10-13  Sindhupalchok
+36034              0.043750              4.870833             16.657291  ...                                    968996.400000  2020-05-21        Syangja
+14743             19.138020             12.073495              1.197338  ...                                    989811.631200  2018-05-28        Dhading
+14040              1.278472              1.022361              1.881806  ...                                    210557.271840  2018-07-30        Khotang
+...                     ...                   ...                   ...  ...                                              ...         ...            ...
+63208              4.757183              1.348627              4.222206  ...                                    548106.507120  2022-10-01  Sindhupalchok
+21030              1.263611              0.853472             12.179444  ...                                     43435.531128  2022-09-11      Panchthar
+81064             26.404807             30.846794              5.525320  ...                                    297194.338800  2021-05-28        Saptari
+53936             32.591978              4.274189              5.929396  ...                                    378914.230464  2019-06-02       Jajarkot
+27611              0.792500              2.130625              8.285000  ...                                    451211.353920  2019-09-08           Bara
+
+[69835 rows x 61 columns]
+11285    0.0
+17801    0.0
+36034    0.0
+14743    0.0
+14040    0.0
+        ...
+63208    1.0
+21030    1.0
+81064    0.0
+53936    0.0
+27611    0.0
+Name: label, Length: 69835, dtype: float64
+       precip_rate_tminus_0  precip_rate_tminus_1  precip_rate_tminus_2  ...  KMA_ens_1_precip_total_cumulative_precipitation        date         district
+58608             26.041174              5.042784              3.990076  ...                                     4.977402e+05  2020-05-04          Nuwakot
+80836             28.070124              6.432139              1.965417  ...                                     1.593835e+06  2017-05-30            Palpa
+65456              0.005119              0.016488              2.075440  ...                                     3.511196e+04  2021-06-03         Dhankuta
+21597              0.000000              0.597812              7.260000  ...                                     3.510472e+04  2022-10-13             Bara
+19936             29.000992             34.421323             10.321617  ...                                     2.624566e+05  2017-05-01           Achham
+...                     ...                   ...                   ...  ...                                              ...         ...              ...
+74436              0.009792              0.667222              0.200903  ...                                     2.260798e+04  2018-09-17          Khotang
+42070             89.384442             37.444999              9.345000  ...                                     5.756310e+05  2019-07-12         Dhanusha
+60268              0.000511             10.050591              0.049543  ...                                     1.471092e+05  2019-04-25          Kailali
+78673              2.096920              3.317946              6.134464  ...                                     2.517775e+05  2020-09-28  Kabhrepalanchok
+16403             22.935890             51.246286             22.034071  ...                                     2.211256e+06  2021-06-27          Nuwakot
+
+[12324 rows x 61 columns]
+58608    0.0
+80836    0.0
+65456    0.0
+21597    0.0
+19936    0.0
+        ...
+74436    1.0
+42070    0.0
+60268    0.0
+78673    0.0
+16403    1.0
+Name: label, Length: 12324, dtype: float64
+Int64Index([11285, 17801, 36034, 14743, 14040, 62239, 33024, 36064, 80018,
+            24851,
+            ...
+             1940,  1799, 57297, 78922, 47663, 63208, 21030, 81064, 53936,
+            27611],
+           dtype='int64', length=69835)
+*** Error in argument: '(X_train.index)'
+<bound method IndexOpsMixin.tolist of Int64Index([11285, 17801, 36034, 14743, 14040, 62239, 33024, 36064, 80018,
+            24851,
+            ...
+             1940,  1799, 57297, 78922, 47663, 63208, 21030, 81064, 53936,
+            27611],
+           dtype='int64', length=69835)>
+[11285, 17801, 36034, 14743, 14040, 62239, 33024, 36064, 80018, 24851, 51275, 81846, 43676, 16976, 14250, 40205, 10995, 11645, 15852, 68841, 73903, 36869, 72282, 20570, 19307, 32518, 75787, 54015, 26890, 62068, 28560, 8166, 73567, 81031, 2651, 70462, 25416, 55444, 15561, 52203, 5731, 76832, 57884, 30563, 10405, 11612, 21918, 6257, 54542, 21933, 7313, 5397, 79972, 19064, 33799, 15297, 1212, 66194, 79183, 33639, 3789, 58480, 77952, 37607, 26939, 65374, 38582, 51688, 62814, 49432, 63623, 59732, 63086, 27320, 18174, 68198, 71711, 58830, 13633, 46295, 69581, 47051, 18595, 71700, 12353, 28829, 46043, 9463, 24419, 43231, 12549, 70262, 58082, 66956, 65785, 40338, 32945, 44138, 56223, 25081, 72049, 48324, 49318, 11467, 7949, 19853, 22181, 733, 23703, 68817, 79927, 9569, 62807, 81121, 81346, 40533, 41, 7008, 79697, 14966, 15766, 4402, 46625, 16155, 2791, 43047, 64345, 81052, 3500, 65890, 50682, 26911, 81968, 69995, 11658, 64672, 12385, 66397, 743, 81902, 43585, 35885, 64160, 28051, 6821, 26781, 67024, 48797, 61658, 49792, 33968, 16824, 14867, 23521, 52865, 19225, 27734, 64076, 14287, 9900, 33761, 37202, 34056, 42448, 65376, 55546, 13358, 53628, 26121, 50636, 52281, 7190, 66442, 40647, 36567, 68033, 42845, 58051, 73196, 36902, 28301, 69306, 80391, 42055, 4775, 75641, 31377, 77300, 9290, 6014, 61946, 77135, 18899, 51048, 58074, 65515, 71002, 37587, 48761, 40705, 45204, 18984, 22830, 7641, 81536, 13051, 31914, 23625, 23645, 67018, 50201, 9721, 47928, 26229, 63380, 31596, 31934, 5827, 78847, 72570, 22063, 40279, 4677, 9192, 20500, 13141, 60497, 12963, 11646, 43843, 21378, 2707, 69287, 60280, 60022, 32111, 1211, 25395, 65196, 64542, 36517, 11912, 28086, 44315, 71508, 43090, 53094, 64684, 37066, 5650, 4651, 2843, 2750, 6701, 8447, 56700, 38415, 70622, 62845, 11609, 6773, 50057, 72806, 18583, 64514, 55086, 36079, 60794, 22287, 13496, 49150, 37107, 9381, 40016, 76113, 67313, 24777, 9780, 43855, 54271, 3206, 63877, 72467, 1403, 6022, 70544, 44566, 42459, 56122, 44995, 77330, 72634, 19525, 12995, 70385, 40749, 19083, 22454, 3994, 62855, 70982, 31687, 6196, 30306, 11503, 48635, 78349, 51147, 28451, 65110, 60178, 79445, 80785, 71274, 67522, 32054, 67554, 64022, 2388, 23581, 35739, 59504, 57755, 25719, 39832, 70484, 71919, 28455, 73685, 9887, 36675, 50968, 61567, 33723, 63523, 14138, 35277, 72565, 37032, 67202, 54171, 31101, 80072, 56798, 17158, 25070, 35779, 25792, 7933, 48804, 49681, 77763, 16860, 12771, 21132, 19418, 60920, 43918, 46476, 2063, 15632, 72789, 52105, 76316, 80772, 63869, 7381, 37486, 29536, 42783, 45942, 66808, 77123, 21460, 27046, 70358, 1476, 3432, 40214, 3011, 51270, 54120, 81797, 73228, 35271, 81107, 66046, 81713, 35116, 6102, 760, 50713, 23529, 53360, 21395, 30143, 71545, 7520, 74865, 23421, 55081, 23713, 34662, 40793, 46870, 35287, 17386, 25997, 50671, 28905, 43092, 79712, 22762, 45735, 74468, 10623, 76497, 71455, 69192, 5543, 67608, 9293, 21072, 3858, 56168, 79488, 15552, 39139, 32800, 71398, 15227, 11461, 72529, 4479, 16974, 27515, 57015, 3277, 6984, 28393, 18811, 47249, 64696, 48870, 81693, 46339, 16720, 956, 30762, 56986, 31414, 7347, 45092, 49417, 48148, 16616, 30937, 8266, 43469, 53555, 6719, 78085, 2465, 28123, 59579, 74090, 42496, 75106, 4275, 75815, 28479, 59945, 46559, 59640, 72483, 81616, 47915, 22539, 81177, 76346, 27375, 62653, 15356, 73960, 46151, 22695, 9747, 61249, 1942, 56765, 26117, 44991, 19716, 43404, 17021, 49791, 75523, 25270, 26928, 71603, 27940, 28521, 31681, 23585, 4490, 64676, 36911, 54958, 2666, 43607, 62081, 39415, 54773, 53977, 30899, 8850, 47924, 61021, 6849, 42355, 8124, 15232, 7050, 14695, 19269, 27447, 56932, 13046, 4253, 80054, 19152, 58725, 32383, 18483, 57274, 49937, 7846, 80247, 42755, 67515, 12976, 71238, 28598, 66945, 53983, 63963, 32206, 80228, 67919, 81505, 44288, 54783, 14529, 63042, 37323, 10761, 8836, 21818, 71122, 17537, 26274, 12903, 26032, 49503, 26226, 67653, 41869, 12984, 73577, 52261, 46053, 43638, 15571, 46818, 53405, 55902, 77710, 53912, 31211, 18881, 66415, 4536, 23168, 73347, 34225, 40344, 56061, 63675, 15080, 51109, 18352, 61402, 71053, 39523, 15349, 58410, 57701, 51
+*** NameError: name 'data_fir' is not defined
+'/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep/LabelledData_GPMv07/KMA/ensemble_1'
+       precip_rate_tminus_0  precip_rate_tminus_1  precip_rate_tminus_2  ...  KMA_ens_1_precip_total_cumulative_precipitation        date       district
+11285              0.010435              0.007870              0.000000  ...                                    124725.624336  2018-10-02       Chitawan
+17801              0.101420              0.581676              0.307244  ...                                    368643.247680  2021-10-13  Sindhupalchok
+36034              0.043750              4.870833             16.657291  ...                                    968996.400000  2020-05-21        Syangja
+14743             19.138020             12.073495              1.197338  ...                                    989811.631200  2018-05-28        Dhading
+14040              1.278472              1.022361              1.881806  ...                                    210557.271840  2018-07-30        Khotang
+...                     ...                   ...                   ...  ...                                              ...         ...            ...
+63208              4.757183              1.348627              4.222206  ...                                    548106.507120  2022-10-01  Sindhupalchok
+21030              1.263611              0.853472             12.179444  ...                                     43435.531128  2022-09-11      Panchthar
+81064             26.404807             30.846794              5.525320  ...                                    297194.338800  2021-05-28        Saptari
+53936             32.591978              4.274189              5.929396  ...                                    378914.230464  2019-06-02       Jajarkot
+27611              0.792500              2.130625              8.285000  ...                                    451211.353920  2019-09-08           Bara
+
+[69835 rows x 61 columns]
+11285    0.0
+17801    0.0
+36034    0.0
+14743    0.0
+14040    0.0
+        ...
+63208    1.0
+21030    1.0
+81064    0.0
+53936    0.0
+27611    0.0
+Name: label, Length: 69835, dtype: float64
+       Unnamed: 0  precip_rate_tminus_0  precip_rate_tminus_1  ...  KMA_ens_1_precip_total_cumulative_precipitation        date       district
+0           11285              0.010435              0.007870  ...                                    124725.624336  2018-10-02       Chitawan
+1           17801              0.101420              0.581676  ...                                    368643.247680  2021-10-13  Sindhupalchok
+2           36034              0.043750              4.870833  ...                                    968996.400000  2020-05-21        Syangja
+3           14743             19.138020             12.073495  ...                                    989811.631200  2018-05-28        Dhading
+4           14040              1.278472              1.022361  ...                                    210557.271840  2018-07-30        Khotang
+...           ...                   ...                   ...  ...                                              ...         ...            ...
+69830       63208              4.757183              1.348627  ...                                    548106.507120  2022-10-01  Sindhupalchok
+69831       21030              1.263611              0.853472  ...                                     43435.531128  2022-09-11      Panchthar
+69832       81064             26.404807             30.846794  ...                                    297194.338800  2021-05-28        Saptari
+69833       53936             32.591978              4.274189  ...                                    378914.230464  2019-06-02       Jajarkot
+69834       27611              0.792500              2.130625  ...                                    451211.353920  2019-09-08           Bara
+
+[69835 rows x 62 columns]
+       precip_rate_tminus_0  precip_rate_tminus_1  precip_rate_tminus_2  ...        date       district    0
+11285              0.010435              0.007870              0.000000  ...  2018-10-02       Chitawan  NaN
+17801              0.101420              0.581676              0.307244  ...  2021-10-13  Sindhupalchok  NaN
+36034              0.043750              4.870833             16.657291  ...  2020-05-21        Syangja  NaN
+14743             19.138020             12.073495              1.197338  ...  2018-05-28        Dhading  NaN
+14040              1.278472              1.022361              1.881806  ...  2018-07-30        Khotang  NaN
+...                     ...                   ...                   ...  ...         ...            ...  ...
+63208                   NaN                   NaN                   NaN  ...         NaN            NaN  1.0
+21030                   NaN                   NaN                   NaN  ...         NaN            NaN  1.0
+81064                   NaN                   NaN                   NaN  ...         NaN            NaN  0.0
+53936                   NaN                   NaN                   NaN  ...         NaN            NaN  0.0
+27611                   NaN                   NaN                   NaN  ...         NaN            NaN  0.0
+
+[139670 rows x 62 columns]
+11285    0.0
+17801    0.0
+36034    0.0
+14743    0.0
+14040    0.0
+        ...
+63208    1.0
+21030    1.0
+81064    0.0
+53936    0.0
+27611    0.0
+Name: label, Length: 69835, dtype: float64
+       precip_rate_tminus_0  precip_rate_tminus_1  precip_rate_tminus_2  ...        date       district    0
+11285              0.010435              0.007870              0.000000  ...  2018-10-02       Chitawan  NaN
+17801              0.101420              0.581676              0.307244  ...  2021-10-13  Sindhupalchok  NaN
+36034              0.043750              4.870833             16.657291  ...  2020-05-21        Syangja  NaN
+14743             19.138020             12.073495              1.197338  ...  2018-05-28        Dhading  NaN
+14040              1.278472              1.022361              1.881806  ...  2018-07-30        Khotang  NaN
+...                     ...                   ...                   ...  ...         ...            ...  ...
+63208                   NaN                   NaN                   NaN  ...         NaN            NaN  1.0
+21030                   NaN                   NaN                   NaN  ...         NaN            NaN  1.0
+81064                   NaN                   NaN                   NaN  ...         NaN            NaN  0.0
+53936                   NaN                   NaN                   NaN  ...         NaN            NaN  0.0
+27611                   NaN                   NaN                   NaN  ...         NaN            NaN  0.0
+
+[139670 rows x 62 columns]
+Index([                           'precip_rate_tminus_0',
+                                  'precip_rate_tminus_1',
+                                  'precip_rate_tminus_2',
+                                  'precip_rate_tminus_3',
+                                  'precip_rate_tminus_4',
+                                  'precip_rate_tminus_5',
+                                  'precip_rate_tminus_6',
+                                  'precip_rate_tminus_7',
+                                  'precip_rate_tminus_8',
+                                  'precip_rate_tminus_9',
+                                 'precip_rate_tminus_10',
+                                 'precip_rate_tminus_11',
+                                 'precip_rate_tminus_12',
+                                 'precip_rate_tminus_13',
+                               'GPMv07_mean_precip_rate',
+                                'GPMv07_max_precip_rate',
+                                'GPMv07_min_precip_rate',
+                 'GPMv07_total_cumulative_precipitation',
+                                              'dem_mean',
+                                            'dem_median',
+                                             'dem_stdev',
+                                               'dem_min',
+                                               'dem_max',
+                                             'dem_range',
+                                          'dem_variance',
+                                           'aspect_mean',
+                                         'aspect_median',
+                                          'aspect_stdev',
+                                            'aspect_min',
+                                            'aspect_max',
+                                          'aspect_range',
+                                       'aspect_variance',
+                                            'slope_mean',
+                                          'slope_median',
+                                           'slope_stdev',
+                                             'slope_min',
+                                             'slope_max',
+                                           'slope_range',
+                                        'slope_variance',
+                                               'lc_mode',
+                                                'lc_var',
+                         'KMA_ens_1_precip_rate_tplus_1',
+                         'KMA_ens_1_precip_rate_tplus_2',
+                         'KMA_ens_1_precip_rate_tplus_3',
+                         'KMA_ens_1_precip_rate_tplus_4',
+                         'KMA_ens_1_precip_rate_tplus_5',
+                         'KMA_ens_1_precip_rate_tplus_6',
+                         'KMA_ens_1_precip_rate_tplus_7',
+                         'KMA_ens_1_precip_rate_tplus_8',
+                         'KMA_ens_1_precip_rate_tplus_9',
+                        'KMA_ens_1_precip_rate_tplus_10',
+                        'KMA_ens_1_precip_rate_tplus_11',
+                        'KMA_ens_1_precip_rate_tplus_12',
+                        'KMA_ens_1_precip_rate_tplus_13',
+                        'KMA_ens_1_precip_rate_tplus_14',
+                     'KMA_ens_1_precip_mean_precip_rate',
+                      'KMA_ens_1_precip_max_precip_rate',
+                      'KMA_ens_1_precip_min_precip_rate',
+       'KMA_ens_1_precip_total_cumulative_precipitation',
+                                                  'date',
+                                              'district',
+                                                       0],
+      dtype='object')
+       precip_rate_tminus_0  precip_rate_tminus_1  precip_rate_tminus_2  ...        date       district    0
+11285              0.010435              0.007870              0.000000  ...  2018-10-02       Chitawan  NaN
+17801              0.101420              0.581676              0.307244  ...  2021-10-13  Sindhupalchok  NaN
+36034              0.043750              4.870833             16.657291  ...  2020-05-21        Syangja  NaN
+14743             19.138020             12.073495              1.197338  ...  2018-05-28        Dhading  NaN
+14040              1.278472              1.022361              1.881806  ...  2018-07-30        Khotang  NaN
+...                     ...                   ...                   ...  ...         ...            ...  ...
+63208                   NaN                   NaN                   NaN  ...         NaN            NaN  1.0
+21030                   NaN                   NaN                   NaN  ...         NaN            NaN  1.0
+81064                   NaN                   NaN                   NaN  ...         NaN            NaN  0.0
+53936                   NaN                   NaN                   NaN  ...         NaN            NaN  0.0
+27611                   NaN                   NaN                   NaN  ...         NaN            NaN  0.0
+
+[139670 rows x 62 columns]
+       precip_rate_tminus_0  precip_rate_tminus_1  precip_rate_tminus_2  ...        date       district  label
+11285              0.010435              0.007870              0.000000  ...  2018-10-02       Chitawan    NaN
+17801              0.101420              0.581676              0.307244  ...  2021-10-13  Sindhupalchok    NaN
+36034              0.043750              4.870833             16.657291  ...  2020-05-21        Syangja    NaN
+14743             19.138020             12.073495              1.197338  ...  2018-05-28        Dhading    NaN
+14040              1.278472              1.022361              1.881806  ...  2018-07-30        Khotang    NaN
+...                     ...                   ...                   ...  ...         ...            ...    ...
+63208                   NaN                   NaN                   NaN  ...         NaN            NaN    1.0
+21030                   NaN                   NaN                   NaN  ...         NaN            NaN    1.0
+81064                   NaN                   NaN                   NaN  ...         NaN            NaN    0.0
+53936                   NaN                   NaN                   NaN  ...         NaN            NaN    0.0
+27611                   NaN                   NaN                   NaN  ...         NaN            NaN    0.0
+
+[139670 rows x 62 columns]
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 775, in <module>
+    # Make results directory
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 363, in load_data
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 363, in load_data
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/bdb.py", line 115, in dispatch_line
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit
+
+If you suspect this is an IPython 8.9.0 bug, please report it at:
+    https://github.com/ipython/ipython/issues
+or send an email to the mailing list at ipython-dev@python.org
+
+You can print a more detailed traceback right now with "%tb", or use "%debug"
+to interactively debug it.
+
+Extra-detailed tracebacks for bug-reporting purposes can be enabled via:
+    %config Application.verbose_crash=True

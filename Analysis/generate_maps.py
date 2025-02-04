@@ -22,10 +22,11 @@ import argparse
 
 def get_args():
     parser = argparse.ArgumentParser(description='Generating Confusion Matrix')
-    parser.add_argument('--run', help='Wandb run name')
-    parser.add_argument('--forecast_model', help='Precipitation Forecast Model used')
-    parser.add_argument('--ens_member', help='Precipitation Forecast Model Ens member used')
-    parser.add_argument('--hindcast_model', help='Precipitation Hindcast Model used')
+    parser.add_argument('--run', default=None, help='Wandb run name')
+    parser.add_argument('--forecast_model', default=None, help='Precipitation Forecast Model used')
+    parser.add_argument('--ens_member', default=None,  help='Precipitation Forecast Model Ens member used')
+    parser.add_argument('--hindcast_model', default=None, help='Precipitation Hindcast Model used')
+    parser.add_argument('--root_dir', help='Root directory')
     return parser.parse_args()
 
 
@@ -140,18 +141,26 @@ if __name__ == '__main__':
     forecast_model = args.forecast_model
     ens_number = args.ens_member
     hindcast_model =args.hindcast_model
+    root_dir = args.root_dir
 
-    root_dir = '/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
     nepal_im = Image.open('{}/District_Labels.tif'.format(root_dir))
+
+    if not run_dir:
+        results_dir = '{}/FullSeason_Results'.format(root_dir)
+        prediction_df = pd.read_csv('{}/predictions_and_groundtruth_trainsource_gsmap.csv'.format(results_dir))
+    else:
+        results_dir = '{}/Results/{}'.format(root_dir, run_dir)
+        prediction_df = pd.read_csv('{}/predictions_and_groundtruth.csv'.format(results_dir))
+
+    # Generate maps
+    generate_prediction_map(prediction_df, nepal_im, results_dir)
+    #generate_precipitation_map(feature_df, nepal_im, results_dir, forecast_model)
+    '''
     feature_df = pd.read_csv('{}/LabelledData_{}/{}/ensemble_{}/2023_windowsize14_district.csv'.format(root_dir,
                                                                                                        hindcast_model,
                                                                                                        forecast_model,
                                                                                                        ens_number))
-    results_dir = '{}/Results/{}'.format(root_dir, run_dir)
-    prediction_df = pd.read_csv('{}/predictions_and_groundtruth.csv'.format(results_dir))
-    # Generate maps
-    generate_prediction_map(prediction_df, nepal_im, results_dir)
-    generate_precipitation_map(feature_df, nepal_im, results_dir, forecast_model)
+    '''
 
 
 

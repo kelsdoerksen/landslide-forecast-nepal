@@ -7,22 +7,24 @@ import time
 import numpy as np
 import argparse
 import warnings
+import os
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 def get_args():
     parser = argparse.ArgumentParser(description='Generate Feature Space for District Landslide Prediction')
-    parser.add_argument("--year", help='Specify year to generate feature space for. Range 2015-2021')
+    parser.add_argument("--year", help='Specify year to generate feature space for.')
     parser.add_argument("--hindcast_source", help='Hindcast precipitation source. Must be one of GPM or GSMaP')
     parser.add_argument("--forecast_source", help='Forecast precipitation source. Must be one of UKMO, NCEP, KMA.')
     parser.add_argument('--ens_member', help='Ensemble member to use precipitation data from.')
     return parser.parse_args()
 
 # Set data path
-root_dir = '/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
+root_dir = '/Volumes/PRO-G40 1/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
+#root_dir = '/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep/2024_Season_Retro/'
 
-# Read in incidents records for 2011-2023
-incidents_df = pd.read_csv(root_dir + '/Wards_with_Bipad_events_one_to_many_landslides_only.csv')
-
+# Read in incidents records
+incidents_df = pd.read_csv('{}/Wards_with_Bipad_events_one_to_many_landslides_only.csv'.format(root_dir))
+#incidents_df = pd.read_csv(root_dir + 'incidents_April_October_2024.csv')
 
 # Grab District Names -> Harcoded to match Bipad Portal records
 districts = ['Achham', 'Arghakhanchi', 'Baglung', 'Baitadi', 'Bajhang', 'Bajura', 'Banke', 'Bara', 'Bardiya',
@@ -37,7 +39,7 @@ districts = ['Achham', 'Arghakhanchi', 'Baglung', 'Baitadi', 'Bajhang', 'Bajura'
              'Sindhupalchok', 'Siraha', 'Solukhumbu', 'Sunsari', 'Surkhet', 'Syangja', 'Tanahu',
              'Taplejung', 'Terhathum', 'Udayapur']
 
-print('The number of landslides on the District-level from 2015-2023 in Nepal is {}'.format(len(incidents_df)))
+print('The number of landslides on the District-level in Nepal is {}'.format(len(incidents_df)))
 
 
 def daterange(date1, date2):
@@ -58,8 +60,8 @@ def generate_labelled_district(df, district, dates_list):
     # two landslides in the same district on the same day
     landslide_events_filt = landslide_events.drop_duplicates(subset=['Date'], keep='first')
     landslide_events_list = landslide_events_filt['Date'].tolist()
-    landslide_events_list_formatted = [datetime.strptime(sub, "%d/%m/%Y").strftime('%Y-%m-%d') for sub in landslide_events_list]
-
+    #landslide_events_list_formatted = [datetime.strptime(sub, "%m/%d/%y").strftime('%Y-%m-%d') for sub in landslide_events_list] # 2024 list
+    landslide_events_list_formatted = [datetime.strptime(sub, "%d/%m/%Y").strftime('%Y-%m-%d') for sub in landslide_events_list] # 2016-2023 list
     # Generate list of labelled events for the AOI specified
     label_list = []
     for doy in dates_list:
@@ -98,8 +100,8 @@ def add_landcover_features(modis_df, day):
     Generate and add landcover features per district
     '''
     year = day[0:4]
-    if int(year) > 2021:
-        query_year = '2021'
+    if int(year) > 2024:
+        query_year = '2023'
     else:
         query_year = year
 
@@ -224,8 +226,8 @@ def generate_labelled_xdays_sample(filepath, label_df, district, day, window_siz
     slope_df = add_geomorphic_features(slope, 'slope', district)
     aspect_df = add_geomorphic_features(aspect, 'aspect', district)
 
-    # Add landcover features -> only available 2001-2021 for MODIS
-    modis = pd.read_csv(filepath + '/MODIS_District_2015-2021/{}_Modis_2015-2021.csv'.format(district))
+    # Add landcover features
+    modis = pd.read_csv(filepath + '/MODIS_District_2011-2023/{}_Modis_2011-2023.csv'.format(district))
     modis_df = add_landcover_features(modis, day)
 
     # Add precip lookahead features
@@ -323,14 +325,11 @@ def run_generate_data(root_dir, year, start_date, end_date, window_size, forecas
         print('%.2f percent complete' % (100 * (1 - count / total_districts)))
         print('{} districts left to generate samples for'.format(count))
     # Saving data for future use
-    if forecast_model == 'ecmwf':
-        all_data.to_csv('{}/LabelledData_{}/{}/{}_windowsize{}_district.csv'.format(root_dir, hindcast_data,
-                                                                                    forecast_model, year, window_size))
-    else:
-        all_data.to_csv('{}/LabelledData_{}/{}/ensemble_{}/{}_windowsize{}_district.csv'.format(root_dir, hindcast_data,
-                                                                                                forecast_model,
-                                                                                                forecast_ensemble,
-                                                                                                year, window_size))
+    save_dir = '{}/LabelledData_{}/{}/ensemble_{}'.format(root_dir, hindcast_data, forecast_model,
+                                                              forecast_ensemble)
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+    all_data.to_csv('{}/{}_windowsize{}_district.csv'.format(save_dir, year, window_size))
     print('The program took {}s to run'.format(time.time()-start_time))
 
 
@@ -341,5 +340,5 @@ if __name__ == "__main__":
     forecast = args.forecast_source
     ens_num = args.ens_member
 
-    run_generate_data(root_dir, year, date(int(year), 1, 1), date(int(year)+1, 1, 14), 14, forecast, ens_num, hindcast)
-
+    #run_generate_data(root_dir, year, date(int(year), 1, 1), date(int(year)+1, 1, 14), 14, forecast, ens_num, hindcast)
+    run_generate_data(root_dir, year, date(int(year), 4, 1), date(int(year), 10, 30), 14, forecast, ens_num, hindcast)

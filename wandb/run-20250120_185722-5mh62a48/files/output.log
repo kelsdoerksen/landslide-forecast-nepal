@@ -1,0 +1,50 @@
+Loading data...
+Tuning the model
+Tuning for iteration: 0
+Running grid search cv on training set...
+--- 316.2547161579132 seconds to hyperparameter tune ---
+Tuning for iteration: 1
+Running grid search cv on training set...
+--- 330.5300130844116 seconds to hyperparameter tune ---
+Tuning for iteration: 2
+Running grid search cv on training set...
+--- 336.3662259578705 seconds to hyperparameter tune ---
+> [0;32m/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py[0m(492)[0;36mrun_rf[0;34m()[0m
+[0;32m    491 [0;31m    [0;31m# Save the model to file[0m[0;34m[0m[0;34m[0m[0m
+[0m[0;32m--> 492 [0;31m    [0mjoblib[0m[0;34m.[0m[0mdump[0m[0;34m([0m[0mforest[0m[0;34m,[0m [0;34m'{}/rf_model.joblib'[0m[0;34m.[0m[0mformat[0m[0;34m([0m[0mresults_dir[0m[0;34m)[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[0;32m    493 [0;31m    [0;31m# saving as pickle too[0m[0;34m[0m[0;34m[0m[0m
+[0m
+*** NameError: name 'tuned_list' is not defined
+   bootstrap  max_depth  min_samples_split  n_estimators  accuracy        f1
+0       True          7                  6           100  0.734989  0.492384
+1       True          7                  6           200  0.736287  0.492663
+2       True          7                  6           200  0.737910  0.493889
+{'bootstrap': True, 'max_depth': 7, 'min_samples_split': 6, 'n_estimators': 200, 'accuracy': 0.7379097695553392, 'f1': 0.49388906298965846, 'best_model': RandomForestClassifier(class_weight='balanced', max_depth=7,
+                       min_samples_split=6, n_estimators=200, n_jobs=-1,
+                       random_state=540)}
+{'bootstrap': True, 'max_depth': 7, 'min_samples_split': 6, 'n_estimators': 200, 'accuracy': 0.7379097695553392, 'f1': 0.49388906298965846, 'best_model': RandomForestClassifier(class_weight='balanced', max_depth=7,
+                       min_samples_split=6, n_estimators=200, n_jobs=-1,
+                       random_state=540)}
+['/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep/LabelledData_GPMv07/KMA/ensemble_1/rf_model.joblib']
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 815, in <module>
+    run_rf(data_dir, X_train, y_train, X_test, y_test, X_val, y_val, results, experiment, model, test_y, tuning)
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 492, in run_rf
+    joblib.dump(max_dict['best_model'], '{}/rf_model.joblib'.format(data_dir))
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 492, in run_rf
+    joblib.dump(max_dict['best_model'], '{}/rf_model.joblib'.format(data_dir))
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/bdb.py", line 115, in dispatch_line
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit
+
+If you suspect this is an IPython 8.9.0 bug, please report it at:
+    https://github.com/ipython/ipython/issues
+or send an email to the mailing list at ipython-dev@python.org
+
+You can print a more detailed traceback right now with "%tb", or use "%debug"
+to interactively debug it.
+
+Extra-detailed tracebacks for bug-reporting purposes can be enabled via:
+    %config Application.verbose_crash=True

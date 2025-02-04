@@ -12,7 +12,9 @@ from datetime import datetime, timedelta
 
 def get_args():
     parser = argparse.ArgumentParser(description='Generating Confusion Matrix')
-    parser.add_argument('--run', help='Wandb run name')
+    parser.add_argument('--run', default=None, help='Wandb run name')
+    parser.add_argument('--root_dir', help='Root directory of data')
+    parser.add_argument('--test_year', help='Test directory')
     return parser.parse_args()
 
 
@@ -149,18 +151,19 @@ def generate_tp_rate_map(df, nepal_mask, save_dir, decision_threshold=0.2):
     plt.close()
 
 
-def generate_monsoon_plots(results_df):
+def generate_monsoon_plots(results_df, year):
     """
     Generate Monsoon Season CM plots
     """
     # Get list of unique dates in dataframe
     date_list = results_df['date'].unique()
     sorted_dates = sorted(date_list)
-    may = sorted_dates.index("2023-05-01")
-    june = sorted_dates.index("2023-06-01")
-    july = sorted_dates.index("2023-07-01")
-    aug = sorted_dates.index("2023-08-01")
-    sept = sorted_dates.index("2023-09-01")
+    apr = sorted_dates.index("{}-04-01".format(year))
+    may = sorted_dates.index("{}-05-01".format(year))
+    june = sorted_dates.index("{}-06-01".format(year))
+    july = sorted_dates.index("{}-07-01".format(year))
+    aug = sorted_dates.index("{}-08-01".format(year))
+    sept = sorted_dates.index("{}-09-01".format(year))
     # Iterate through date list and make confusion matrix plot
     total_tp = []
     total_fp = []
@@ -183,7 +186,7 @@ def generate_monsoon_plots(results_df):
     plt.plot(sorted_dates, total_tp, label='True Positive')
     plt.plot(sorted_dates, total_fp, label='False Positive')
     plt.plot(sorted_dates, total_fn, label='False Negative')
-    ax.set_xticks([sorted_dates[may], sorted_dates[june], sorted_dates[july], sorted_dates[aug],
+    ax.set_xticks([sorted_dates[apr], sorted_dates[may], sorted_dates[june], sorted_dates[july], sorted_dates[aug],
                    sorted_dates[sept]])
     ax.tick_params(axis='x', labelsize=8)
     plt.xlabel('Date')
@@ -196,18 +199,22 @@ def generate_monsoon_plots(results_df):
 if __name__ == '__main__':
     args = get_args()
     run_dir = args.run
+    root_dir = args.root_dir
+    year = args.test_year
 
-    root_dir = '/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep/Results'
+    nepal_im = Image.open('{}/District_Labels.tif'.format(root_dir))
 
-    nepal_im = Image.open('/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
-                          '/District_Labels.tif')
+    if not run_dir:
+        results_dir = '{}/FullSeason_Results'.format(root_dir)
+        results_df = pd.read_csv('{}/predictions_and_groundtruth_trainsource_gpm.csv'.format(results_dir))
+    else:
+        results_dir = '{}/Results/{}'.format(root_dir, run_dir)
+        results_df = pd.read_csv('{}/predictions_and_groundtruth.csv'.format(results_dir))
 
-    results_dir = '{}/{}'.format(root_dir, run_dir)
-    results_df = pd.read_csv('{}/predictions_and_groundtruth.csv'.format(results_dir))
 
     if not os.path.exists('{}/CM'.format(results_dir)):
         os.mkdir('{}/CM'.format(results_dir))
 
     # Get overall TP rate per Dist
     generate_tp_rate_map(results_df, nepal_im, results_dir)
-    generate_monsoon_plots(results_df)
+    generate_monsoon_plots(results_df, year)

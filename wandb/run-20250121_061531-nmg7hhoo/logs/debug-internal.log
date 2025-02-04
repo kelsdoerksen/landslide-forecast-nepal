@@ -1,0 +1,17 @@
+{"time":"2025-01-21T06:15:31.756388-08:00","level":"INFO","msg":"using version","core version":"0.18.5"}
+{"time":"2025-01-21T06:15:31.756463-08:00","level":"INFO","msg":"created symlink","path":"/Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20250121_061531-nmg7hhoo/logs/debug-core.log"}
+{"time":"2025-01-21T06:15:31.877707-08:00","level":"INFO","msg":"created new stream","id":"nmg7hhoo"}
+{"time":"2025-01-21T06:15:31.877871-08:00","level":"INFO","msg":"stream: started","id":"nmg7hhoo"}
+{"time":"2025-01-21T06:15:31.878271-08:00","level":"INFO","msg":"sender: started","stream_id":"nmg7hhoo"}
+{"time":"2025-01-21T06:15:31.877967-08:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"nmg7hhoo"}}
+{"time":"2025-01-21T06:15:31.878073-08:00","level":"INFO","msg":"handler: started","stream_id":{"value":"nmg7hhoo"}}
+{"time":"2025-01-21T06:15:32.386865-08:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-01-21T06:30:47.869042-08:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/kelsey-doerksen/landslide-prediction/nmg7hhoo/file_stream\": read tcp 192.168.1.6:63932->35.186.228.49:443: read: connection reset by peer"}
+{"time":"2025-01-21T06:34:45.593601-08:00","level":"INFO","msg":"stream: closing","id":"nmg7hhoo"}
+{"time":"2025-01-21T06:34:45.593658-08:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-01-21T06:34:45.594849-08:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-01-21T06:34:47.107458-08:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-01-21T06:34:47.266829-08:00","level":"INFO","msg":"handler: closed","stream_id":{"value":"nmg7hhoo"}}
+{"time":"2025-01-21T06:34:47.26696-08:00","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"nmg7hhoo"}}
+{"time":"2025-01-21T06:34:47.267094-08:00","level":"INFO","msg":"sender: closed","stream_id":"nmg7hhoo"}
+{"time":"2025-01-21T06:34:47.267689-08:00","level":"INFO","msg":"stream: closed","id":"nmg7hhoo"}

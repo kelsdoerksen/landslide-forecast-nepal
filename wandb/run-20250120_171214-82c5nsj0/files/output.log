@@ -1,0 +1,72 @@
+Loading data...
+Tuning the model
+Running grid search cv on training set...
+--- 360.04342889785767 seconds to hyperparameter tune ---
+> [0;32m/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py[0m(454)[0;36mrun_rf[0;34m()[0m
+[0;32m    453 [0;31m    [0;31m# Save the model to file[0m[0;34m[0m[0;34m[0m[0m
+[0m[0;32m--> 454 [0;31m    [0mjoblib[0m[0;34m.[0m[0mdump[0m[0;34m([0m[0mforest[0m[0;34m,[0m [0;34m'{}/rf_model.joblib'[0m[0;34m.[0m[0mformat[0m[0;34m([0m[0mresults_dir[0m[0;34m)[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[0;32m    455 [0;31m    [0;31m# saving as pickle too[0m[0;34m[0m[0;34m[0m[0m
+[0m
+6.0
+*** ValueError: The feature names should match those that were passed during fit.
+Feature names unseen at fit time:
+- date
+- district
+       precip_rate_tminus_0  precip_rate_tminus_1  precip_rate_tminus_2  ...  KMA_ens_1_precip_total_cumulative_precipitation        date    district
+66229             11.252031              0.899609              4.496094  ...                                     2.282885e+05  2017-05-06   Taplejung
+50086              6.132291             25.951041              8.141666  ...                                     6.097703e+05  2021-05-11     Syangja
+4328              13.555294              1.772647             43.141960  ...                                     1.743633e+06  2022-08-10       Rolpa
+58599              0.095632              0.084207              0.093212  ...                                     1.725017e+05  2022-04-23  Solukhumbu
+11303              1.010660              0.720868              0.015347  ...                                     8.156891e+04  2019-05-28   Terhathum
+...                     ...                   ...                   ...  ...                                              ...         ...         ...
+56932              2.278594              2.435625              0.157969  ...                                     5.891765e+05  2017-05-04     Baglung
+36127              3.649056              2.962790              7.312500  ...                                     3.329060e+06  2021-09-02        Mugu
+12121             23.217628              3.157372              1.437820  ...                                     7.152456e+05  2021-06-25     Saptari
+15724             66.030832             18.884916             26.406597  ...                                     3.602196e+06  2017-07-05     Dailekh
+44141              0.083594              0.421758             12.568476  ...                                     1.363518e+05  2018-07-06        Ilam
+
+[12324 rows x 61 columns]
+       precip_rate_tminus_0  precip_rate_tminus_1  ...  KMA_ens_1_precip_min_precip_rate  KMA_ens_1_precip_total_cumulative_precipitation
+66229             11.252031              0.899609  ...                        305.146900                                     2.282885e+05
+50086              6.132291             25.951041  ...                        392.730100                                     6.097703e+05
+4328              13.555294              1.772647  ...                       3568.352000                                     1.743633e+06
+58599              0.095632              0.084207  ...                        330.539120                                     1.725017e+05
+11303              1.010660              0.720868  ...                        100.875725                                     8.156891e+04
+...                     ...                   ...  ...                               ...                                              ...
+56932              2.278594              2.435625  ...                        749.135600                                     5.891765e+05
+36127              3.649056              2.962790  ...                       5249.562500                                     3.329060e+06
+12121             23.217628              3.157372  ...                       1641.629200                                     7.152456e+05
+15724             66.030832             18.884916  ...                       4185.148000                                     3.602196e+06
+44141              0.083594              0.421758  ...                        320.759700                                     1.363518e+05
+
+[12324 rows x 59 columns]
+array([[0.49652115, 0.50347885],
+       [0.68228912, 0.31771088],
+       [0.24400684, 0.75599316],
+       ...,
+       [0.99575391, 0.00424609],
+       [0.23804403, 0.76195597],
+       [0.40908553, 0.59091447]])
+0.7444011684518014
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 778, in <module>
+    run_rf(X_train, y_train, X_test, y_test, X_val, y_val, results, experiment, model, test_y, tuning)
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 454, in run_rf
+    joblib.dump(forest, '{}/rf_model.joblib'.format(results_dir))
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 454, in run_rf
+    joblib.dump(forest, '{}/rf_model.joblib'.format(results_dir))
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/bdb.py", line 115, in dispatch_line
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit
+
+If you suspect this is an IPython 8.9.0 bug, please report it at:
+    https://github.com/ipython/ipython/issues
+or send an email to the mailing list at ipython-dev@python.org
+
+You can print a more detailed traceback right now with "%tb", or use "%debug"
+to interactively debug it.
+
+Extra-detailed tracebacks for bug-reporting purposes can be enabled via:
+    %config Application.verbose_crash=True

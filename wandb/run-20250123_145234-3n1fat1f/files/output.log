@@ -1,0 +1,33 @@
+Loading data...
+Tuning the model
+Tuning for iteration: 0
+Running grid search cv on training set...
+--- 478.8629548549652 seconds to hyperparameter tune ---
+Tuning for iteration: 1
+Running grid search cv on training set...
+--- 620.0746791362762 seconds to hyperparameter tune ---
+Tuning for iteration: 2
+Running grid search cv on training set...
+--- 481.044536113739 seconds to hyperparameter tune ---
+Max model stats after parameter tuning is: {'bootstrap': True, 'max_depth': 7, 'min_samples_split': 8, 'n_estimators': 100, 'accuracy': 0.7237795064377682, 'f1': 0.48621678932268925, 'best_model': RandomForestClassifier(class_weight='balanced', max_depth=7,
+                       min_samples_split=8, n_jobs=-1, random_state=746)}
+Evaluating model...
+The hard predictions were right 73.29% of the time
+No Skill: ROC AUC=0.500
+RFC: ROC AUC=0.821
+No nan values in fscore
+The number of non-landslide events is: 9428
+The number of landslide events is: 2738
+Best Threshold=0.504320, F-Score=0.558
+Test set accuracy at threshold 0.5043195563613767: 0.7359033371691599
+Test set F1 at threshold 0.5043195563613767: 0.558471897760066
+True Positive is 2032
+True Negative is 6921
+False Positive is 2507
+False Negative is 706
+False positive rate at best threshold is 0.2659100551548579
+True positive rate at best threshold is is 0.7421475529583638
+False negative rate at best threshold is is 0.25785244704163623
+True negative rate at best threshold is is 0.7340899448451421
+--------------------
+{'0': {'precision': 0.9074341156417989, 'recall': 0.7340899448451421, 'f1-score': 0.8116094986807387, 'support': 9428}, '1': {'precision': 0.44767569949328045, 'recall': 0.7421475529583638, 'f1-score': 0.558471897760066, 'support': 2738}, 'accuracy': 0.7359033371691599, 'macro avg': {'precision': 0.6775549075675397, 'recall': 0.7381187489017529, 'f1-score': 0.6850406982204024, 'support': 12166}, 'weighted avg': {'precision': 0.8039639082264904, 'recall': 0.7359033371691599, 'f1-score': 0.7546400139428789, 'support': 12166}}

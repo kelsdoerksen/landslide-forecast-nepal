@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 726, in <module>
+    os.mkdir(results)
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/kelseydoerksen/Desktop/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep/Results/GPMv07/super-sponge-314_ForecastModelukmo_EnsembleNum1'

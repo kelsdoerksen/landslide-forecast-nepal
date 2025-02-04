@@ -1,0 +1,17 @@
+{"time":"2025-01-20T23:54:40.842836-08:00","level":"INFO","msg":"using version","core version":"0.18.5"}
+{"time":"2025-01-20T23:54:40.842937-08:00","level":"INFO","msg":"created symlink","path":"/Users/kelseydoerksen/code/landslide-forecast-nepal/wandb/run-20250120_235440-11fdb58x/logs/debug-core.log"}
+{"time":"2025-01-20T23:54:40.967829-08:00","level":"INFO","msg":"created new stream","id":"11fdb58x"}
+{"time":"2025-01-20T23:54:40.967907-08:00","level":"INFO","msg":"stream: started","id":"11fdb58x"}
+{"time":"2025-01-20T23:54:40.968011-08:00","level":"INFO","msg":"sender: started","stream_id":"11fdb58x"}
+{"time":"2025-01-20T23:54:40.967953-08:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"11fdb58x"}}
+{"time":"2025-01-20T23:54:40.968106-08:00","level":"INFO","msg":"handler: started","stream_id":{"value":"11fdb58x"}}
+{"time":"2025-01-20T23:54:41.376093-08:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-01-21T00:07:56.907587-08:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/kelsey-doerksen/landslide-prediction/11fdb58x/file_stream\": read tcp 192.168.1.6:57887->35.186.228.49:443: read: connection reset by peer"}
+{"time":"2025-01-21T00:16:34.280579-08:00","level":"INFO","msg":"stream: closing","id":"11fdb58x"}
+{"time":"2025-01-21T00:16:34.281095-08:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-01-21T00:16:34.284184-08:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-01-21T00:16:35.439671-08:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-01-21T00:16:35.599176-08:00","level":"INFO","msg":"handler: closed","stream_id":{"value":"11fdb58x"}}
+{"time":"2025-01-21T00:16:35.599218-08:00","level":"INFO","msg":"sender: closed","stream_id":"11fdb58x"}
+{"time":"2025-01-21T00:16:35.599204-08:00","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"11fdb58x"}}
+{"time":"2025-01-21T00:16:35.599377-08:00","level":"INFO","msg":"stream: closed","id":"11fdb58x"}

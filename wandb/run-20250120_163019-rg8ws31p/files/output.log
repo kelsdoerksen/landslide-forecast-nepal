@@ -1,0 +1,13 @@
+Loading data...
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 774, in <module>
+    X_train, y_train, X_test, y_test, X_val, y_val = load_data(test_y, '{}/LabelledData_{}/{}/ensemble_{}'.
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 358, in load_data
+    stratify=ytrain['label'])
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/pandas/core/series.py", line 981, in __getitem__
+    return self._get_value(key)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/pandas/core/series.py", line 1089, in _get_value
+    loc = self.index.get_loc(label)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/site-packages/pandas/core/indexes/range.py", line 395, in get_loc
+    raise KeyError(key)
+KeyError: 'label'

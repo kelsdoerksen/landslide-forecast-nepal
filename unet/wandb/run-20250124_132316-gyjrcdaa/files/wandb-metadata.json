@@ -1,0 +1,52 @@
+{
+  "os": "macOS-10.16-x86_64-i386-64bit",
+  "python": "3.10.16",
+  "startedAt": "2025-01-24T13:23:16.464847Z",
+  "args": [
+    "--epochs",
+    "150",
+    "--batch_size",
+    "32",
+    "--learning-rate",
+    "0.001",
+    "--root_dir",
+    "/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep",
+    "--save_dir",
+    "/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep/Results/GPMv07",
+    "--val_percent",
+    "0.1",
+    "--ensemble",
+    "UKMO",
+    "--ensemble_member",
+    "0",
+    "--tags",
+    "iclr2025"
+  ],
+  "program": "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/run_pipeline.py",
+  "codePath": "unet/run_pipeline.py",
+  "git": {
+    "remote": "git@github.com:kelsdoerksen/landslide-forecast-nepal.git",
+    "commit": "7581a6a91e49ebc550fc0248eae1c180553881e0"
+  },
+  "email": "kelsey.doerksen@cs.ox.ac.uk",
+  "root": "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet",
+  "host": "Kelseys-MacBook-Pro.local",
+  "username": "kelseydoerksen",
+  "executable": "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/bin/python",
+  "codePathLocal": "run_pipeline.py",
+  "cpu_count": 4,
+  "cpu_count_logical": 8,
+  "disk": {
+    "/": {
+      "total": "499963174912",
+      "used": "430181822464"
+    }
+  },
+  "memory": {
+    "total": "17179869184"
+  },
+  "cpu": {
+    "count": 4,
+    "countLogical": 8
+  }
+}

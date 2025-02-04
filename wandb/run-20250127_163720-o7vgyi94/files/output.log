@@ -1,0 +1,77 @@
+Loading data...
+> [0;32m/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py[0m(623)[0;36mrun_xgb[0;34m()[0m
+[0;32m    622 [0;31m[0;34m[0m[0m
+[0m[0;32m--> 623 [0;31m    [0;32mif[0m [0mtest_year[0m [0;34m==[0m [0;34m'2024'[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0m[0;32m    624 [0;31m        [0mclf[0m [0;34m=[0m [0;32mNone[0m  [0;31m# putting this here for now but will update[0m[0;34m[0m[0;34m[0m[0m
+[0m
+87090    1
+15398    1
+51610    0
+63799    1
+9701     0
+        ..
+2235     0
+35972    0
+89221    0
+2699     0
+6051     0
+Name: label, Length: 14149, dtype: int64
+75395    0
+89472    0
+62392    0
+92204    0
+5940     1
+        ..
+33701    0
+69442    1
+7257     0
+19082    1
+43550    0
+Name: label, Length: 80176, dtype: int64
+*** NameError: name 'ytst' is not defined
+10569    0
+9467     1
+13967    0
+305      0
+3570     0
+        ..
+183      0
+2265     0
+10159    0
+2279     0
+882      0
+Name: label, Length: 14322, dtype: int64
+XGBRegressor(base_score=None, booster=None, callbacks=None,
+             colsample_bylevel=None, colsample_bynode=None,
+             colsample_bytree=None, device=None, early_stopping_rounds=None,
+             enable_categorical=False, eval_metric=None, feature_types=None,
+             gamma=None, grow_policy=None, importance_type=None,
+             interaction_constraints=None, learning_rate=None, max_bin=None,
+             max_cat_threshold=None, max_cat_to_onehot=None,
+             max_delta_step=None, max_depth=None, max_leaves=None,
+             min_child_weight=None, missing=nan, monotone_constraints=None,
+             multi_strategy=None, n_estimators=None, n_jobs=None,
+             num_parallel_tree=None, random_state=36, ...)
+*** AttributeError: 'XGBRegressor' object has no attribute 'predict_proba'
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 918, in <module>
+    run_xgb(data_dir, X_train, y_train, X_test, y_test, X_val, y_val, results, experiment, model, test_y, tuning)
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 623, in run_xgb
+    X_train = X_train.dropna()
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/run_classifier.py", line 623, in run_xgb
+    X_train = X_train.dropna()
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/landslides-unet/lib/python3.10/bdb.py", line 115, in dispatch_line
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit
+
+If you suspect this is an IPython 8.30.0 bug, please report it at:
+    https://github.com/ipython/ipython/issues
+or send an email to the mailing list at ipython-dev@python.org
+
+You can print a more detailed traceback right now with "%tb", or use "%debug"
+to interactively debug it.
+
+Extra-detailed tracebacks for bug-reporting purposes can be enabled via:
+    %config Application.verbose_crash=True
