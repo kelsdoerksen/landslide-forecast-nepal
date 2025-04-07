@@ -1,0 +1,30 @@
+/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/osgeo/gdal.py:312: FutureWarning: Neither gdal.UseExceptions() nor gdal.DontUseExceptions() has been explicitly called. In GDAL 4.0, exceptions will be enabled by default.
+  warnings.warn(
+Testing pre-trained model on latest Monsoon season...
+Grabbing testing data...
+> /Users/kelseydoerksen/code/landslide-forecast-nepal/unet/dataset.py(44)__init__()
+     43
+---> 44         fns_monsoon = [x for x in fns if x in monsoon_date_list]
+     45
+'/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep/2024_Season_Retro/UNet_Samples_14Day_GPMv07/ecmwf/ensemble_0'
+*** NameError: name 'f' is not defined
+['2024-08-12', '2024-08-06', '2024-06-03', '2024-06-17', '2024-06-16', '2024-06-02', '2024-08-07', '2024-08-13', '2024-08-05', '2024-06-28', '2024-08-11', '2024-06-14', '2024-06-01', '2024-06-15', '2024-08-10', '2024-06-29', '2024-08-04', '2024-04-14', '2024-04-28', '2024-06-11', '2024-08-28', '2024-06-05', '2024-08-14', '2024-08-15', '2024-08-01', '2024-06-04', '2024-08-29', '2024-06-10', '2024-04-29', '2024-04-15', '2024-04-17', '2024-06-06', '2024-06-12', '2024-08-17', '2024-08-03', '2024-08-02', '2024-08-16', '2024-06-13', '2024-06-07', '2024-04-16', '2024-09-19', '2024-07-20', '2024-07-08', '2024-09-25', '2024-05-31', '2024-05-25', '2024-05-19', '2024-05-18', '2024-05-24', '2024-05-30', '2024-09-30', '2024-09-24', '2024-07-09', '2024-07-21', '2024-09-18', '2024-07-23', '2024-09-26', '2024-05-26', '2024-05-27', '2024-09-27', '2024-07-22', '2024-09-23', '2024-07-26', '2024-05-23', '2024-05-22', '2024-07-27', '2024-09-22', '2024-10-01', '2024-09-20', '2024-07-19', '2024-07-31', '2024-07-25', '2024-09-08', '2024-05-08', '2024-05-20', '2024-05-21', '2024-05-09', '2024-09-09', '2024-07-24', '2024-07-30', '2024-07-18', '2024-09-21', '2024-07-15', '2024-07-01', '2024-07-29', '2024-09-04', '2024-09-10', '2024-05-10', '2024-05-04', '2024-05-05', '2024-05-11', '2024-09-11', '2024-09-05', '2024-07-28', '2024-07-14', '2024-07-02', '2024-07-16', '2024-09-13', '2024-09-07', '2024-05-07', '2024-05-13', '2024-05-12', '2024-05-06', '2024-09-06', '2024-09-12', '2024-07-17', '2024-07-03', '2024-09-16', '2024-09-02', '2024-07-07', '2024-07-13', '2024-05-02', '2024-05-16', '2024-05-17', '2024-05-03', '2024-07-12', '2024-07-06', '2024-09-03', '2024-09-17', '2024-09-01', '2024-09-15', '2024-07-10', '2024-07-04', '2024-09-29', '2024-05-29', '2024-05-15', '2024-05-01', '2024-05-14', '2024-05-28', '2024-09-28', '2024-07-05', '2024-07-11', '2024-09-14', '2024-04-27', '2024-08-27', '2024-06-22', '2024-06-23', '2024-08-26', '2024-04-26', '2024-04-18', '2024-04-30', '2024-04-24', '2024-08-24', '2024-06-09', '2024-08-30', '2024-08-18', '2024-06-21', '2024-06-20', '2024-08-19', '2024-08-31', '2024-06-08', '2024-08-25', '2024-04-25', '2024-04-19', '2024-04-21', '2024-06-30', '2024-08-09', '2024-06-24', '2024-08-21', '2024-06-18', '2024-06-19', '2024-08-20', '2024-06-25', '2024-08-08', '2024-04-20', '2024-04-22', '2024-06-27', '2024-08-22', '2024-08-23', '2024-06-26', '2024-04-23']
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/run_pipeline.py", line 140, in <module>
+    landslide_test_dataset = LandslideDataset(sample_dir, label_dir, 'monsoon_test', save_dir)
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/dataset.py", line 44, in __init__
+    fns_monsoon = [x for x in fns if x in monsoon_date_list]
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/dataset.py", line 44, in __init__
+    fns_monsoon = [x for x in fns if x in monsoon_date_list]
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/bdb.py", line 115, in dispatch_line
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit
+If you suspect this is an IPython 8.7.0 bug, please report it at:
+    https://github.com/ipython/ipython/issues
+or send an email to the mailing list at ipython-dev@python.org
+You can print a more detailed traceback right now with "%tb", or use "%debug"
+to interactively debug it.
+Extra-detailed tracebacks for bug-reporting purposes can be enabled via:
+    %config Application.verbose_crash=True

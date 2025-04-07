@@ -1,0 +1,8 @@
+Testing pre-trained model on latest Monsoon season...
+Grabbing testing data...
+/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/osgeo/gdal.py:312: FutureWarning: Neither gdal.UseExceptions() nor gdal.DontUseExceptions() has been explicitly called. In GDAL 4.0, exceptions will be enabled by default.
+  warnings.warn(
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/run_pipeline.py", line 142, in <module>
+    predict(unet, landslide_test_dataset, experiment, save_dir, device=device,
+TypeError: predict() missing 1 required positional argument: 'exp_type'

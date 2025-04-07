@@ -39,6 +39,8 @@ def get_args():
                         required=True)
     parser.add_argument('--tags', help='wandb tag',
                         required=True)
+    parser.add_argument('--exp_type', help='experiment type; standard or monsoon_test',
+                        required=True)
 
     return parser.parse_args()
 
@@ -98,7 +100,7 @@ if __name__ == '__main__':
     experiment = wandb.init(project='landslide-prediction', resume='allow', anonymous='must')
     experiment.config.update(
         dict(epochs=args.epochs, batch_size=args.batch_size, learning_rate=args.lr,
-             val_percent=0.1, save_checkpoint=True,tags=[tag])
+             val_percent=0.1, save_checkpoint=True, tags=[tag], exp_type=args.exp_type)
     )
 
     # --- Setting Directories
@@ -112,21 +114,6 @@ if __name__ == '__main__':
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     logging.info(f'Using device {device}')
-    unet = models.UNet(n_channels=32, n_classes=1)
-
-    if torch.cuda.is_available():
-        unet.cuda()
-    #unet.to(device=device)
-
-    set_seed(random.randint(0,1000))
-
-    # ---- Grabbing Training Data ----
-    print('Grabbing training data...')
-    landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', save_dir)
-
-    # --- Grabbing Testing Data ----
-    print('Grabbing testing data...')
-    landslide_test_dataset = LandslideDataset(sample_dir, label_dir, 'test', save_dir)
 
     # --- Generating District Masks for Custom Metrics calculations
     # Generating district masks to use for the precision, recall
@@ -143,21 +130,53 @@ if __name__ == '__main__':
             points.append([district_masks[district][0][i], district_masks[district][1][i]])
         district_masks[district] = points
 
-    print('Training model...')
-    trained_model = train_model(
-        model=unet,
-        device=device,
-        dataset=landslide_train_dataset,
-        save_dir=save_dir,
-        experiment=experiment,
-        val_percent=float(args.val_percent),
-        epochs=args.epochs,
-        batch_size=args.batch_size,
-        learning_rate=args.lr,
-        opt = args.optimizer,
-        save_checkpoint=True,
-        district_masks = district_masks)
+    # Check experiment type and run the things
+    if args.exp_type == 'monsoon_test':
+        unet = models.UNet(n_channels=32, n_classes=1)
+        set_seed(random.randint(0, 1000))
 
-    print('Running Test set...')
-    predict(trained_model, landslide_test_dataset, experiment, save_dir, device=device,
+        print('Testing pre-trained model on latest Monsoon season...')
+        model_path = '{}/Results/GPMv07/UKMO_ensemble_0_3s5mrfx1/cosmic-shadow-424_last_epoch.pth'.format(root_dir)         # Hardcoding for now until I do some investigating
+        unet = torch.load(model_path, weights_only=False)
+
+        print('Grabbing testing data...')
+        landslide_test_dataset = LandslideDataset(sample_dir, label_dir, 'monsoon_test', save_dir)
+
+        print('Predicting on 2024 Monsoon season...')
+        predict(unet, landslide_test_dataset, experiment, save_dir, device=device,
+                district_masks=district_masks, exp_type = args.exp_type)
+    else:
+        unet = models.UNet(n_channels=32, n_classes=1)
+
+        if torch.cuda.is_available():
+            unet.cuda()
+        #unet.to(device=device)
+
+        set_seed(random.randint(0,1000))
+
+        # ---- Grabbing Training Data ----
+        print('Grabbing training data...')
+        landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', save_dir)
+
+        # --- Grabbing Testing Data ----
+        print('Grabbing testing data...')
+        landslide_test_dataset = LandslideDataset(sample_dir, label_dir, 'test', save_dir)
+
+        print('Training model...')
+        trained_model = train_model(
+            model=unet,
+            device=device,
+            dataset=landslide_train_dataset,
+            save_dir=save_dir,
+            experiment=experiment,
+            val_percent=float(args.val_percent),
+            epochs=args.epochs,
+            batch_size=args.batch_size,
+            learning_rate=args.lr,
+            opt = args.optimizer,
+            save_checkpoint=True,
             district_masks = district_masks)
+
+        print('Running Test set...')
+        predict(trained_model, landslide_test_dataset, experiment, save_dir, device=device,
+                district_masks = district_masks, exp_type = args.exp_type)

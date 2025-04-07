@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/run_pipeline.py", line 113, in <module>
+    os.mkdir(save_dir)
+FileNotFoundError: [Errno 2] No such file or directory: '/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep/2024_Season_Retro/Results/GPMv07/ecmwf_ensemble_0_k28v9321'

@@ -1,0 +1,16 @@
+/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/osgeo/gdal.py:312: FutureWarning: Neither gdal.UseExceptions() nor gdal.DontUseExceptions() has been explicitly called. In GDAL 4.0, exceptions will be enabled by default.
+  warnings.warn(
+/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/torch/cuda/amp/grad_scaler.py:120: UserWarning: torch.cuda.amp.GradScaler is enabled, but CUDA is not available.  Disabling.
+  warnings.warn("torch.cuda.amp.GradScaler is enabled, but CUDA is not available.  Disabling.")
+Grabbing training data...
+Grabbing testing data...
+Training model...
+Training EPOCH 0:
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/run_pipeline.py", line 162, in <module>
+    trained_model = train_model(
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/train.py", line 89, in train_model
+    thr_precision, thr_recall = precision_recall_threshold(labels, outputs_probs, threshold, district_masks)
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/metrics.py", line 87, in precision_recall_threshold
+    precision_ratio = true_positives / (true_positives + false_positives)
+ZeroDivisionError: division by zero

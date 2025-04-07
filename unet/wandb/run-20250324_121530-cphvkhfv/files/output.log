@@ -1,0 +1,25 @@
+/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/osgeo/gdal.py:312: FutureWarning: Neither gdal.UseExceptions() nor gdal.DontUseExceptions() has been explicitly called. In GDAL 4.0, exceptions will be enabled by default.
+  warnings.warn(
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/torch/serialization.py", line 354, in _check_seekable
+    f.seek(f.tell())
+AttributeError: 'dict' object has no attribute 'seek'
+During handling of the above exception, another exception occurred:
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/run_pipeline.py", line 142, in <module>
+    predict(unet, landslide_test_dataset, experiment, save_dir, device=device,
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/predict.py", line 27, in predict
+    unetmodel.load_state_dict(torch.load(in_model)['state_dict'])
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/torch/serialization.py", line 791, in load
+    with _open_file_like(f, 'rb') as opened_file:
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/torch/serialization.py", line 276, in _open_file_like
+    return _open_buffer_reader(name_or_buffer)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/torch/serialization.py", line 261, in __init__
+    _check_seekable(buffer)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/torch/serialization.py", line 357, in _check_seekable
+    raise_err_msg(["seek", "tell"], e)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/torch/serialization.py", line 350, in raise_err_msg
+    raise type(e)(msg)
+AttributeError: 'dict' object has no attribute 'seek'. You can only torch.load from a file that is seekable. Please pre-load the data into a buffer like io.BytesIO and try to load from it instead.
+Testing pre-trained model on latest Monsoon season...
+Grabbing testing data...

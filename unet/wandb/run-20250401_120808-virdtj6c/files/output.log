@@ -1,0 +1,207 @@
+/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/osgeo/gdal.py:312: FutureWarning: Neither gdal.UseExceptions() nor gdal.DontUseExceptions() has been explicitly called. In GDAL 4.0, exceptions will be enabled by default.
+  warnings.warn(
+/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/torch/cuda/amp/grad_scaler.py:120: UserWarning: torch.cuda.amp.GradScaler is enabled, but CUDA is not available.  Disabling.
+  warnings.warn("torch.cuda.amp.GradScaler is enabled, but CUDA is not available.  Disabling.")
+Grabbing training data...
+Grabbing testing data...
+Training model...
+Training EPOCH 0:
+Training EPOCH 1:
+Training EPOCH 2:
+Training EPOCH 3:
+Training EPOCH 4:
+Training EPOCH 5:
+Training EPOCH 6:
+Training EPOCH 7:
+Training EPOCH 8:
+Training EPOCH 9:
+Training EPOCH 10:
+Training EPOCH 11:
+Training EPOCH 12:
+Training EPOCH 13:
+Training EPOCH 14:
+Training EPOCH 15:
+Training EPOCH 16:
+Training EPOCH 17:
+Training EPOCH 18:
+Training EPOCH 19:
+Training EPOCH 20:
+Training EPOCH 21:
+Training EPOCH 22:
+Training EPOCH 23:
+Training EPOCH 24:
+Training EPOCH 25:
+Training EPOCH 26:
+Training EPOCH 27:
+Training EPOCH 28:
+Training EPOCH 29:
+Training EPOCH 30:
+Training EPOCH 31:
+Training EPOCH 32:
+Training EPOCH 33:
+Training EPOCH 34:
+Training EPOCH 35:
+Training EPOCH 36:
+Training EPOCH 37:
+Training EPOCH 38:
+Training EPOCH 39:
+Training EPOCH 40:
+Training EPOCH 41:
+Training EPOCH 42:
+Training EPOCH 43:
+Training EPOCH 44:
+Training EPOCH 45:
+Training EPOCH 46:
+Training EPOCH 47:
+Training EPOCH 48:
+Training EPOCH 49:
+Training EPOCH 50:
+Training EPOCH 51:
+Training EPOCH 52:
+Training EPOCH 53:
+Training EPOCH 54:
+Training EPOCH 55:
+Training EPOCH 56:
+Training EPOCH 57:
+Training EPOCH 58:
+Training EPOCH 59:
+Training EPOCH 60:
+Training EPOCH 61:
+Training EPOCH 62:
+Training EPOCH 63:
+Training EPOCH 64:
+Training EPOCH 65:
+Training EPOCH 66:
+Training EPOCH 67:
+Training EPOCH 68:
+Training EPOCH 69:
+Training EPOCH 70:
+Training EPOCH 71:
+Training EPOCH 72:
+Training EPOCH 73:
+Training EPOCH 74:
+Training EPOCH 75:
+Training EPOCH 76:
+Training EPOCH 77:
+Training EPOCH 78:
+Training EPOCH 79:
+Training EPOCH 80:
+Training EPOCH 81:
+Training EPOCH 82:
+Training EPOCH 83:
+Training EPOCH 84:
+Training EPOCH 85:
+Training EPOCH 86:
+Training EPOCH 87:
+Training EPOCH 88:
+Training EPOCH 89:
+Training EPOCH 90:
+Training EPOCH 91:
+Training EPOCH 92:
+Training EPOCH 93:
+Training EPOCH 94:
+Training EPOCH 95:
+Training EPOCH 96:
+Training EPOCH 97:
+Training EPOCH 98:
+Training EPOCH 99:
+Training EPOCH 100:
+Training EPOCH 101:
+Training EPOCH 102:
+Training EPOCH 103:
+Training EPOCH 104:
+Training EPOCH 105:
+Training EPOCH 106:
+Training EPOCH 107:
+Training EPOCH 108:
+Training EPOCH 109:
+Training EPOCH 110:
+Training EPOCH 111:
+Training EPOCH 112:
+Training EPOCH 113:
+Training EPOCH 114:
+Training EPOCH 115:
+Training EPOCH 116:
+Training EPOCH 117:
+Training EPOCH 118:
+Training EPOCH 119:
+Training EPOCH 120:
+Training EPOCH 121:
+Training EPOCH 122:
+Training EPOCH 123:
+Training EPOCH 124:
+Training EPOCH 125:
+Training EPOCH 126:
+Training EPOCH 127:
+Training EPOCH 128:
+Training EPOCH 129:
+Training EPOCH 130:
+Training EPOCH 131:
+Training EPOCH 132:
+Training EPOCH 133:
+Training EPOCH 134:
+Training EPOCH 135:
+Training EPOCH 136:
+Training EPOCH 137:
+Training EPOCH 138:
+Training EPOCH 139:
+Training EPOCH 140:
+Training EPOCH 141:
+Training EPOCH 142:
+Training EPOCH 143:
+Training EPOCH 144:
+Training EPOCH 145:
+Training EPOCH 146:
+Training EPOCH 147:
+Training EPOCH 148:
+Training EPOCH 149:
+Running Test set...
+> /Users/kelseydoerksen/code/landslide-forecast-nepal/unet/predict.py(60)predict()
+     59
+---> 60             bce_score += loss_criterion(outputs, labels)
+     61             p, r = precision_recall_threshold(labels, outputs_probs, threshold, district_masks)
+*** SyntaxError: invalid syntax
+(0.5, 0.43478260869565216)
+(0.5652173913043478, 0.5652173913043478)
+*** SyntaxError: invalid syntax
+*** SyntaxError: invalid syntax
+0
+(0.5, 0.43478260869565216)
+(0.5263157894736842, 0.38461538461538464)
+(0.5652173913043478, 0.2826086956521739)
+(0.5238095238095238, 0.13414634146341464)
+(0.5238095238095238, 0.22448979591836735)
+(0.9065420560747663, 0.4511627906976744)
+(0.9684542586750788, 0.8121693121693122)
+(0.9722222222222222, 0.8235294117647058)
+(0.9682539682539683, 0.8615819209039548)
+(0.9568965517241379, 0.8571428571428571)
+(0.96, 0.7817589576547231)
+(0.946236559139785, 0.6717557251908397)
+(0.9367088607594937, 0.8505747126436781)
+(0.868421052631579, 0.8354430379746836)
+(0.5652173913043478, 0.6842105263157895)
+(0.7222222222222222, 0.5)
+(0.6666666666666666, 0.6060606060606061)
+(0.16666666666666666, 0.5)
+(0, 0)
+0.7723164360327527
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/run_pipeline.py", line 177, in <module>
+    predict(trained_model, landslide_test_dataset, experiment, save_dir, device=device,
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/predict.py", line 60, in predict
+    bce_score += loss_criterion(outputs, labels)
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/predict.py", line 60, in predict
+    bce_score += loss_criterion(outputs, labels)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/bdb.py", line 115, in dispatch_line
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit
+If you suspect this is an IPython 8.7.0 bug, please report it at:
+    https://github.com/ipython/ipython/issues
+or send an email to the mailing list at ipython-dev@python.org
+You can print a more detailed traceback right now with "%tb", or use "%debug"
+to interactively debug it.
+Extra-detailed tracebacks for bug-reporting purposes can be enabled via:
+    %config Application.verbose_crash=True

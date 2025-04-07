@@ -1,0 +1,49 @@
+/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/osgeo/gdal.py:312: FutureWarning: Neither gdal.UseExceptions() nor gdal.DontUseExceptions() has been explicitly called. In GDAL 4.0, exceptions will be enabled by default.
+  warnings.warn(
+/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/torch/cuda/amp/grad_scaler.py:120: UserWarning: torch.cuda.amp.GradScaler is enabled, but CUDA is not available.  Disabling.
+  warnings.warn("torch.cuda.amp.GradScaler is enabled, but CUDA is not available.  Disabling.")
+Grabbing training data...
+Grabbing testing data...
+Training model...
+Training EPOCH 0:
+Running Test set...
+> /Users/kelseydoerksen/code/landslide-forecast-nepal/unet/predict.py(60)predict()
+     59
+---> 60             bce_score += loss_criterion(outputs, labels)
+     61             p, r = precision_recall_threshold(labels, outputs_probs, threshold, district_masks)
+torch.Size([10, 1, 60, 100])
+*** NameError: name 'output_probs' is not defined
+torch.Size([10, 1, 60, 100])
+1
+(10, 1, 60, 100)
+False
+(60, 100)
+(60, 100)
+True
+True
+19
+tensor(0.0402)
+*** SyntaxError: invalid syntax
+(0.0, 0.0)
+torch.Size([10, 32, 60, 100])
+torch.Size([10, 1, 60, 100])
+10
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/run_pipeline.py", line 177, in <module>
+    predict(trained_model, landslide_test_dataset, experiment, save_dir, device=device,
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/predict.py", line 60, in predict
+    bce_score += loss_criterion(outputs, labels)
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/predict.py", line 60, in predict
+    bce_score += loss_criterion(outputs, labels)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/bdb.py", line 115, in dispatch_line
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit
+If you suspect this is an IPython 8.7.0 bug, please report it at:
+    https://github.com/ipython/ipython/issues
+or send an email to the mailing list at ipython-dev@python.org
+You can print a more detailed traceback right now with "%tb", or use "%debug"
+to interactively debug it.
+Extra-detailed tracebacks for bug-reporting purposes can be enabled via:
+    %config Application.verbose_crash=True

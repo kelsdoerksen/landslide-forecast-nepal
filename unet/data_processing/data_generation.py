@@ -99,8 +99,13 @@ def load_precip_lookahead(day, ensemble_model, ensemble_num):
         lookahead = delta.strftime(format)
         print('Running for lookahead: {}'.format(lookahead))
         try:
-            lookahead_precip = np.load('{}/Subseasonal/{}/ensemble_member_{}/precipitation_forecast_id{}_doy_{}.npy'.
-                                       format(precip_dir, ensemble_model, ensemble_num, ensemble_num, lookahead))
+            if ensemble_model == 'ecmwf':
+                lookahead_precip = np.load(
+                    '{}/Subseasonal/{}/ensemble_member_{}/precipitation_forecast_ecmwf_doy_{}.npy'.
+                    format(precip_dir, ensemble_model, ensemble_num, lookahead))
+            else:
+                lookahead_precip = np.load('{}/Subseasonal/{}/ensemble_member_{}/precipitation_forecast_id{}_doy_{}.npy'.
+                                           format(precip_dir, ensemble_model, ensemble_num, ensemble_num, lookahead))
             if lookahead_precip.shape != np.zeros((60,100)).shape:
                 print('Missing precipitation for date {}, returning None'.format(lookahead))
                 return None
@@ -108,7 +113,7 @@ def load_precip_lookahead(day, ensemble_model, ensemble_num):
                 precip_list.append(lookahead_precip)
                 cumulative_precip.append(lookahead_precip * 24)
         except ValueError and FileNotFoundError:
-            print('Missing precipitation for date {}, returning None')
+            print('Missing precipitation for date {}, returning None'.format(lookahead))
             return None
 
     precip_mean = np.array(precip_list).mean(axis=0)
@@ -187,7 +192,7 @@ if __name__ == "__main__":
     print('Generating samples using forecast data from model: {}, member: {}'.format(model, ens_num))
 
     # Get list of dates
-    sdate = date(int(start), 1, 1)
+    sdate = date(int(start), 4, 1)
     edate = date(int(end), 12, 31)
     date_list = daterange(sdate, edate)
 
