@@ -80,7 +80,7 @@ def precision_recall_threshold(y_true, y_pred, threshold, d_masks):
     if false_positives == 0 and true_positives == 0:
         precision_ratio = 0
         recall_ratio = 0
-    if false_negatives == 0 and true_positives == 0:
+    elif false_negatives == 0 and true_positives == 0:
         precision_ratio = 0
         recall_ratio = 0
     else:

@@ -15,16 +15,18 @@ from utils import *
 from metrics import *
 
 
-def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_masks):
+def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_masks, exp_type):
     """
     Predict standard way (no dropout at test time)
     """
 
     threshold = 0.2
-
-    # Setting model to eval mode
     unetmodel = models.UNet(n_channels=32, n_classes=1)
-    unetmodel.load_state_dict(torch.load(in_model)['state_dict'])
+    # Setting model to eval mode
+    if exp_type == 'monsoon_test':
+        unetmodel.load_state_dict(in_model['state_dict'])
+    else:
+        unetmodel.load_state_dict(torch.load(in_model)['state_dict'])
     unetmodel.eval()
 
     # Data loader for test set
@@ -53,7 +55,7 @@ def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_
             preds.append(outputs_probs.detach().numpy())
 
             bce_score += loss_criterion(outputs, labels)
-            p, r = precision_recall_threshold(labels, inputs, threshold, district_masks)
+            p, r = precision_recall_threshold(labels, outputs_probs, threshold, district_masks)
             precision += p
             recall += r
 

@@ -1,5 +1,9 @@
 """
 Landslide Dataset Module
+
+split: monsoon_train refers to training the model with all the latest data (2016-2023) to be able
+to run it on the 2024 test set
+monsoon_test refers to the 2024 monsoon season testing model performance
 """
 
 from torch.utils.data import Dataset
@@ -28,7 +32,7 @@ class LandslideDataset(Dataset):
         self.out_dir = out_dir
 
         # Apply monsoon date bounds
-        years = [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023]
+        years = [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
         monsoon_date_list = []
         for y in years:
             monsoon_date_list.extend(monsoon_dates(y))
@@ -47,17 +51,21 @@ class LandslideDataset(Dataset):
 
     def __len__(self):
         if self.split == 'train':
-            image_fns = [x for x in self.image_fns if "2023" not in x]
-        else:
+            image_fns = [x for x in self.image_fns if ["2023", "2024"] not in x]
+        elif self.split == 'test':
             image_fns = [x for x in self.image_fns if "2023" in x]
+        elif self.split == 'monsoon_test':
+            image_fns = [x for x in self.image_fns if "2024" in x]      #
+        elif self.split == 'monsoon_train':
+            image_fns = [x for x in self.image_fns if "2024" not in x]
         return len(image_fns)
 
     def __getitem__(self, index):
         image_fns = sort(self.image_fns)
 
         if self.split == 'train':
-            image_fns = [x for x in image_fns if "2023" not in x]
-        else:
+            image_fns = [x for x in image_fns if ["2023", "2024"] not in x]
+        elif self.split == 'test':
             image_fns = [x for x in image_fns if "2023" in x]
             # Save list of image_fns to file so we know what dates were used
             image_fns_save = [s.strip('sample_') for s in image_fns]
@@ -65,6 +73,17 @@ class LandslideDataset(Dataset):
             with open('{}/test_dates.txt'.format(self.out_dir), 'w') as f:
                 for line in image_fns_save:
                     f.write('{}'.format(line))
+        elif self.split == 'monsoon_test':
+            image_fns = [x for x in image_fns if "2024" in x]
+            # Save list of image_fns to file so we know what dates were used
+            image_fns_save = [s.strip('sample_') for s in image_fns]
+            image_fns_save = [s.strip('.npy') for s in image_fns]
+            with open('{}/test_dates.txt'.format(self.out_dir), 'w') as f:
+                for line in image_fns_save:
+                    f.write('{}'.format(line))
+        elif self.split == 'monsoon_train':
+            image_fns = [x for x in image_fns if "2024" not in x]
+
 
         label_fns = list(map(lambda x: x.replace('sample', 'label'), image_fns))
 

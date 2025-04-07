@@ -17,6 +17,8 @@ def get_args():
                         required=True)
     parser.add_argument('--results_dir', help='Results directory',
                         required=True)
+    parser.add_argument('--run_name', help='Name of run in results dir',
+                        required=True)
 
     return parser.parse_args()
 
@@ -239,19 +241,26 @@ if __name__ == '__main__':
     args = get_args()
     root_dir = args.root_dir
     results_dir = args.results_dir
+    run = args.run_name
+
+    # Set up final results path with pointing to the run directory
+    run_dir = '{}/{}'.format(results_dir, run)
 
     # Grab list of .npy groundtruth and predictions from results dir
-    predictions = [f for f in os.listdir(results_dir) if 'pred' in f]
+    predictions = [f for f in os.listdir(run_dir) if 'pred' in f]
     predictions.sort()
-    groundtruth = [f for f in os.listdir(results_dir) if 'groundtruth' in f]
+
+    gt_dir = '{}/2023_Groundtruth'.format(results_dir)      # Setting gt dir to come from the 2023 folder
+    groundtruth = [f for f in os.listdir(gt_dir) if 'groundtruth' in f]
+    #groundtruth = [f for f in os.listdir(results_dir) if 'groundtruth' in f]
     groundtruth.sort()
 
     # Load predictions and groundtruth to list
     prediction_arrays = []
     groundtruth_arrays = []
     for i in range(len(predictions)):
-        pred = np.load('{}/{}'.format(results_dir, predictions[i]))
-        gt = np.load('{}/{}'.format(results_dir, groundtruth[i]))
+        pred = np.load('{}/{}'.format(run_dir, predictions[i]))
+        gt = np.load('{}/{}'.format(gt_dir, groundtruth[i]))
         for j in range(len(pred)):
             prediction_arrays.append(pred[j,:,:,:])
             groundtruth_arrays.append(gt[j,:,:,:])
@@ -288,8 +297,7 @@ if __name__ == '__main__':
         results_df = pd.DataFrame(results_list)
         return results_df.mean()
 
-    '''
-    # Running for 
+    # Running for
     thr = [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1]
     thr_results = []
     for t in thr:
@@ -298,16 +306,16 @@ if __name__ == '__main__':
     df = pd.DataFrame(thr_results)
 
     # Save to csv
-    df.to_csv('{}/analysis_2023_results.csv'.format(results_dir))
-    '''
+    df.to_csv('{}/ICLR_CameraReady/{}_analysis_2023_results.csv'.format(results_dir, run))
+
     # Running for date
     f1_dates = timeseries_f1_plots(0.1)
     df_f1 = pd.DataFrame()
     df_f1['f1'] = f1_dates[0]
 
-    with open('{}/test_dates.txt'.format(results_dir), 'r') as file:
+    with open('{}/2023_Groundtruth/test_dates.txt'.format(results_dir), 'r') as file:
         text = file.read()
     substrings = ['sample' + part.strip() for part in text.split('sample') if part.strip()]
     doys = [s.replace('sample_', '') for s in substrings]
     df_f1['doy'] = doys
-    df_f1.to_csv('{}/2023_timeseries.csv'.format(results_dir))
+    df_f1.to_csv('{}/ICLR_CameraReady/{}_2023_timeseries.csv'.format(results_dir, run))
