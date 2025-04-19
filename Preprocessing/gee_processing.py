@@ -24,7 +24,8 @@ parser.add_argument("--query_year",
 root_dir = '<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep'
 
 # Initialize ee
-ee.Initialize(opt_url='https://earthengine-highvolume.googleapis.com')
+ee.Initialize(project='<EE_PROJECT>')
+#ee.Initialize(opt_url='https://earthengine-highvolume.googleapis.com')
 
 
 def daterange(date1, date2):
