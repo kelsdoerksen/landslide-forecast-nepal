@@ -451,6 +451,7 @@ def run_rf(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wand
     Xtest = Xtest.drop(columns=info_cols)
 
     if not tuning:
+        model_state = 'No tuning'
         if not os.path.exists('{}/best_model.pkl'.format(data_dir)):
             # Create an instance of Random Forest
             forest = RandomForestClassifier(criterion='gini',
@@ -609,6 +610,7 @@ def run_gb(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wand
     Xtest = Xtest.drop(columns=info_cols)
 
     if not tuning:
+        model_state = 'No tuning'
         if not os.path.exists('{}/best_model.pkl'.format(data_dir)):
             # Create an instance of XGB
             clf = GradientBoostingClassifier(random_state=random.randint(1, 1000))
@@ -758,6 +760,7 @@ def run_xgb(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wan
     Xtest = Xtest.drop(columns=info_cols)
 
     if not tuning:
+        model_state = 'No tuning'
         if not os.path.exists('{}/best_model.pkl'.format(data_dir)):
             # Create an instance of XGB
             clf = XGBClassifier(random_state=random.randint(1, 1000), eta=0.05, max_depth=3, min_child_weight=0,
@@ -909,6 +912,7 @@ def run_mlp(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wan
     Xtest = Xtest.drop(columns=info_cols)
 
     if not tuning:
+        model_state = 'No tuning'
         if not os.path.exists('{}/best_model.pkl'.format(data_dir)):
             # Create an instance of XGB
             clf = MLPClassifier(random_state=random.randint(1, 1000))
