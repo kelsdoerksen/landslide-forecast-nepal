@@ -107,8 +107,6 @@ def plot_importances(imp, perm, save_dir):
     # Normalize first
     imp = imp / imp.max(axis=1).importance
     perm = perm / perm.max(axis=1).importance
-    #import ipdb
-    #ipdb.set_trace()
 
     X_axis = np.arange(len(imp.columns))
     plt.figure()
@@ -344,6 +342,7 @@ def load_data(test_year, data_dir, experiment_type):
     unwanted_cols = ['label', 'Unnamed: 0', 'Unnamed: 0.1']
     X_test = df_test.drop(columns=unwanted_cols, errors='ignore')
 
+    '''
     if os.path.exists('{}/train_data_2016-2022.csv'.format(data_dir)):
         train = pd.read_csv('{}/train_data_2016-2022.csv'.format(data_dir))
         val = pd.read_csv('{}/val_data_2016-2022.csv'.format(data_dir))
@@ -377,6 +376,31 @@ def load_data(test_year, data_dir, experiment_type):
 
         train_data.to_csv('{}/train_data_2016-2022.csv'.format(data_dir), index=False)
         val_data.to_csv('{}/val_data_2016-2022.csv'.format(data_dir), index=False)
+    '''
+    # Shuffle
+    df_train = shuffle(monsoon_train)
+
+    # Drop Nans
+    df_train = df_train.dropna().reset_index()
+    df_train = df_train.drop(columns=['index'])
+
+    # Split into label and features, preserve date and location
+    ytrain = df_train['label']
+
+    # Drop any columns we don't want
+    Xtrain = df_train.drop(columns=unwanted_cols, errors='ignore')
+
+    # Split into train and validation for parameter tuning, use 15% for validation
+    X_train, X_val, y_train, y_val = train_test_split(Xtrain, ytrain, test_size=0.15,
+                                                      random_state=random.randint(1, 1000), stratify=ytrain)
+
+    train_data = pd.concat([X_train, y_train], axis=1)
+    train_data = train_data.rename(columns={0: 'label'})
+    val_data = pd.concat([X_val, y_val], axis=1)
+    val_data = val_data.rename(columns={0: 'label'})
+
+    train_data.to_csv('{}/train_data_2016-2022.csv'.format(data_dir), index=False)
+    val_data.to_csv('{}/val_data_2016-2022.csv'.format(data_dir), index=False)
 
     if experiment_type == 'no_hindcast':
         X_train = X_train.drop(X_train.filter(regex='tminus').columns, axis=1)
@@ -593,8 +617,8 @@ def run_gb(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wand
                 clf = pickle.load(f)
         print('No model hyperparameter tuning')
         # Concat the train and validation sets together to train on the entire available dataset
-        X_train = pd.concat([X_train, X_val])
-        ytrain = pd.concat([ytrain, y_val])
+        X_train = pd.concat([X_train, X_val], axis=0)
+        ytrain = pd.concat([ytrain, y_val], axis=0)
         # Fit the model
         print('Fitting model...')
         clf.fit(X_train, ytrain)
@@ -1070,6 +1094,7 @@ if __name__ == '__main__':
 
     # Set up wandb experiment for tracking
     experiment = wandb.init(project='landslide-prediction',
+                            dir=results_dir,
                            resume='allow', anonymous='must')
     experiment.config.update(dict(model=model, test_year=test_y))
 
