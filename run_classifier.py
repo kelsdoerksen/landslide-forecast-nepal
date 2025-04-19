@@ -28,6 +28,7 @@ import time
 
 def get_args():
     parser = argparse.ArgumentParser(description='Running ML Pipeline for Landslide Prediction')
+    parser.add_argument('--root_dir', help='Root directory of data')
     parser.add_argument('--model', help='ML Model. Currently supports rf, gb, and xgb')
     parser.add_argument('--test_year', help='Test year for study. Supports 2016-2023')
     parser.add_argument('--forecast_model', help='Precipitation Forecast Model Used')
@@ -1052,6 +1053,7 @@ def run_trained_ukmo(root_directory, results_dir, wandb_exp, model_type, forecas
 
 if __name__ == '__main__':
     args = get_args()
+    root_dir = args.root_dir
     model = args.model
     test_y = args.test_year
     forecast_model = args.forecast_model
@@ -1062,7 +1064,7 @@ if __name__ == '__main__':
     test_forecast = args.test_forecast
     tuning = args.parameter_tuning
 
-    root_dir = '/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
+    #root_dir = '/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
 
     # Set up wandb experiment for tracking
     experiment = wandb.init(project='landslide-prediction',
