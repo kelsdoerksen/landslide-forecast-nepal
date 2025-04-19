@@ -29,6 +29,7 @@ import time
 def get_args():
     parser = argparse.ArgumentParser(description='Running ML Pipeline for Landslide Prediction')
     parser.add_argument('--root_dir', help='Root directory of data')
+    parser.add_argument('--results_dir', help='Results directory for runs')
     parser.add_argument('--model', help='ML Model. Currently supports rf, gb, and xgb')
     parser.add_argument('--test_year', help='Test year for study. Supports 2016-2023')
     parser.add_argument('--forecast_model', help='Precipitation Forecast Model Used')
@@ -1054,6 +1055,7 @@ def run_trained_ukmo(root_directory, results_dir, wandb_exp, model_type, forecas
 if __name__ == '__main__':
     args = get_args()
     root_dir = args.root_dir
+    results_dir = args.results_dir
     model = args.model
     test_y = args.test_year
     forecast_model = args.forecast_model
@@ -1073,10 +1075,10 @@ if __name__ == '__main__':
 
     # Make results directory
     if wandb_setting == 'offline':
-        results = '{}/Results/{}/{}_ForecastModel_{}_EnsembleNum{}'.format(root_dir, hindcast_model, wandb.run.id,
+        results = '{}/Results/{}/{}_ForecastModel_{}_EnsembleNum{}'.format(results_dir, hindcast_model, wandb.run.id,
                                                                        forecast_model, ensemble_num)
     else:
-        results = '{}/Results/{}/{}_ForecastModel_{}_EnsembleNum{}'.format(root_dir, hindcast_model, experiment.name,
+        results = '{}/Results/{}/{}_ForecastModel_{}_EnsembleNum{}'.format(results_dir, hindcast_model, experiment.name,
                                                                        forecast_model, ensemble_num)
     os.mkdir(results)
 
