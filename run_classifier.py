@@ -463,8 +463,8 @@ def run_rf(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wand
                 forest = pickle.load(f)
         print('No model hyperparameter tuning')
         # Concat the train and validation sets together to train on the entire available dataset
-        X_train = pd.concat([X_train, X_val])
-        ytrain = pd.concat([ytrain, y_val])
+        X_train = pd.concat([X_train, X_val], axis=0)
+        ytrain = pd.concat([ytrain, y_val], axis=0)
 
         # Fit the model
         print('Fitting model...')
@@ -767,8 +767,8 @@ def run_xgb(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wan
                 clf = pickle.load(f)
         print('No model hyperparameter tuning')
         # Concat the train and validation sets together to train on the entire available dataset
-        X_train = pd.concat([X_train, X_val])
-        ytrain = pd.concat([ytrain, y_val])
+        X_train = pd.concat([X_train, X_val], axis=0)
+        ytrain = pd.concat([ytrain, y_val], axis=0)
         # Fit the model
         print('Fitting model...')
         clf.fit(X_train, ytrain)
