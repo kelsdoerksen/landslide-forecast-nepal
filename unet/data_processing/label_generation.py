@@ -13,8 +13,10 @@ root_dir = '/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Mon
 
 # Loading landslide records and Nepal District Array
 #landslide_records = pd.read_csv('{}/Wards_with_Bipad_events_one_to_many_landslides_only.csv'.format(root_dir))
-landslide_records = pd.read_csv('{}/incidents_April_October_2024.csv'.format(root_dir))
+#landslide_records = pd.read_csv('{}/incidents_April_October_2024.csv'.format(root_dir))
+landslide_records = pd.read_csv('{}/incidents_2024_Downloaded_14-04-2025.csv'.format(root_dir))
 nepal_im = Image.open('{}/District_Labels.tif'.format(root_dir))
+
 
 district_dict = {
     'Bhojpur': 1, 'Dhankuta': 2, 'Ilam': 3, 'Jhapa': 4, 'Khotang': 5, 'Morang': 6, 'Okhaldhunga': 7,
@@ -58,13 +60,13 @@ def generate_daily_labels(doy, landslide_df):
         # Removing 0 at the beginning as this is not in the 2024 monsoon records
         if lookahead[0] == '0':
             lookahead = lookahead[1:]
-        landslide_subset = landslide_df[landslide_df['Date'] == lookahead]
+        landslide_subset = landslide_df[landslide_df['Incident on'] == lookahead]
         if len(landslide_subset) == 0:
             landslide_list.append(np.zeros((60, 100)))
         else:
             for district in list(district_dict.keys()):
                 district_val = district_dict[district]
-                if len(landslide_subset[landslide_subset['District_Proper'] == district]) == 0:
+                if len(landslide_subset[landslide_subset['District'] == district]) == 0:
                     nepal_arr[nepal_arr == district_val] = 0
             nepal_arr[nepal_arr>=1] = 1
             landslide_list.append(nepal_arr)

@@ -1,0 +1,29 @@
+/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/osgeo/gdal.py:312: FutureWarning: Neither gdal.UseExceptions() nor gdal.DontUseExceptions() has been explicitly called. In GDAL 4.0, exceptions will be enabled by default.
+  warnings.warn(
+Testing pre-trained model on latest Monsoon season...
+Grabbing testing data...
+Predicting on 2024 Monsoon season...
+length of test dataset is: 18
+> /Users/kelseydoerksen/code/landslide-forecast-nepal/unet/predict.py(61)predict()
+     60             # Append first to preserve image shape for future plotting
+---> 61             gt.append(labels.detach().numpy())
+     62             preds.append(outputs_probs.detach().numpy())
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/run_pipeline.py", line 149, in <module>
+    predict(unet, landslide_test_dataset, experiment, save_dir, device=device,
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/predict.py", line 61, in predict
+    gt.append(labels.detach().numpy())
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/predict.py", line 61, in predict
+    gt.append(labels.detach().numpy())
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/bdb.py", line 115, in dispatch_line
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit
+If you suspect this is an IPython 8.7.0 bug, please report it at:
+    https://github.com/ipython/ipython/issues
+or send an email to the mailing list at ipython-dev@python.org
+You can print a more detailed traceback right now with "%tb", or use "%debug"
+to interactively debug it.
+Extra-detailed tracebacks for bug-reporting purposes can be enabled via:
+    %config Application.verbose_crash=True

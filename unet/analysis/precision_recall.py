@@ -9,6 +9,7 @@ import argparse
 from datetime import date, timedelta
 import os
 import pandas as pd
+import pickle
 
 
 def get_args():
@@ -19,6 +20,7 @@ def get_args():
                         required=True)
     parser.add_argument('--run_name', help='Name of run in results dir',
                         required=True)
+    parser.add_argument('--gt_dir', help='Groundtruth directory')
 
     return parser.parse_args()
 
@@ -68,6 +70,8 @@ def pr_generation(y_true, y_pred, threshold, d_masks):
     :param: y_pred: model prediction
     :param: d_masks: dictionary of
     '''
+    #
+
     # Set true positive and false positive count to 0
     true_positives = 0
     false_positives = 0
@@ -93,6 +97,7 @@ def pr_generation(y_true, y_pred, threshold, d_masks):
             if all(item in points for item in d_masks[district]):
                 district_pixels.append(d_masks[district])
                 non_landslide_districts.pop(district)
+
 
         total_overlap = 0
         for j in range(len(district_pixels)):
@@ -140,7 +145,7 @@ def pr_generation(y_true, y_pred, threshold, d_masks):
     if false_positives == 0:
         fpr = 0
     else:
-        true_negatives = (77*len(y_true)) - total_landslides   # Number of Districts minus the landslides that actually occurred
+        true_negatives = (77*len(y_true)) - false_negatives - true_positives - false_positives
         fpr = false_positives / (false_positives + true_negatives)
 
     F1 = (true_positives) / (true_positives + (0.5*(false_positives+false_negatives)))
@@ -237,11 +242,62 @@ def pr_generation_timeseries(y_true, y_pred, threshold, d_masks):
     return f1_score
 
 
+def landslide_record_gen(y_true, y_pred, threshold, d_masks):
+    '''
+    Record the landslide predicted by model and true landslide locations for further plotting in future
+    :param: y_true: label
+    :param: y_pred: model prediction
+    :param: d_masks: dictionary of
+    '''
+
+    threshold_value = threshold
+    y_pred = y_pred[0]
+    y_true = y_true[0]
+
+    y_pred = (y_pred > threshold_value) * 1
+
+    true_landsliding_districts = []
+    predicted_landsliding_districts = []
+    for i in range(len(y_pred)):
+        groundtruth_landslides = []
+        non_landslide_districts = d_masks.copy()  # copy of landslides dict to manipulate
+        dummy_pred = np.copy(y_pred[i, 0, :, ])  # copy of y_pred to manipulate
+        # Get what districts are in label
+        district_pixels = []
+        landslides = np.where(y_true[i, 0, :, :] == 1)
+        points = []
+        gt_landslide_dict = {}
+        for k in range(len(landslides[0])):
+            points.append([landslides[0][k], landslides[1][k]])
+        for district in d_masks:
+            if all(item in points for item in d_masks[district]):
+                district_pixels.append(d_masks[district])
+                non_landslide_districts.pop(district)
+                groundtruth_landslides.append(district)
+                gt_landslide_dict[district] = d_masks[district]
+
+        all_districts = d_masks.copy()
+        pred_landslides = []
+        for j in all_districts:
+            # iterate through the list of points containing the landslide aka true_location
+            location = all_districts[j]
+            for w in range(len(location)):
+                if y_pred[i, 0, location[w][0], location[w][1]] == 1:
+                    pred_landslides.append(j)
+                    break
+
+        true_landsliding_districts.append(groundtruth_landslides)
+        predicted_landsliding_districts.append(pred_landslides)
+
+    return true_landsliding_districts, predicted_landsliding_districts
+
+
 if __name__ == '__main__':
     args = get_args()
     root_dir = args.root_dir
     results_dir = args.results_dir
     run = args.run_name
+    gt_dir = args.gt_dir
 
     # Set up final results path with pointing to the run directory
     run_dir = '{}/{}'.format(results_dir, run)
@@ -250,8 +306,9 @@ if __name__ == '__main__':
     predictions = [f for f in os.listdir(run_dir) if 'pred' in f]
     predictions.sort()
 
-    gt_dir = '{}/2023_Groundtruth'.format(results_dir)      # Setting gt dir to come from the 2023 folder
     groundtruth = [f for f in os.listdir(gt_dir) if 'groundtruth' in f]
+    if len(groundtruth) < 1:
+        groundtruth = [f for f in os.listdir(gt_dir) if 'label' in f]
     #groundtruth = [f for f in os.listdir(results_dir) if 'groundtruth' in f]
     groundtruth.sort()
 
@@ -297,7 +354,13 @@ if __name__ == '__main__':
         results_df = pd.DataFrame(results_list)
         return results_df.mean()
 
-    # Running for
+    # Get list of test dates from file
+    with open('{}/test_dates.txt'.format(gt_dir), 'r') as file:
+        text = file.read()
+    substrings = ['sample' + part.strip() for part in text.split('sample') if part.strip()]
+    doys = [s.replace('sample_', '') for s in substrings]
+
+    # Running for all thresholds
     thr = [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1]
     thr_results = []
     for t in thr:
@@ -306,16 +369,31 @@ if __name__ == '__main__':
     df = pd.DataFrame(thr_results)
 
     # Save to csv
-    df.to_csv('{}/ICLR_CameraReady/{}_analysis_2023_results.csv'.format(results_dir, run))
+    df.to_csv('{}/{}_analysis_results.csv'.format(results_dir, run))
+    #df.to_csv('{}/ICLR_CameraReady/{}_analysis_2023_results.csv'.format(results_dir, run))
 
     # Running for date
     f1_dates = timeseries_f1_plots(0.1)
     df_f1 = pd.DataFrame()
     df_f1['f1'] = f1_dates[0]
 
-    with open('{}/2023_Groundtruth/test_dates.txt'.format(results_dir), 'r') as file:
-        text = file.read()
-    substrings = ['sample' + part.strip() for part in text.split('sample') if part.strip()]
-    doys = [s.replace('sample_', '') for s in substrings]
     df_f1['doy'] = doys
-    df_f1.to_csv('{}/ICLR_CameraReady/{}_2023_timeseries.csv'.format(results_dir, run))
+    #df_f1.to_csv('{}/ICLR_CameraReady/{}_2023_timeseries.csv'.format(results_dir, run))
+    df_f1.to_csv('{}/{}_2023_timeseries.csv'.format(results_dir, run))
+
+    # Get list of gt and pred landslide districts for future plotting
+    gt_landslide_districts, pred_landslide_districts = landslide_record_gen(np.array([groundtruth_arrays]),
+                                                                            np.array([prediction_arrays]), 0.1,
+                                                                            district_masks)
+
+    gt_landslide_districts_dict = {}
+    pred_landslide_districts_dict = {}
+    for d in range(len(doys)):
+        gt_landslide_districts_dict[doys[d]] = gt_landslide_districts[d]
+        pred_landslide_districts_dict[doys[d]] = pred_landslide_districts[d]
+
+    # Save dictionaries to file
+    with open('{}/{}_groundtruth_landsliding_districts.pkl'.format(results_dir, run), 'wb') as fp:
+        pickle.dump(gt_landslide_districts_dict, fp)
+    with open('{}/{}_prediction_landsliding_districts.pkl'.format(results_dir, run), 'wb') as fp:
+        pickle.dump(pred_landslide_districts_dict, fp)

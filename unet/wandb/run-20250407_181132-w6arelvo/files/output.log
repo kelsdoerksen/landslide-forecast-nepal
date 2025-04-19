@@ -1,0 +1,10 @@
+Testing pre-trained model on latest Monsoon season...
+Grabbing testing data...
+/Users/kelseydoerksen/opt/anaconda3/envs/aq/lib/python3.10/site-packages/osgeo/gdal.py:312: FutureWarning: Neither gdal.UseExceptions() nor gdal.DontUseExceptions() has been explicitly called. In GDAL 4.0, exceptions will be enabled by default.
+  warnings.warn(
+Traceback (most recent call last):
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/run_pipeline.py", line 146, in <module>
+    landslide_test_dataset = LandslideDataset(sample_dir, label_dir, 'monsoon_test', save_dir)
+  File "/Users/kelseydoerksen/code/landslide-forecast-nepal/unet/dataset.py", line 41, in __init__
+    fns = os.listdir(image_dir)
+FileNotFoundError: [Errno 2] No such file or directory: '{}/2024_Season_Retro/UNet_Samples_14Day_GPMv07/ecmwf/ensemble_0'

@@ -39,6 +39,9 @@ def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_
     # iterate over the test set
     preds = []
     gt = []
+
+    print('length of test dataset is: {}'.format(len(test_loader)))
+
     with torch.no_grad():
         for i, data in enumerate(test_loader):
             inputs, labels = data
@@ -46,6 +49,7 @@ def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_
 
             # predict the mask
             outputs = unetmodel(inputs)
+
 
             # Apply sigmoid for predictions
             outputs_probs = torch.sigmoid(outputs)

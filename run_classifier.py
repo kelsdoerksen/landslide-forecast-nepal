@@ -373,8 +373,8 @@ def load_data(test_year, data_dir, experiment_type):
         val_data = pd.concat([X_val, y_val])
         val_data = val_data.rename(columns={0: 'label'})
 
-        #train_data.to_csv('{}/train_data_2016-2022.csv'.format(data_dir), index=False)
-        #val_data.to_csv('{}/val_data_2016-2022.csv'.format(data_dir), index=False)
+        train_data.to_csv('{}/train_data_2016-2022.csv'.format(data_dir), index=False)
+        val_data.to_csv('{}/val_data_2016-2022.csv'.format(data_dir), index=False)
 
     if experiment_type == 'no_hindcast':
         X_train = X_train.drop(X_train.filter(regex='tminus').columns, axis=1)
@@ -436,6 +436,10 @@ def run_rf(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wand
             with open('{}/best_model.pkl'.format(data_dir), 'rb') as f:
                 forest = pickle.load(f)
         print('No model hyperparameter tuning')
+        # Concat the train and validation sets together to train on the entire available dataset
+        X_train = pd.concat([X_train, X_val])
+        ytrain = pd.concat([ytrain, y_val])
+
         # Fit the model
         print('Fitting model...')
         forest.fit(X_train, ytrain)
@@ -586,6 +590,9 @@ def run_gb(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wand
             with open('{}/best_model.pkl'.format(data_dir), 'rb') as f:
                 clf = pickle.load(f)
         print('No model hyperparameter tuning')
+        # Concat the train and validation sets together to train on the entire available dataset
+        X_train = pd.concat([X_train, X_val])
+        ytrain = pd.concat([ytrain, y_val])
         # Fit the model
         print('Fitting model...')
         clf.fit(X_train, ytrain)
@@ -733,6 +740,9 @@ def run_xgb(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wan
             with open('{}/best_model.pkl'.format(data_dir), 'rb') as f:
                 clf = pickle.load(f)
         print('No model hyperparameter tuning')
+        # Concat the train and validation sets together to train on the entire available dataset
+        X_train = pd.concat([X_train, X_val])
+        ytrain = pd.concat([ytrain, y_val])
         # Fit the model
         print('Fitting model...')
         clf.fit(X_train, ytrain)

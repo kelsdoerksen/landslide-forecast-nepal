@@ -84,7 +84,6 @@ class LandslideDataset(Dataset):
         elif self.split == 'monsoon_train':
             image_fns = [x for x in image_fns if "2024" not in x]
 
-
         label_fns = list(map(lambda x: x.replace('sample', 'label'), image_fns))
 
         image_fn = image_fns[index]

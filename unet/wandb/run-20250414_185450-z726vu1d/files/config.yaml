@@ -1,0 +1,38 @@
+_wandb:
+    value:
+        cli_version: 0.18.5
+        m: []
+        python_version: 3.10.16
+        t:
+            "1":
+                - 1
+                - 41
+                - 55
+            "2":
+                - 1
+                - 41
+                - 55
+            "3":
+                - 23
+                - 55
+            "4": 3.10.16
+            "5": 0.18.5
+            "8":
+                - 5
+            "12": 0.18.5
+            "13": darwin-x86_64
+batch_size:
+    value: 32
+epochs:
+    value: 150
+exp_type:
+    value: monsoon_test
+learning_rate:
+    value: 0.001
+save_checkpoint:
+    value: true
+tags:
+    value:
+        - NHESS
+val_percent:
+    value: 0.1

@@ -139,6 +139,9 @@ if __name__ == '__main__':
         model_path = '{}/Results/GPMv07/UKMO_ensemble_0_3s5mrfx1/cosmic-shadow-424_last_epoch.pth'.format(root_dir)         # Hardcoding for now until I do some investigating
         unet = torch.load(model_path, weights_only=False)
 
+        sample_dir = '{}/2024_Season_Retro/UNet_Samples_14Day_GPMv07/ecmwf/ensemble_0'.format(root_dir)          # We used ecmwf during the monsoon season of 2024
+        label_dir = '{}/2024_Season_Retro/Binary_Landslide_Labels_14day'.format(root_dir)
+
         print('Grabbing testing data...')
         landslide_test_dataset = LandslideDataset(sample_dir, label_dir, 'monsoon_test', save_dir)
 
