@@ -1100,14 +1100,15 @@ if __name__ == '__main__':
     experiment = wandb.init(project='landslide-prediction',
                             dir=results_dir,
                            resume='allow', anonymous='must')
-    experiment.config.update(dict(model=model, test_year=test_y))
+    experiment.config.update(dict(model=model, test_year=test_y, forecast_model=forecast_model,
+                                  ensemble_num=ensemble_num))
 
     # Make results directory
     if wandb_setting == 'offline':
-        results = '{}/{}_ForecastModel_{}_EnsembleNum{}'.format(results_dir, hindcast_model, wandb.run.id,
+        results = '{}/{}_ForecastModel_{}_EnsembleNum{}'.format(results_dir, wandb.run.id,
                                                                        forecast_model, ensemble_num)
     else:
-        results = '{}/{}_ForecastModel_{}_EnsembleNum{}'.format(results_dir, hindcast_model, experiment.name,
+        results = '{}/{}_ForecastModel_{}_EnsembleNum{}'.format(results_dir, experiment.name,
                                                                        forecast_model, ensemble_num)
     os.mkdir(results)
 
