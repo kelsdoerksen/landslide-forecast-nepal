@@ -201,4 +201,3 @@ if __name__ == "__main__":
         print('Generating sample for DOY: {}'.format(date))
         generate_sample(date, model, ens_num, hindcast_source)
 
-
