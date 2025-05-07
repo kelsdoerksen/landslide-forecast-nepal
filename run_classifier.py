@@ -40,6 +40,7 @@ def get_args():
     parser.add_argument('--wandb_setting', help='Wandb experiment setting, offline or online')
     parser.add_argument('--test_forecast', help='Model to test forecast for 2023 based on ukmo training')
     parser.add_argument('--parameter_tuning', help='Specify if tuning model hyperparameters', default=None)
+    parser.add_argument('--tag', help='Project tag')
 
     return parser.parse_args()
 
@@ -1093,6 +1094,7 @@ if __name__ == '__main__':
     wandb_setting = args.wandb_setting
     test_forecast = args.test_forecast
     tuning = args.parameter_tuning
+    tag = args.tag
 
     #root_dir = '/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
 
@@ -1101,7 +1103,7 @@ if __name__ == '__main__':
                             dir=results_dir,
                            resume='allow', anonymous='must')
     experiment.config.update(dict(model=model, test_year=test_y, forecast_model=forecast_model,
-                                  ensemble_num=ensemble_num))
+                                  ensemble_num=ensemble_num, Tags=args.tag))
 
     # Make results directory
     if wandb_setting == 'offline':
