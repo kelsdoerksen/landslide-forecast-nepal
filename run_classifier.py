@@ -245,10 +245,12 @@ def calc_model_performance(model, labels, probs, xtest, results_dir, wandb_id, m
     calc_confusion_matrix(labels, predictions, results_dir)
 
     # Calculate importances
+    '''
     if model_type == 'rf':
         importances = calc_importance(model, xtest, results_dir)
         perm_importances = calc_perm_importance(model, xtest, labels, results_dir)
         plot_importances(importances, perm_importances, results_dir)
+    '''
 
     # Calc precision recall
     print('--------------------')
@@ -1101,9 +1103,9 @@ if __name__ == '__main__':
     # Set up wandb experiment for tracking
     experiment = wandb.init(project='landslide-prediction',
                             dir=results_dir,
-                           resume='allow', anonymous='must')
+                           resume='allow', anonymous='must', tags=["{}".format(tag)])
     experiment.config.update(dict(model=model, test_year=test_y, forecast_model=forecast_model,
-                                  ensemble_num=ensemble_num, Tags=args.tag))
+                                  ensemble_num=ensemble_num))
 
     # Make results directory
     if wandb_setting == 'offline':

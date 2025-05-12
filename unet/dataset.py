@@ -51,7 +51,8 @@ class LandslideDataset(Dataset):
 
     def __len__(self):
         if self.split == 'train':
-            image_fns = [x for x in self.image_fns if ["2023", "2024"] not in x]
+            image_fns = [x for x in self.image_fns if "2023" not in x]
+            image_fns = [x for x in image_fns if "2023" not in x]
         elif self.split == 'test':
             image_fns = [x for x in self.image_fns if "2023" in x]
         elif self.split == 'monsoon_test':
@@ -64,7 +65,8 @@ class LandslideDataset(Dataset):
         image_fns = sort(self.image_fns)
 
         if self.split == 'train':
-            image_fns = [x for x in image_fns if ["2023", "2024"] not in x]
+            image_fns = [x for x in image_fns if "2023" not in x]
+            image_fns = [x for x in image_fns if "2024" not in x]
         elif self.split == 'test':
             image_fns = [x for x in image_fns if "2023" in x]
             # Save list of image_fns to file so we know what dates were used
@@ -85,7 +87,6 @@ class LandslideDataset(Dataset):
             image_fns = [x for x in image_fns if "2024" not in x]
 
         label_fns = list(map(lambda x: x.replace('sample', 'label'), image_fns))
-
         image_fn = image_fns[index]
         label_fn = label_fns[index]
         image_fp = os.path.join(self.image_dir, image_fn)
