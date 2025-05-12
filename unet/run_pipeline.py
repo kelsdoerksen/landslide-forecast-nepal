@@ -97,10 +97,11 @@ if __name__ == '__main__':
     tag = args.tags
 
     # Initializing logging in wandb for experiment
-    experiment = wandb.init(project='landslide-prediction', resume='allow', anonymous='must')
+    experiment = wandb.init(project='landslide-prediction', resume='allow', anonymous='must',
+                            tags=["{}".format(tag)])
     experiment.config.update(
         dict(epochs=args.epochs, batch_size=args.batch_size, learning_rate=args.lr,
-             val_percent=0.1, save_checkpoint=True, tags=[tag], exp_type=args.exp_type)
+             val_percent=0.1, save_checkpoint=True, exp_type=args.exp_type)
     )
 
     # --- Setting Directories

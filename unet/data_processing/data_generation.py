@@ -192,7 +192,7 @@ if __name__ == "__main__":
     print('Generating samples using forecast data from model: {}, member: {}'.format(model, ens_num))
 
     # Get list of dates
-    sdate = date(int(start), 4, 1)
+    sdate = date(int(start), 1, 1)
     edate = date(int(end), 12, 31)
     date_list = daterange(sdate, edate)
 

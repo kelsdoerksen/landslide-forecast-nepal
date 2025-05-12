@@ -19,12 +19,13 @@ def get_args():
     return parser.parse_args()
 
 # Set data path
-root_dir = '/Volumes/PRO-G40 1/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
+root_dir = '/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
 #root_dir = '/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep/2024_Season_Retro/'
 
 # Read in incidents records
-incidents_df = pd.read_csv('{}/Wards_with_Bipad_events_one_to_many_landslides_only.csv'.format(root_dir))
+#incidents_df = pd.read_csv('{}/Wards_with_Bipad_events_one_to_many_landslides_only.csv'.format(root_dir))
 #incidents_df = pd.read_csv(root_dir + 'incidents_April_October_2024.csv')
+incidents_df = pd.read_csv('{}/Bipad_Incidents_2023-2024_May82025Download.csv'.format(root_dir))
 
 # Grab District Names -> Harcoded to match Bipad Portal records
 districts = ['Achham', 'Arghakhanchi', 'Baglung', 'Baitadi', 'Bajhang', 'Bajura', 'Banke', 'Bara', 'Bardiya',
@@ -41,7 +42,6 @@ districts = ['Achham', 'Arghakhanchi', 'Baglung', 'Baitadi', 'Bajhang', 'Bajura'
 
 print('The number of landslides on the District-level in Nepal is {}'.format(len(incidents_df)))
 
-
 def daterange(date1, date2):
   date_list = []
   for n in range(int ((date2 - date1).days)+1):
@@ -55,13 +55,14 @@ def generate_labelled_district(df, district, dates_list):
     Generates a dataframe for a district specified with labelled
     landslide occurrences 0,1 respectively
     '''
-    landslide_events = df[df.District_Proper == district]
+    landslide_events = df[df.District == district]
     # Filter to remove any duplicates, can't differentiate between
     # two landslides in the same district on the same day
+    landslide_events = landslide_events.rename(columns={'Incident on': 'Date'})
     landslide_events_filt = landslide_events.drop_duplicates(subset=['Date'], keep='first')
     landslide_events_list = landslide_events_filt['Date'].tolist()
-    #landslide_events_list_formatted = [datetime.strptime(sub, "%m/%d/%y").strftime('%Y-%m-%d') for sub in landslide_events_list] # 2024 list
-    landslide_events_list_formatted = [datetime.strptime(sub, "%d/%m/%Y").strftime('%Y-%m-%d') for sub in landslide_events_list] # 2016-2023 list
+    landslide_events_list_formatted = [datetime.strptime(sub, "%m/%d/%y").strftime('%Y-%m-%d') for sub in landslide_events_list] # 2024 list
+    #landslide_events_list_formatted = [datetime.strptime(sub, "%d/%m/%Y").strftime('%Y-%m-%d') for sub in landslide_events_list] # 2016-2023 list
     # Generate list of labelled events for the AOI specified
     label_list = []
     for doy in dates_list:
@@ -150,7 +151,7 @@ def add_precip_lookahead(day, precip_forecast_df, window_size, model_name, ensem
 def generate_precip_lookback(day, precip, window_size, lookback_name):
     '''
     Generate Precipitation lookback features given day0, precipitation df
-    :param: operaiotnal_mode: refers to operational-use context, querying from tminus days bwack
+    :param: operaiotnal_mode: refers to operational-use context, querying from tminus days back
     '''
     format = '%Y-%m-%d'
     day = str(day)
@@ -341,4 +342,4 @@ if __name__ == "__main__":
     ens_num = args.ens_member
 
     #run_generate_data(root_dir, year, date(int(year), 1, 1), date(int(year)+1, 1, 14), 14, forecast, ens_num, hindcast)
-    run_generate_data(root_dir, year, date(int(year), 4, 1), date(int(year), 10, 30), 14, forecast, ens_num, hindcast)
+    run_generate_data(root_dir, year, date(int(year), 1, 1), date(int(year), 12, 31), 14, forecast, ens_num, hindcast)

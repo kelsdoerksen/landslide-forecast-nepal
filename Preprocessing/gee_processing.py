@@ -99,8 +99,8 @@ def getRequests(query_year, gee_data):
     :param: gee_data: full name of GEE data collection
     """
     # --- Calculating  daily mean ---
-    start_date = date(int(query_year), 4, 1)
-    end_date = date(int(query_year) , 10, 30)
+    start_date = date(int(query_year), 1, 1)
+    end_date = date(int(query_year) , 12, 31)
 
     # Get list of days over the query year
     dates_list = daterange(start_date, end_date)

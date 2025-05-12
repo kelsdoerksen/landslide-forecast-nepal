@@ -25,8 +25,8 @@ def ecmwf_to_daily(precip_data):
     taking the nearest neighbour as day of year
     """
     # Give a range to query, will give +5 days on either side in case of missing data
-    start = datetime.strptime('2024-04-01', '%Y-%m-%d')
-    end = datetime.strptime('2024-10-15', '%Y-%m-%d')
+    start = datetime.strptime('2024-10-01', '%Y-%m-%d')
+    end = datetime.strptime('2024-10-31', '%Y-%m-%d')
 
     dates = daterange(start, end)
     for doy in dates:
@@ -41,7 +41,7 @@ def ecmwf_to_daily(precip_data):
             except:
                 n +=1
         # Specify save dir
-        directory = '{}/ecmwf'.format(root_dir)
+        directory = '{}/PrecipitationModel_Forecast_Data/Subseasonal/ecmwf'.format(root_dir)
         if not os.path.exists(directory):
             os.makedirs(directory)
 
@@ -49,5 +49,5 @@ def ecmwf_to_daily(precip_data):
 
 # Specify precip data to process
 precip = xr.open_dataset('/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep/'
-                         '2024_Season_Retro/Nepal_ECMWF_2024_Apr-Oct_GPMfinal.nc')
+                         '2024_Season_Retro/Nepal_ECMWF_2024_Oct_GPMfinal_2.nc')
 ecmwf_to_daily(precip)
