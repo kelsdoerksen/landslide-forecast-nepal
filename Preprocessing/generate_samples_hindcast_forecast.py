@@ -101,7 +101,7 @@ def add_landcover_features(modis_df, day):
     Generate and add landcover features per district
     '''
     year = day[0:4]
-    if int(year) > 2024:
+    if int(year) > 2023:
         query_year = '2023'
     else:
         query_year = year
