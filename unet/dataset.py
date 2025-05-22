@@ -22,69 +22,77 @@ def daterange(date1, date2):
     return date_list
 
 def monsoon_dates(year):
-    return daterange(date(int(year), 4, 1), date(int(year), 10, 31))
+    return daterange(date(int(year), 4, 1), date(int(year), 10, 17))
+
+def out_of_monsoon_dates(year):
+    date_list_pre = daterange(date(int(year), 1, 1), date(int(year), 3, 31))
+    date_list_post = daterange(date(int(year), 11, 1), date(int(year), 12, 31))
+    return date_list_pre + date_list_post
 
 class LandslideDataset(Dataset):
-    def __init__(self, image_dir, label_dir, split, out_dir):
+    def __init__(self, image_dir, label_dir, split, exp_type, test_year, out_dir):
         self.image_dir = image_dir
         self.label_dir = label_dir
         self.split = split
+        self.exp_type = exp_type
+        self.test_year = test_year
         self.out_dir = out_dir
 
-        # Apply monsoon date bounds
+        # Apply valid date bounds depending on the experiment type
         years = [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
-        monsoon_date_list = []
-        for y in years:
-            monsoon_date_list.extend(monsoon_dates(y))
+        # Remove any years greater than test year because we do not want these samples
+        years = [x for x in years if x <= int(test_year)]
+        valid_date_list = []
+
+        if split == 'train':
+            for y in years:
+                valid_date_list.extend(monsoon_dates(y))
+
+        # We only ever test on out of monsoon dates
+        if split == 'test':
+            for y in years:
+                if exp_type == 'out-monsoon':
+                    valid_date_list.extend(out_of_monsoon_dates(y))
+                else:
+                    valid_date_list.extend(monsoon_dates(y))
 
         # Get list of dates from samples
         fns = os.listdir(image_dir)
         fns = [s.strip('sample_') for s in fns]
         fns = [s.strip('.npy') for s in fns]
 
-        fns_monsoon = [x for x in fns if x in monsoon_date_list]
+        fns_valid = [x for x in fns if x in valid_date_list]
 
-        image_fns_monsoon = ['sample_' + x for x in fns_monsoon]
-        label_fns_monsoon = ['label_' + x for x in fns_monsoon]
-        self.image_fns = [x + '.npy' for x in image_fns_monsoon]
-        self.label_fns = [x + '.npy' for x in label_fns_monsoon]
+        image_fns_valid = ['sample_' + x for x in fns_valid]
+        label_fns_valid = ['label_' + x for x in fns_valid]
+        self.image_fns = [x + '.npy' for x in image_fns_valid]
+        self.label_fns = [x + '.npy' for x in label_fns_valid]
+
 
     def __len__(self):
         if self.split == 'train':
-            image_fns = [x for x in self.image_fns if "2023" not in x]
-            image_fns = [x for x in image_fns if "2023" not in x]
+            image_fns = [x for x in self.image_fns if "{}".format(self.test_year) not in x]
+            image_fns = [x for x in image_fns if "{}".format(self.test_year) not in x]
         elif self.split == 'test':
-            image_fns = [x for x in self.image_fns if "2023" in x]
-        elif self.split == 'monsoon_test':
-            image_fns = [x for x in self.image_fns if "2024" in x]      #
-        elif self.split == 'monsoon_train':
-            image_fns = [x for x in self.image_fns if "2024" not in x]
+            image_fns = [x for x in self.image_fns if "{}".format(self.test_year) in x]
         return len(image_fns)
 
     def __getitem__(self, index):
         image_fns = sort(self.image_fns)
 
         if self.split == 'train':
-            image_fns = [x for x in image_fns if "2023" not in x]
-            image_fns = [x for x in image_fns if "2024" not in x]
+            image_fns = [x for x in self.image_fns if "{}".format(self.test_year) not in x]
+            with open('{}/train_dates.txt'.format(self.out_dir), 'w') as f:
+                for line in image_fns:
+                    f.write('{}'.format(line))
         elif self.split == 'test':
-            image_fns = [x for x in image_fns if "2023" in x]
+            image_fns = [x for x in self.image_fns if "{}".format(self.test_year) in x]
             # Save list of image_fns to file so we know what dates were used
             image_fns_save = [s.strip('sample_') for s in image_fns]
             image_fns_save = [s.strip('.npy') for s in image_fns]
             with open('{}/test_dates.txt'.format(self.out_dir), 'w') as f:
                 for line in image_fns_save:
                     f.write('{}'.format(line))
-        elif self.split == 'monsoon_test':
-            image_fns = [x for x in image_fns if "2024" in x]
-            # Save list of image_fns to file so we know what dates were used
-            image_fns_save = [s.strip('sample_') for s in image_fns]
-            image_fns_save = [s.strip('.npy') for s in image_fns]
-            with open('{}/test_dates.txt'.format(self.out_dir), 'w') as f:
-                for line in image_fns_save:
-                    f.write('{}'.format(line))
-        elif self.split == 'monsoon_train':
-            image_fns = [x for x in image_fns if "2024" not in x]
 
         label_fns = list(map(lambda x: x.replace('sample', 'label'), image_fns))
         image_fn = image_fns[index]

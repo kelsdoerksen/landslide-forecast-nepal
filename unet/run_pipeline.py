@@ -26,7 +26,8 @@ def get_args():
     parser.add_argument('--learning-rate', '-l', type=float, default=0.001, help='Learning rate', dest='lr')
     parser.add_argument('--optimizer', '-o', type=str, default='adam', help='Model optimizer')
     parser.add_argument('--classes', '-c', type=int, default=1, help='Number of classes')
-    parser.add_argument('--test-year', '-t', type=str, help='Test year for analysis (sets out of training)')
+    parser.add_argument('--test_year', '-t', type=str, help='Test year for analysis (sets out of training)',
+                        required=True)
     parser.add_argument('--root_dir', help='Specify root directory',
                         required=True)
     parser.add_argument('--save_dir', help='Specify root save directory',
@@ -39,7 +40,7 @@ def get_args():
                         required=True)
     parser.add_argument('--tags', help='wandb tag',
                         required=True)
-    parser.add_argument('--exp_type', help='experiment type; standard or monsoon_test',
+    parser.add_argument('--exp_type', help='experiment type; in-monsoon and out-monsoon',
                         required=True)
 
     return parser.parse_args()
@@ -101,7 +102,8 @@ if __name__ == '__main__':
                             tags=["{}".format(tag)])
     experiment.config.update(
         dict(epochs=args.epochs, batch_size=args.batch_size, learning_rate=args.lr,
-             val_percent=0.1, save_checkpoint=True, exp_type=args.exp_type)
+             val_percent=0.1, save_checkpoint=True, exp_type=args.exp_type, forecast_model=args.ensemble,
+             forecast_model_num=args.ensemble_member)
     )
 
     # --- Setting Directories
@@ -160,11 +162,13 @@ if __name__ == '__main__':
 
         # ---- Grabbing Training Data ----
         print('Grabbing training data...')
-        landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', save_dir)
+        landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
+                                                   save_dir)
 
         # --- Grabbing Testing Data ----
         print('Grabbing testing data...')
-        landslide_test_dataset = LandslideDataset(sample_dir, label_dir, 'test', save_dir)
+        landslide_test_dataset = LandslideDataset(sample_dir, label_dir, 'test', args.exp_type, args.test_year,
+                                                  save_dir)
 
         print('Training model...')
         trained_model = train_model(

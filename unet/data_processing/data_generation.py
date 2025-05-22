@@ -99,12 +99,7 @@ def load_precip_lookahead(day, ensemble_model, ensemble_num):
         lookahead = delta.strftime(format)
         print('Running for lookahead: {}'.format(lookahead))
         try:
-            if ensemble_model == 'ecmwf':
-                lookahead_precip = np.load(
-                    '{}/Subseasonal/{}/ensemble_member_{}/precipitation_forecast_ecmwf_doy_{}.npy'.
-                    format(precip_dir, ensemble_model, ensemble_num, lookahead))
-            else:
-                lookahead_precip = np.load('{}/Subseasonal/{}/ensemble_member_{}/precipitation_forecast_id{}_doy_{}.npy'.
+            lookahead_precip = np.load('{}/Subseasonal/{}/ensemble_member_{}/precipitation_forecast_id{}_doy_{}.npy'.
                                            format(precip_dir, ensemble_model, ensemble_num, ensemble_num, lookahead))
             if lookahead_precip.shape != np.zeros((60,100)).shape:
                 print('Missing precipitation for date {}, returning None'.format(lookahead))
