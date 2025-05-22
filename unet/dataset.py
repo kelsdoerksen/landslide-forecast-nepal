@@ -22,7 +22,7 @@ def daterange(date1, date2):
     return date_list
 
 def monsoon_dates(year):
-    return daterange(date(int(year), 4, 1), date(int(year), 10, 17))
+    return daterange(date(int(year), 4, 1), date(int(year), 10, 31))
 
 def out_of_monsoon_dates(year):
     date_list_pre = daterange(date(int(year), 1, 1), date(int(year), 3, 31))

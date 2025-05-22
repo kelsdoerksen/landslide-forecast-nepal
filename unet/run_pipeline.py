@@ -134,6 +134,7 @@ if __name__ == '__main__':
         district_masks[district] = points
 
     # Check experiment type and run the things
+    #Below is old, I will remove this once I have written the new format
     if args.exp_type == 'monsoon_test':
         unet = models.UNet(n_channels=32, n_classes=1)
         set_seed(random.randint(0, 1000))
@@ -167,8 +168,12 @@ if __name__ == '__main__':
 
         # --- Grabbing Testing Data ----
         print('Grabbing testing data...')
-        landslide_test_dataset = LandslideDataset(sample_dir, label_dir, 'test', args.exp_type, args.test_year,
-                                                  save_dir)
+        if args.exp_type == 'ukmo-train-ecmwf-test':
+            # If experiment type is train on ukmo, test on ecmwf, test set comes from ecmwf
+            sample_dir = '{}/UNet_Samples_14Day_GPMv07/ECMWF/ensemble_0'.format(root_dir)
+        else:
+            landslide_test_dataset = LandslideDataset(sample_dir, label_dir, 'test', args.exp_type, args.test_year,
+                                                      save_dir)
 
         print('Training model...')
         trained_model = train_model(
