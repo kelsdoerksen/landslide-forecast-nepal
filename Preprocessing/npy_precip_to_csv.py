@@ -60,8 +60,8 @@ def convert_npy_to_precip(precip_dir, forecast, ens_number):
                          format(root_dir, forecast, ens_number, key), index=False)
 
 
-forecast = 'NCEP'
-ens_members = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+forecast = 'UKMO'
+ens_members = [0, 1, 2, 3]
 for ens_number in ens_members:
     precip_dir = '{}/Subseasonal/{}/ensemble_member_{}'.format(root_dir, forecast, ens_number)
     convert_npy_to_precip(precip_dir, forecast, ens_number)

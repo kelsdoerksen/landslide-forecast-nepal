@@ -31,7 +31,7 @@ def get_args():
     parser.add_argument('--root_dir', help='Root directory of data')
     parser.add_argument('--results_dir', help='Results directory for runs')
     parser.add_argument('--model', help='ML Model. Currently supports rf, gb, and xgb')
-    parser.add_argument('--test_year', help='Test year for study. Supports 2016-2023')
+    parser.add_argument('--test_year', help='Test year for study. Supports 2016-2024')
     parser.add_argument('--forecast_model', help='Precipitation Forecast Model Used')
     parser.add_argument('--ensemble_num', help='Ensemble member id used from precipitation forecast model')
     parser.add_argument('--hindcast_model', help='Hindcast precipitation model used')
@@ -301,14 +301,11 @@ def load_data(test_year, data_dir, experiment_type):
         '2020': ['2016', '2017', '2018', '2019'],
         '2021': ['2016', '2017', '2018', '2019', '2020'],
         '2022': ['2016', '2017', '2018', '2019', '2020', '2021'],
-        '2023': ['2016', '2017', '2018', '2019', '2020', '2021', '2022']
+        '2023': ['2016', '2017', '2018', '2019', '2020', '2021', '2022'],
+        '2024': ['2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023']
     }
 
-    if test_year == '2024':
-        # Training the model on all the data to save
-        train_years = ['2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023']
-    else:
-        train_years = year_split_dict[test_year]
+    train_years = year_split_dict[test_year]
 
     df_train_list = []
     monsoon_train_list = []
@@ -431,6 +428,8 @@ def run_rf(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wand
 
     X_val = Xval.drop(columns=info_cols)
 
+    '''
+    # Commenting out this block as I will just include it all in the same results folder with specified test year saved
     if test_year == '2024':
         forest = None   # putting this here for now but will update
         X_train['label'] = ytrain
@@ -449,6 +448,7 @@ def run_rf(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wand
         with open("{}/rf_model.pkl".format(results_dir), "wb") as file:
             pickle.dump(forest, file)
         return
+        '''
 
     test_info = Xtest[info_cols]
     Xtest = Xtest.drop(columns=info_cols)
@@ -590,6 +590,7 @@ def run_gb(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wand
 
     X_val = Xval.drop(columns=info_cols)
 
+    '''
     if test_year == '2024':
         clf = None  # putting this here for now but will update
         X_train['label'] = ytrain
@@ -608,6 +609,7 @@ def run_gb(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wand
         with open("{}/gb_model.pkl".format(results_dir), "wb") as file:
             pickle.dump(clf, file)
         return
+    '''
 
     test_info = Xtest[info_cols]
     Xtest = Xtest.drop(columns=info_cols)
@@ -740,6 +742,8 @@ def run_xgb(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wan
 
     X_val = Xval.drop(columns=info_cols)
 
+    '''
+    # Commenting out as I don't need to separate
     if test_year == '2024':
         clf = None  # putting this here for now but will update
         X_train['label'] = ytrain
@@ -758,6 +762,7 @@ def run_xgb(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wan
         with open("{}/xgb_model.pkl".format(results_dir), "wb") as file:
             pickle.dump(clf, file)
         return
+    '''
 
     test_info = Xtest[info_cols]
     Xtest = Xtest.drop(columns=info_cols)

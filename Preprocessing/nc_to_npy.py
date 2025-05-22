@@ -7,6 +7,7 @@ import xarray as xr
 import datetime
 from datetime import datetime, date, timedelta
 import os
+from pathlib import Path
 
 # --- Specify dir of data
 # root dir
@@ -22,11 +23,20 @@ models = {
              'ensemble_count': 16,
              'date_start': '2015-01-01',
              'date_end': '2023-11-14'},
-    'UKMO': {'filename': "Nepal_UKMO_4ens_RT_Dec2015-Oct2023_GPMfinal.nc",
-             'ensemble_count': 4,
-             'date_start': '2015-12-01',
-             'date_end': '2024-01-01'}
+    'UKMO': {'filename': "Nepal_UKMO_2024_Oct-Dec_GPMfinal_May14Download_ens0.nc",
+             'ensemble_count': 1,
+             'date_start': '2024-10-01',
+             'date_end': '2024-12-31'},
+    'ECMWF': {'filename': "Nepal_ECMWF_2023_Jul-2024_Apr_GPMfinal.nc",
+              'ensemble_count': 1,
+              'date_start': '2023-07-01',
+              'date_end': '2023-07-14'}
 }
+# UKMO: Nepal_UKMO_4ens_RT_Dec2015-Oct2023_GPMfinal.nc -> all four ensemble members
+# UKMO: Nepal_UKMO_Dec2015-Apr2024_GPMfinal_ens0 -> only ensemble 0
+# UKMO file: Nepal_UKMO_2024_Oct-Dec_GPMfinal_May14Download_ens0.nc"
+# UKMO file: Nepal_UKMO_2024_Apr-Sep_GPMfinal_ens0.nc
+# ECMWF file: Nepal_ECMWF_2024_Oct-Dec_GPMfinal_May14Download.nc
 
 def daterange(date1, date2):
   date_list = []
@@ -67,7 +77,9 @@ def process_subseasonal(model_type):
             directory = '{}/Subseasonal/{}/ensemble_member_{}'.format(root_dir, model_type, i)
             if not os.path.exists(directory):
                 os.makedirs(directory)
-            np.save('{}/precipitation_forecast_id{}_doy_{}.npy'.format(directory, i,
+            if not Path('{}/precipitation_forecast_id{}_doy_{}.npy'.format(directory, i,
+                                                                       str(start_date_for_lookahead)[0:10])).is_file():
+                np.save('{}/precipitation_forecast_id{}_doy_{}.npy'.format(directory, i,
                                                                        str(start_date_for_lookahead)[0:10]), precip_arr)
 
     with open('{}/missing_dates_{}.txt'.format(root_dir, model_type), 'w') as fp:
@@ -76,7 +88,7 @@ def process_subseasonal(model_type):
             fp.write("%s\n" % item)
         print('Done')
 
-forecast_models = ['NCEP']
+forecast_models = ['UKMO']
 for fm in forecast_models:
     process_subseasonal(fm)
 

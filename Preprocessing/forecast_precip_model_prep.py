@@ -14,7 +14,7 @@ import argparse
 def get_args():
     parser = argparse.ArgumentParser(description='Processing Precipitation Data to Tabular format')
     parser.add_argument("--precip_source", default=None, help='Precipitation source. Must be one of GPM, GSMaP, KMA,'
-                                                              'NCEP, UKMO')
+                                                              'NCEP, UKMO, ECMWF')
     parser.add_argument("--ens_member", default=None, help='Ensemble member to use precipitation data from.')
     return parser.parse_args()
 
@@ -59,7 +59,7 @@ def convert_npy_to_precip(nepal_im, data_dir, precip_source, results_dir):
             try:
                 date_str = result.group(1)
             except AttributeError:
-                print('Missing precip for date {}, skipping'.format(date_str))
+                print('Missing precip for date, skipping')
                 continue
             print('Processing for date: {}'.format(date_str))
             try:
@@ -84,7 +84,7 @@ def convert_npy_to_precip(nepal_im, data_dir, precip_source, results_dir):
         else:
             savename = 'GPM'
 
-        df_sorted.to_csv('{}/{}_{}.csv'.format(results_dir, key, savename))
+        df_sorted.to_csv('{}/{}_{}.csv'.format(results_dir, key, savename), index=False)
 
 
 if __name__ == "__main__":
@@ -103,10 +103,6 @@ if __name__ == "__main__":
                                                                                                   ens_num)
         save_dir = '{}/PrecipitationModel_Forecast_Data/Subseasonal/{}/DistrictLevel/ensemble_member_{}'.format(
             root_dir, precip_source, ens_num)
-        '''
-        data_dir = '{}/ecmwf'.format(root_dir)
-        save_dir = '{}/ecmwf/Subseasonal/DistrictLevel'.format(root_dir)
-        '''
     else:
         data_dir = '{}/{}_Mean_Pixelwise'.format(root_dir, precip_source)
         save_dir = '{}/{}_Mean_Pixelwise/Subseasonal/DistrictLevel'.format(root_dir, precip_source)
