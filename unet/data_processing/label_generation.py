@@ -9,12 +9,13 @@ import pandas as pd
 
 # Setting data directories to query from
 #root_dir = '/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
-root_dir = '/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep/2024_Season_Retro'
+root_dir = '/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
 
 # Loading landslide records and Nepal District Array
 #landslide_records = pd.read_csv('{}/Wards_with_Bipad_events_one_to_many_landslides_only.csv'.format(root_dir))
 #landslide_records = pd.read_csv('{}/incidents_April_October_2024.csv'.format(root_dir))
-landslide_records = pd.read_csv('{}/incidents_2024_Downloaded_14-04-2025.csv'.format(root_dir))
+#landslide_records = pd.read_csv('{}/incidents_2024_Downloaded_14-04-2025.csv'.format(root_dir))
+landslide_records = pd.read_csv('{}/Bipad_Incidents_2023-2024_May82025Download.csv'.format(root_dir))
 nepal_im = Image.open('{}/District_Labels.tif'.format(root_dir))
 
 
@@ -78,7 +79,7 @@ def generate_daily_labels(doy, landslide_df):
     return combined_label
 
 
-date_list = daterange(date(2024,4,13), date(2024,10,31))
+date_list = daterange(date(2023,10,17), date(2024,12,31))
 for d in date_list:
     print('Generating label for doy: {}'.format(d))
     generate_daily_labels(d, landslide_records)
