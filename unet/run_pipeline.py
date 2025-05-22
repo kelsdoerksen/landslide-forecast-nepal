@@ -103,7 +103,7 @@ if __name__ == '__main__':
     experiment.config.update(
         dict(epochs=args.epochs, batch_size=args.batch_size, learning_rate=args.lr,
              val_percent=0.1, save_checkpoint=True, exp_type=args.exp_type, forecast_model=args.ensemble,
-             forecast_model_num=args.ensemble_member)
+             ensemble_num=args.ensemble_member, test_year=args.test_year)
     )
 
     # --- Setting Directories
