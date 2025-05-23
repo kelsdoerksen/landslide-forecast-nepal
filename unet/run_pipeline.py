@@ -171,9 +171,8 @@ if __name__ == '__main__':
         if args.exp_type == 'ukmo-train-ecmwf-test':
             # If experiment type is train on ukmo, test on ecmwf, test set comes from ecmwf
             sample_dir = '{}/UNet_Samples_14Day_GPMv07/ECMWF/ensemble_0'.format(root_dir)
-        else:
-            landslide_test_dataset = LandslideDataset(sample_dir, label_dir, 'test', args.exp_type, args.test_year,
-                                                      save_dir)
+        landslide_test_dataset = LandslideDataset(sample_dir, label_dir, 'test', args.exp_type, args.test_year,
+                                                  save_dir)
 
         print('Training model...')
         trained_model = train_model(
