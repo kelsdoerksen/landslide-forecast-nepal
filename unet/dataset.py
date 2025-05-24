@@ -5,6 +5,7 @@ split: monsoon_train refers to training the model with all the latest data (2016
 to run it on the 2024 test set
 monsoon_test refers to the 2024 monsoon season testing model performance
 """
+from symbol import continue_stmt
 
 from torch.utils.data import Dataset
 from torchvision import transforms
@@ -40,8 +41,12 @@ class LandslideDataset(Dataset):
 
         # Apply valid date bounds depending on the experiment type
         years = [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
-        # Remove any years greater than test year because we do not want these samples
-        years = [x for x in years if x <= int(test_year)]
+        if exp_type == 'temporal-cv':
+            # Don't remove earlier or later years, we just want
+            years = years
+        else:
+            # Remove any years greater than test year because we do not want these samples
+            years = [x for x in years if x <= int(test_year)]
         valid_date_list = []
 
         if split == 'train':
