@@ -5,7 +5,6 @@ split: monsoon_train refers to training the model with all the latest data (2016
 to run it on the 2024 test set
 monsoon_test refers to the 2024 monsoon season testing model performance
 """
-from symbol import continue_stmt
 
 from torch.utils.data import Dataset
 from torchvision import transforms
