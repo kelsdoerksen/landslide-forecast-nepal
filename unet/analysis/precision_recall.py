@@ -379,7 +379,7 @@ if __name__ == '__main__':
 
     df_f1['doy'] = doys
     #df_f1.to_csv('{}/ICLR_CameraReady/{}_2023_timeseries.csv'.format(results_dir, run))
-    df_f1.to_csv('{}/{}_2023_timeseries.csv'.format(results_dir, run))
+    df_f1.to_csv('{}/{}_test_timeseries.csv'.format(results_dir, run))
 
     # Get list of gt and pred landslide districts for future plotting
     gt_landslide_districts, pred_landslide_districts = landslide_record_gen(np.array([groundtruth_arrays]),
