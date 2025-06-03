@@ -175,5 +175,8 @@ def train_model(model,
                 'optimizer': optimizer.state_dict()},
                out_model)
 
+    # Save final model with the weights and architecture itself
+    torch.save(model, "{}/pretrained_model.pth".format(save_dir))
+
     return out_model
 
