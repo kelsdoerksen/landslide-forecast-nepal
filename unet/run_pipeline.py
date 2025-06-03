@@ -135,6 +135,36 @@ if __name__ == '__main__':
 
     # Check experiment type and run the things
     #Below is old, I will remove this once I have written the new format
+    if args.exp_type == 'monsoon-tool':
+        print('Training model on all the latest data and saving for monsoon tool')
+        unet = models.UNet(n_channels=32, n_classes=1)
+
+        if torch.cuda.is_available():
+            unet.cuda()
+        # unet.to(device=device)
+
+        set_seed(random.randint(0, 1000))
+
+        # ---- Grabbing Training Data ----
+        print('Grabbing training data...')
+        landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
+                                                   save_dir)
+
+        print('Training model...')
+        trained_model = train_model(
+            model=unet,
+            device=device,
+            dataset=landslide_train_dataset,
+            save_dir=save_dir,
+            experiment=experiment,
+            val_percent=float(args.val_percent),
+            epochs=args.epochs,
+            batch_size=args.batch_size,
+            learning_rate=args.lr,
+            opt=args.optimizer,
+            save_checkpoint=True,
+            district_masks=district_masks)
+
     if args.exp_type == 'monsoon_test':
         unet = models.UNet(n_channels=32, n_classes=1)
         set_seed(random.randint(0, 1000))

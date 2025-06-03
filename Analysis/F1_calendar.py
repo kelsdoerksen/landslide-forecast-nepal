@@ -41,7 +41,7 @@ def generate_f1_fig(df, year, save_dir):
     date_list = df['date'].unique()
     sorted_dates = sorted(date_list)
 
-    f1_all = f1_score_gen(df, 0.19)
+    f1_all = f1_score_gen(df, 0.2)
     if not os.path.exists('{}/F1'.format(save_dir)):
         os.mkdir('{}/F1'.format(save_dir))
 

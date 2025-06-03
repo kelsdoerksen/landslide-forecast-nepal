@@ -369,7 +369,7 @@ if __name__ == '__main__':
     df = pd.DataFrame(thr_results)
 
     # Save to csv
-    df.to_csv('{}/{}_analysis_results.csv'.format(results_dir, run))
+    df.to_csv('{}/{}/{}_analysis_results.csv'.format(results_dir, run, run))
     #df.to_csv('{}/ICLR_CameraReady/{}_analysis_2023_results.csv'.format(results_dir, run))
 
     # Running for date
@@ -379,7 +379,7 @@ if __name__ == '__main__':
 
     df_f1['doy'] = doys
     #df_f1.to_csv('{}/ICLR_CameraReady/{}_2023_timeseries.csv'.format(results_dir, run))
-    df_f1.to_csv('{}/{}_test_timeseries.csv'.format(results_dir, run))
+    df_f1.to_csv('{}/{}/{}_test_timeseries_01Threshold.csv'.format(results_dir, run, run))
 
     # Get list of gt and pred landslide districts for future plotting
     gt_landslide_districts, pred_landslide_districts = landslide_record_gen(np.array([groundtruth_arrays]),
@@ -393,7 +393,7 @@ if __name__ == '__main__':
         pred_landslide_districts_dict[doys[d]] = pred_landslide_districts[d]
 
     # Save dictionaries to file
-    with open('{}/{}_groundtruth_landsliding_districts.pkl'.format(results_dir, run), 'wb') as fp:
+    with open('{}/{}/{}_groundtruth_landsliding_districts.pkl'.format(results_dir, run, run), 'wb') as fp:
         pickle.dump(gt_landslide_districts_dict, fp)
-    with open('{}/{}_prediction_landsliding_districts.pkl'.format(results_dir, run), 'wb') as fp:
+    with open('{}/{}/{}_prediction_landsliding_districts.pkl'.format(results_dir,run, run), 'wb') as fp:
         pickle.dump(pred_landslide_districts_dict, fp)

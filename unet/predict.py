@@ -50,7 +50,6 @@ def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_
             # predict the mask
             outputs = unetmodel(inputs)
 
-
             # Apply sigmoid for predictions
             outputs_probs = torch.sigmoid(outputs)
 
