@@ -43,6 +43,8 @@ class LandslideDataset(Dataset):
         if exp_type == 'temporal-cv':
             # Don't remove earlier or later years, we just want
             years = years
+        elif exp_type == 'monsoon_tool' and test_year == 2025:
+            years = [2023, 2024]
         else:
             # Remove any years greater than test year because we do not want these samples
             years = [x for x in years if x <= int(test_year)]

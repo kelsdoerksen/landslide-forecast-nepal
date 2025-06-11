@@ -7,6 +7,7 @@ from dataset import *
 from metrics import *
 import numpy as np
 from model import *
+from losses import *
 import torch
 import torch.nn as nn
 import logging
@@ -26,9 +27,10 @@ def train_model(model,
                 epochs: int,
                 batch_size: int,
                 learning_rate: float,
+                training_loss,
                 opt,
                 val_percent,
-                weight_decay: float = 0,
+                weight_decay: float = 0.00001,
                 save_checkpoint: bool=True,
                 district_masks = None
                 ):
@@ -45,7 +47,7 @@ def train_model(model,
     train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=True)
 
-    threshold = 0.2
+    threshold = 0.1
 
     # --- Setting up optimizer
     if opt == 'rms':
@@ -57,7 +59,11 @@ def train_model(model,
                                lr=learning_rate, weight_decay=weight_decay)
 
     # Setting up loss
-    criterion = nn.BCEWithLogitsLoss()
+    if training_loss == 'bce':
+        criterion = nn.BCEWithLogitsLoss()
+    if training_loss == 'bce_pos_weight':
+        criterion = nn.BCEWithLogitsLoss(pos_weight=[0.3])    # penalizes false positives
+
 
     # --- Setting up schedulers
     #scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=5)  # goal: minimize MSE score.
@@ -72,6 +78,8 @@ def train_model(model,
         epoch_loss = 0
         epoch_thr_precision = 0
         epoch_thr_recall = 0
+        epoch_pct_cov_precision = 0
+        epoch_pct_cov_recall = 0
 
         for i, data in enumerate(train_loader):
             inputs, labels = data
@@ -80,13 +88,16 @@ def train_model(model,
             optimizer.zero_grad()  # if set_to_none=True, sets gradients of all optimized torch.Tensors to None, will have a lower memory footprint, can modestly improve performance
 
             outputs = model(inputs)                 # predict on input
-
-            loss = criterion(outputs, labels)       # Calculate loss
+            if training_loss == 'tversky':
+                loss = tversky_loss(outputs, labels)
+            else:
+                loss = criterion(outputs, labels)       # Calculate loss
 
             # Apply sigmoid for probabilities for precision recall
             outputs_probs = torch.sigmoid(outputs)
 
             thr_precision, thr_recall = precision_recall_threshold(labels, outputs_probs, threshold, district_masks)
+            pct_cov_precision, pct_cov_recall = precision_and_recall_threshold_pct_cov(labels, outputs_probs, threshold, district_masks)
 
             grad_scaler.scale(loss).backward()      # Compute partial derivative of the output f with respect to each of the input variables
             grad_scaler.step(optimizer)             # Updates value of parameters according to strategy
@@ -96,11 +107,15 @@ def train_model(model,
             epoch_loss += loss.item()
             epoch_thr_precision += thr_precision
             epoch_thr_recall += thr_recall
+            epoch_pct_cov_precision += pct_cov_precision
+            epoch_pct_cov_recall += pct_cov_recall
 
         experiment.log({
             'train BCE loss': epoch_loss/len(train_loader),
             'train Precision': epoch_thr_precision/len(train_loader),
             'train Recall': epoch_thr_recall/ len(train_loader),
+            'train Precision pct cov': epoch_pct_cov_precision/len(train_loader),
+            'train Recall pct cov': epoch_pct_cov_recall/len(train_loader),
             'step': global_step,
             'epoch': epoch,
             'optimizer': opt
@@ -121,6 +136,8 @@ def train_model(model,
         running_vloss = 0.0
         running_thr_precision = 0
         running_thr_recall = 0
+        running_pct_cov_precision = 0
+        running_pct_cov_recall = 0
         with torch.no_grad():
             for k, vdata in enumerate(val_loader):
                 vinputs, vlabels = vdata
@@ -133,15 +150,23 @@ def train_model(model,
                 # Apply sigmoid for probabilities
                 voutputs_probs = torch.sigmoid(voutputs)
 
+                # Calculating precision recall
                 v_prec, v_rec = precision_recall_threshold(vlabels, voutputs_probs, threshold, district_masks)
+                v_pct_cov_precision, v_pct_cov_recall = precision_and_recall_threshold_pct_cov(vlabels, voutputs_probs,
+                                                                                           threshold, district_masks)
 
                 running_vloss += vloss
                 running_thr_recall += v_rec
                 running_thr_precision += v_prec
+                running_pct_cov_precision += v_pct_cov_precision
+                running_pct_cov_recall += v_pct_cov_recall
 
         avg_vloss = running_vloss / len(val_loader)
         avg_prec = running_thr_precision / len(val_loader)
         avg_rec = running_thr_precision / len(val_loader)
+        avg_pct_cov_prec = running_pct_cov_precision / len(val_loader)
+        avg_pct_cov_recall = running_pct_cov_recall / len(val_loader)
+
 
         logging.info('Validation BCE score: {}'.format(avg_vloss))
         try:
@@ -150,6 +175,8 @@ def train_model(model,
                 'validation BCE loss': avg_vloss,
                 'validation Precision': avg_prec,
                 'validation Recall': avg_rec,
+                'validation Precision pct cov': avg_pct_cov_prec,
+                'valiation Recall pct cov': avg_pct_cov_recall,
                 'step': global_step,
                 'epoch': epoch,
                 **histograms

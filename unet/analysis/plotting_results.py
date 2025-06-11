@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import argparse
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.cm as cm
 
 def get_args():
     parser = argparse.ArgumentParser(description='Plotting for journal paper')
@@ -109,6 +111,47 @@ def temporal_cv_fnr(df):
     plt.tight_layout()
     plt.show()
 
+def landslide_per_month(df):
+
+    fig = plt.figure(figsize=(10, 7))
+    ax = fig.add_subplot(111, projection='3d')
+    years = [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
+    month_order = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June',
+                   'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec']
+    df['month_num'] = df['Month'].apply(lambda m: month_order.index(m))
+    colors = cm.get_cmap('cividis')(np.linspace(0, 1, len(years)))
+    for year in range(len(years)):
+        df_year = df[df['Year'] == years[year]]
+        x = df_year['month_num']
+        y = df_year['Count']
+        z_vals = np.full_like(x, year)
+        ax.plot(x, y, z_vals, label=str(year), color=colors[year], linewidth=3)
+
+    # Set axis labels
+    ax.set_xlabel('Month', labelpad=8, rotation=45, ha='right')
+    ax.set_ylabel('Landslide Count', labelpad=8)
+    ax.set_zlabel('Year', labelpad=8)
+    ax.set_zticks(range(len(years)))
+    ax.set_zticklabels(years)
+
+    # Set ticks and labels
+    ax.set_zticks(range(len(years)))
+    ax.set_zticklabels([str(y) for y in years])
+
+    # Manually color the tick labels to match the lines
+    for tick_label, color in zip(ax.zaxis.get_ticklabels(), colors):
+        tick_label.set_color(color)
+        tick_label.set_fontweight('bold')  # optional for emphasis
+
+    # Set x-ticks to month names
+    ax.set_xticks(range(12))
+    ax.set_xticklabels(month_order)
+
+    # Optional: rotate for better view
+    ax.view_init(elev=25, azim=-60)
+    plt.tight_layout()
+    plt.show()
+
 
 
 if __name__ == '__main__':
@@ -129,6 +172,9 @@ if __name__ == '__main__':
 
     if plot_type == 'temporal-cv-fnr':
         temporal_cv_fnr(df)
+
+    if plot_type == 'landslide-month':
+        landslide_per_month(df)
 
 
 

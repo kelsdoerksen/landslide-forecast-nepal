@@ -17,6 +17,7 @@ from dataset import *
 import logging
 from osgeo import gdal
 import random
+from torch.utils.data import ConcatDataset
 
 
 def get_args():
@@ -25,7 +26,8 @@ def get_args():
     parser.add_argument('--batch_size', '-b', type=int, default=32, help='Batch size')
     parser.add_argument('--learning-rate', '-l', type=float, default=0.001, help='Learning rate', dest='lr')
     parser.add_argument('--optimizer', '-o', type=str, default='adam', help='Model optimizer')
-    parser.add_argument('--classes', '-c', type=int, default=1, help='Number of classes')
+    parser.add_argument('--classes', '-c', type=int, default=1, help='Number of classes'),
+    parser.add_argument('--loss', help='Loss function to use')
     parser.add_argument('--test_year', '-t', type=str, help='Test year for analysis (sets out of training)',
                         required=True)
     parser.add_argument('--root_dir', help='Specify root directory',
@@ -161,6 +163,7 @@ if __name__ == '__main__':
             epochs=args.epochs,
             batch_size=args.batch_size,
             learning_rate=args.lr,
+            training_loss=args.loss,
             opt=args.optimizer,
             save_checkpoint=True,
             district_masks=district_masks)
@@ -182,6 +185,46 @@ if __name__ == '__main__':
         print('Predicting on 2024 Monsoon season...')
         predict(unet, landslide_test_dataset, experiment, save_dir, device=device,
                 district_masks=district_masks, exp_type = args.exp_type)
+
+    if args.exp_type == 'monsoon-tool':
+        print('Training model on UKMO-0 and ECMWF for the monsoon tool...')
+        unet = models.UNet(n_channels=32, n_classes=1)
+
+        if torch.cuda.is_available():
+            unet.cuda()
+        # unet.to(device=device)
+
+        set_seed(random.randint(0, 1000))
+
+        sample_dir_1 = '{}/UNet_Samples_14Day_GPMv07/UKMO/ensemble_0'.format(root_dir)
+        label_dir_1 = '{}/Binary_Landslide_Labels_14day'.format(root_dir)
+
+        sample_dir_2 = '{}/UNet_Samples_14Day_GPMv07/ecmwf/ensemble_0'.format(root_dir)
+        label_dir_2 = '{}/Binary_Landslide_Labels_14day'.format(root_dir)
+
+        # ---- Grabbing Training Data ----
+        print('Grabbing training data...')
+        landslide_train_dataset_1 = LandslideDataset(sample_dir_1, label_dir_1, 'train', args.exp_type, 2023,
+                                                   save_dir)
+        landslide_train_dataset_2 = LandslideDataset(sample_dir_2, label_dir_2, 'train', args.exp_type, 2025,
+                                                     save_dir)
+
+        combined_landslide_train_dataset = ConcatDataset([landslide_train_dataset_1, landslide_train_dataset_2])
+        trained_model = train_model(
+            model=unet,
+            device=device,
+            dataset=combined_landslide_train_dataset,
+            save_dir=save_dir,
+            experiment=experiment,
+            val_percent=float(args.val_percent),
+            epochs=args.epochs,
+            batch_size=args.batch_size,
+            learning_rate=args.lr,
+            training_loss=args.loss,
+            opt=args.optimizer,
+            save_checkpoint=True,
+            district_masks=district_masks)
+
     else:
         unet = models.UNet(n_channels=32, n_classes=1)
 
@@ -215,6 +258,7 @@ if __name__ == '__main__':
             epochs=args.epochs,
             batch_size=args.batch_size,
             learning_rate=args.lr,
+            training_loss=args.loss,
             opt = args.optimizer,
             save_checkpoint=True,
             district_masks = district_masks)
