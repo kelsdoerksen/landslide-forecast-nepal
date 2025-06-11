@@ -289,7 +289,7 @@ def get_monsoon_season(year):
     return monsoon_dates
 
 
-def load_data(test_year, data_dir, experiment_type):
+def load_data(test_year, data_dir, experiment_type, results_dir):
     """
     Function to load in train, test, validation (for param tuning) datasets
     Specify test year, all other years used for training
@@ -320,6 +320,7 @@ def load_data(test_year, data_dir, experiment_type):
     df_train = pd.concat(df_train_list)
     monsoon_train = df_train[df_train['date'].isin(monsoon_train_list)]
 
+    '''
     if test_year == '2024':
         y_train = monsoon_train['label']
         X_train = monsoon_train.drop(columns=['label', 'Unnamed: 0'])
@@ -328,7 +329,7 @@ def load_data(test_year, data_dir, experiment_type):
         if 'Unnamed: 0.1' in X_train.columns:
             X_train = X_train.drop(columns=['Unnamed: 0.1'])
         return X_train, y_train, X_test, y_test
-
+    '''
 
     # Split into monsoon season test set
     df_test = pd.read_csv('{}/{}_windowsize14_district.csv'.format(data_dir, test_year))
@@ -391,7 +392,7 @@ def load_data(test_year, data_dir, experiment_type):
     Xtrain = df_train.drop(columns=unwanted_cols, errors='ignore')
 
     # Split into train and validation for parameter tuning, use 15% for validation
-    X_train, X_val, y_train, y_val = train_test_split(Xtrain, ytrain, test_size=0.15,
+    X_train, X_val, y_train, y_val = train_test_split(Xtrain, ytrain, test_size=0.1,
                                                       random_state=random.randint(1, 1000), stratify=ytrain)
 
     train_data = pd.concat([X_train, y_train], axis=1)
@@ -399,8 +400,8 @@ def load_data(test_year, data_dir, experiment_type):
     val_data = pd.concat([X_val, y_val], axis=1)
     val_data = val_data.rename(columns={0: 'label'})
 
-    train_data.to_csv('{}/train_data_2016-2022.csv'.format(data_dir), index=False)
-    val_data.to_csv('{}/val_data_2016-2022.csv'.format(data_dir), index=False)
+    train_data.to_csv('{}/train_data_2016-2022.csv'.format(results_dir), index=False)
+    val_data.to_csv('{}/val_data_2016-2022.csv'.format(results_dir), index=False)
 
     if experiment_type == 'no_hindcast':
         X_train = X_train.drop(X_train.filter(regex='tminus').columns, axis=1)
@@ -1128,8 +1129,9 @@ if __name__ == '__main__':
     else:
         # Load data
         print('Loading data...')
+        import ipdb
         data_dir = '{}/LabelledData_{}/{}/ensemble_{}'.format(root_dir, hindcast_model, forecast_model, ensemble_num)
-        X_train, y_train, X_test, y_test, X_val, y_val = load_data(test_y, data_dir, exp)
+        X_train, y_train, X_test, y_test, X_val, y_val = load_data(test_y, data_dir, exp, results_dir)
 
         if model == 'rf':
             run_rf(data_dir, X_train, y_train, X_test, y_test, X_val, y_val, results, experiment, model, test_y, tuning)
