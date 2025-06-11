@@ -62,7 +62,7 @@ def train_model(model,
     if training_loss == 'bce':
         criterion = nn.BCEWithLogitsLoss()
     if training_loss == 'bce_pos_weight':
-        criterion = nn.BCEWithLogitsLoss(pos_weight=[0.3])    # penalizes false positives
+        criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([0.3]))    # penalizes false positives
 
 
     # --- Setting up schedulers
