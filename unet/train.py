@@ -145,7 +145,10 @@ def train_model(model,
 
                 voutputs = model(vinputs)
 
-                vloss = criterion(voutputs, vlabels)
+                if training_loss == 'tversky':
+                    vloss = tversky_loss(voutputs, vlabels)
+                else:
+                    vloss = criterion(voutputs, vlabels)  # Calculate loss
 
                 # Apply sigmoid for probabilities
                 voutputs_probs = torch.sigmoid(voutputs)
