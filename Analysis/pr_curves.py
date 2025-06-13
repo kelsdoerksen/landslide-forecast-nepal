@@ -5,10 +5,12 @@ Plotting PR curves from Wandb outputs
 import pandas as pd
 import matplotlib.pyplot as plt
 
-df = pd.read_csv('/Volumes/PRO-G40 1/landslides/Nepal_Landslides_Forecasting_Project/Nepal_September_Workshop/ICLR_2025/'
-                 'rf_varying_forecast.csv')
+df = pd.read_csv('/Users/kelseydoerksen/Desktop/Nature_Comms_Analysis_Plotting/Varying_Forecast/VaryingForecast_GB/GB_Forecast_Varying_All.csv')
 
-forecast_unique = df['name'].unique()
+# rf filepath from iclr: /Users/kelseydoerksen/Desktop/Nature_Comms_Analysis_Plotting/Varying_Forecast/VaryingForecast_RFrf_varying_forecast_iclr.csv
+# gb filepath: /Users/kelseydoerksen/Desktop/Nature_Comms_Analysis_Plotting/Varying_Forecast/VaryingForecast_GB/GB_Forecast_Varying_All.csv'
+
+forecast_unique = df['Name'].unique()
 
 for f in forecast_unique:
     if 'KMA' in f:
@@ -18,16 +20,18 @@ for f in forecast_unique:
         color = 'green'
         linestyle = '--'
     if 'NCEP' in f:
-        color = 'red'
+        color = 'orange'
         linestyle = '-'
-    subset_df = df[df['name'] == f]
-    precision = subset_df['precision']
-    recall = subset_df['recall']
+    subset_df = df[df['Name'] == f]
+    precision = subset_df['Precision']
+    recall = subset_df['Recall']
     plt.plot(recall, precision, linestyle=linestyle, color=color, label=f)
     plt.xlabel("Recall")
+    plt.xlim(0,1)
+    plt.ylim(0,1)
     plt.ylabel("Precision")
-    plt.title('Precision-Recall Curve for Varying Precipitation Forecast Model using Random Forest')
+    plt.title('Precision-Recall Curve for Varying Precipitation Forecast Model using Gradient Boosting')
 
-plt.axhline(y=0.225, color='black', linestyle='dotted', label='Baseline')
-plt.legend(fontsize="x-small")
+#plt.axhline(y=0.225, color='black', linestyle='dotted', label='Baseline')
+plt.legend(fontsize="x-small", loc="upper right", mode = "expand", ncol = 6)
 plt.show()

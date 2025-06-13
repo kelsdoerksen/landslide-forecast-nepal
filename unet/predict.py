@@ -1,7 +1,6 @@
 """
 Script to predict on test set after training model
 """
-import ipdb
 
 from dataset import *
 import numpy as np
@@ -15,10 +14,15 @@ from utils import *
 from metrics import *
 
 
-def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_masks, exp_type):
+def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_masks, exp_type, test_loss):
     """
-    Predict standard way (no dropout at test time)
+    Predict
     """
+
+    if test_loss == 'bce':
+        criterion = nn.BCEWithLogitsLoss()
+    if test_loss == 'bce_pos_weight':
+        criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([0.3]))    # penalizes false positives
 
     threshold = 0.2
     unetmodel = models.UNet(n_channels=32, n_classes=1)
@@ -36,6 +40,9 @@ def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_
     bce_score = 0
     precision = 0
     recall = 0
+    epoch_pct_cov_recall = 0
+    epoch_pct_cov_precision = 0
+    epoch_loss = 0
     # iterate over the test set
     preds = []
     gt = []
@@ -57,18 +64,29 @@ def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_
             gt.append(labels.detach().numpy())
             preds.append(outputs_probs.detach().numpy())
 
-            bce_score += loss_criterion(outputs, labels)
+            if test_loss == 'tversky':
+                loss = tversky_loss(outputs, labels)
+            else:
+                loss = criterion(outputs, labels)       # Calculate loss
+
             p, r = precision_recall_threshold(labels, outputs_probs, threshold, district_masks)
+            pct_cov_precision, pct_cov_recall = precision_and_recall_threshold_pct_cov(labels, outputs_probs, threshold,
+                                                                                       district_masks)
             precision += p
             recall += r
+            epoch_pct_cov_precision += pct_cov_precision
+            epoch_pct_cov_recall += pct_cov_recall
+            epoch_loss += loss.item()
 
     print('test set BCE is: {}'.format(bce_score / len(test_loader)))
 
     # Writing things to file
     wandb_experiment.log({
-        'test set BCE': bce_score / len(test_loader),
+        'test set loss': epoch_loss / len(test_loader),
         'test set Precision': precision / len(test_loader),
-        'test set Recall': recall / len(test_loader)
+        'test set Recall': recall / len(test_loader),
+        'train Precision pct cov': epoch_pct_cov_precision / len(test_loader),
+        'train Recall pct cov': epoch_pct_cov_recall / len(test_loader),
     })
 
 

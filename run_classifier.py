@@ -20,7 +20,7 @@ import wandb
 import argparse
 from xgboost import XGBClassifier
 from sklearn.neural_network import MLPClassifier
-import joblib
+from joblib import dump, load
 import pickle
 import random
 import time
@@ -1088,6 +1088,66 @@ def run_trained_ukmo(root_directory, results_dir, wandb_exp, model_type, forecas
 
     calc_model_performance(rf_model, y_test, probs, X_test, results_dir, wandb_exp, model_type)
 
+def run_rf_monsoon_tool_training(ukmo_dir, ecmwf_dir):
+    """
+    Function to train the rf model using all the data for monsoon tool
+    """
+
+    years = [2016, 2017, 2018, 2019, 2020,2021, 2022, 2023, 2024]
+
+    """
+    Psuedo code of what I want to do:
+    Load in data from UKMO
+    load in data from ECMWF
+    concatenate so I have samples from 2016-2024
+    need to relable the ecmwf, ukmo to "forecast_model" to be consistent between feature names
+    train and save rf model
+    """
+
+    df_train_list = []
+    monsoon_train_list = []
+    # Need to sort out the below to the correct setup with the aggregating data together
+    for y in years:
+        if y < 2023:
+            df = pd.read_csv('{}/{}_windowsize14_district.csv'.format(ukmo_dir, y))
+        else:
+            df = pd.read_csv('{}/{}_windowsize14_district.csv'.format(ecmwf_dir, y))
+
+        # Drop the columns we don't want and rename to generic forecast model to be consistent with feature names
+        df = df.drop(columns=['Unnamed: 0'])
+        df.columns = df.columns.str.replace('UKMO_ens_0', 'forecast_model')
+        df.columns = df.columns.str.replace('ECMWF_ens_0', 'forecast_model')
+
+
+        df_train_list.append(df)
+        monsoon_train = daterange(date(int(y), 4, 1), date(int(y), 10, 31))
+        monsoon_train_list.append(monsoon_train[:])
+
+    # Split into monsoon season
+    monsoon_train_list = [x for xs in monsoon_train_list for x in xs]
+    df_train = pd.concat(df_train_list)
+    monsoon_train = df_train[df_train['date'].isin(monsoon_train_list)]
+
+    monsoon_train = shuffle(monsoon_train)
+    monsoon_train = monsoon_train.dropna()
+
+    # Preserve date and location information for output
+    info_cols = ['date', 'district']
+    train_info = monsoon_train[info_cols]
+    X_train = monsoon_train.drop(columns=info_cols)
+    y_train = monsoon_train['label']
+
+    # Define a simple RF
+    forest = RandomForestClassifier(criterion='gini',
+                                    random_state=random.randint(1, 1000),
+                                    n_estimators=200,
+                                    n_jobs=-1,
+                                    class_weight='balanced')
+
+    forest.fit(X_train, y_train)
+    print('Saving trained rf model for monsoon tool...')
+    dump(forest, '/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/rf_model.joblib')
+
 
 if __name__ == '__main__':
     args = get_args()
@@ -1126,10 +1186,20 @@ if __name__ == '__main__':
         test_forecast_model = test_forecast
         run_trained_ukmo(root_dir, results, experiment, model, test_forecast_model)
 
+    if exp == 'monsoon_tool':
+        # We want to train the rf model on all the data, 2016-2022 from UKMO and 2023-2024 from ECMWF
+        print('Loading UKMO, ECMWF data and training model')
+        ukmo_data_dir = '{}/LabelledData_{}/UKMO/ensemble_0'.format(root_dir, hindcast_model)
+        ecmwf_data_dir = '{}/LabelledData_{}/ECMWF/ensemble_0'.format(root_dir, hindcast_model)
+        run_rf_monsoon_tool_training(ukmo_data_dir, ecmwf_data_dir)
+
+
+
+
+
     else:
         # Load data
         print('Loading data...')
-        import ipdb
         data_dir = '{}/LabelledData_{}/{}/ensemble_{}'.format(root_dir, hindcast_model, forecast_model, ensemble_num)
         X_train, y_train, X_test, y_test, X_val, y_val = load_data(test_y, data_dir, exp, results_dir)
 

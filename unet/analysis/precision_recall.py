@@ -342,17 +342,10 @@ def pr_generation_timeseries(y_true, y_pred, threshold, d_masks, pct_cov):
     plt.plot(true_positive_list, color='green', label='true positives')
     plt.plot(total_landslides_list, color='black', label='total landslides in next 2 weeks')
     plt.legend()
-    import ipdb
-    ipdb.set_trace()
-    save_name = 'plot_fp_tp_pct_cov_{}.png'.format(pct_cov)
+    #save_name = 'plot_fp_tp_pct_cov_{}.png'.format(pct_cov)
     # hard-coding my save directory for now so I can refer to it for this testing run and come back later
-    plt.savefig('/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep/Results/GPMv07/UKMO_ensemble_0_s94em8xz_testing/{}'.format(save_name))
+    #plt.savefig('/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep/Results/GPMv07/UKMO_ensemble_0_s94em8xz_testing/{}'.format(save_name))
     plt.close()
-
-
-
-    import ipdb
-    ipdb.set_trace()
 
     return f1_score
 
