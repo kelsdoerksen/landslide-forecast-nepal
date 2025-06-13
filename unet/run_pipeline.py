@@ -265,4 +265,4 @@ if __name__ == '__main__':
 
         print('Running Test set...')
         predict(trained_model, landslide_test_dataset, experiment, save_dir, device=device,
-                district_masks = district_masks, exp_type = args.exp_type)
+                district_masks = district_masks, exp_type = args.exp_type, test_loss=args.loss)
