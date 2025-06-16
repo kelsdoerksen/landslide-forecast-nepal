@@ -12,6 +12,7 @@ from train import *
 from operator import add
 from utils import *
 from metrics import *
+from losses import *
 
 
 def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_masks, exp_type, test_loss):
@@ -21,7 +22,11 @@ def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_
 
     if test_loss == 'bce':
         criterion = nn.BCEWithLogitsLoss()
-    if test_loss == 'bce_pos_weight':
+    if test_loss == 'bce_pos_weight_01':
+        criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([0.1]))    # penalizes false positives
+    if test_loss == 'bce_pos_weight_02':
+        criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([0.2]))    # penalizes false positives
+    if test_loss == 'bce_pos_weight_03':
         criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([0.3]))    # penalizes false positives
 
     threshold = 0.2
