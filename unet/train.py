@@ -61,8 +61,18 @@ def train_model(model,
     # Setting up loss
     if training_loss == 'bce':
         criterion = nn.BCEWithLogitsLoss()
-    if training_loss == 'bce_pos_weight':
-        criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([0.3]))    # penalizes false positives
+    if training_loss == 'bce_pos_weight_01':
+        weight = 0.1
+        criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([weight]))    # penalizes false positives
+        experiment.log({'bce_pos_weight': weight})
+    if training_loss == 'bce_pos_weight_02':
+        weight = 0.2
+        criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([weight]))    # penalizes false positives
+        experiment.log({'bce_pos_weight': weight})
+    if training_loss == 'bce_pos_weight_03':
+        weight = 0.3
+        criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([weight]))    # penalizes false positives
+        experiment.log({'bce_pos_weight': weight})
 
 
     # --- Setting up schedulers
@@ -111,7 +121,7 @@ def train_model(model,
             epoch_pct_cov_recall += pct_cov_recall
 
         experiment.log({
-            'train BCE loss': epoch_loss/len(train_loader),
+            'train loss': epoch_loss/len(train_loader),
             'train Precision': epoch_thr_precision/len(train_loader),
             'train Recall': epoch_thr_recall/ len(train_loader),
             'train Precision pct cov': epoch_pct_cov_precision/len(train_loader),

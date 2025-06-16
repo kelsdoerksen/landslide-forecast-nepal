@@ -20,6 +20,7 @@ import wandb
 import argparse
 from xgboost import XGBClassifier
 from sklearn.neural_network import MLPClassifier
+import joblib
 from joblib import dump, load
 import pickle
 import random
@@ -1132,7 +1133,7 @@ def run_rf_monsoon_tool_training(ukmo_dir, ecmwf_dir):
     monsoon_train = monsoon_train.dropna()
 
     # Preserve date and location information for output
-    info_cols = ['date', 'district']
+    info_cols = ['date', 'district', 'label']
     train_info = monsoon_train[info_cols]
     X_train = monsoon_train.drop(columns=info_cols)
     y_train = monsoon_train['label']
@@ -1146,7 +1147,8 @@ def run_rf_monsoon_tool_training(ukmo_dir, ecmwf_dir):
 
     forest.fit(X_train, y_train)
     print('Saving trained rf model for monsoon tool...')
-    dump(forest, '/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/rf_model.joblib')
+    filename = '/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/rf_model.pkl'
+    pickle.dump(forest, open(filename, 'wb'))
 
 
 if __name__ == '__main__':
