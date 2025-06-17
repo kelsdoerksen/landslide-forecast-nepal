@@ -22,9 +22,9 @@ def precision_recall_threshold(y_true, y_pred, threshold, d_masks):
     false_positives = 0
     false_negatives = 0
 
-    threshold_value = torch.Tensor([threshold])
+    #threshold_value = torch.Tensor([threshold])
     # Convert y_pred to 0s and 1s based on threshold
-    y_pred_t = (y_pred > threshold_value).float()
+    y_pred_t = (y_pred > float(threshold)).float()
 
     # Convert y_pred, y_true to numpy arrays to be able to do some pythonic
     # manipulation
@@ -101,9 +101,9 @@ def precision_and_recall_threshold_pct_cov(y_true, y_pred, threshold, d_masks, p
     :param: pct_cov: pct coverage of pixels in district to label as "landslide"
     '''
 
-    threshold_value = torch.Tensor([threshold])
+    #threshold_value = torch.Tensor([threshold])
     # Convert y_pred to 0s and 1s based on threshold
-    y_pred_t = (y_pred > threshold_value).float()
+    y_pred_t = (y_pred > float(threshold)).float()
 
     # Convert y_pred, y_true to numpy arrays to be able to do some pythonic
     # manipulation
