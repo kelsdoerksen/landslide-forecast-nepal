@@ -58,6 +58,10 @@ def train_model(model,
         optimizer = optim.Adam(model.parameters(),
                                lr=learning_rate, weight_decay=weight_decay)
 
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # Move model to device
+    model.to(device)
+
     # Setting up loss
     if training_loss == 'bce':
         criterion = nn.BCEWithLogitsLoss()
