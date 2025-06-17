@@ -20,14 +20,16 @@ def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_
     Predict
     """
 
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    
     if test_loss == 'bce':
         criterion = nn.BCEWithLogitsLoss()
     if test_loss == 'bce_pos_weight_01':
-        criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([0.1]))    # penalizes false positives
+        criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([0.1], device=device))    # penalizes false positives
     if test_loss == 'bce_pos_weight_02':
-        criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([0.2]))    # penalizes false positives
+        criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([0.2], device=device))    # penalizes false positives
     if test_loss == 'bce_pos_weight_03':
-        criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([0.3]))    # penalizes false positives
+        criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([0.3], device=device))    # penalizes false positives
 
     threshold = 0.2
     unetmodel = models.UNet(n_channels=32, n_classes=1)
@@ -37,7 +39,6 @@ def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_
     else:
         unetmodel.load_state_dict(torch.load(in_model)['state_dict'])
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     # Move model to device
     unetmodel.to(device)
     unetmodel.eval()
