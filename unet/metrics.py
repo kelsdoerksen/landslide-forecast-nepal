@@ -28,8 +28,8 @@ def precision_recall_threshold(y_true, y_pred, threshold, d_masks):
 
     # Convert y_pred, y_true to numpy arrays to be able to do some pythonic
     # manipulation
-    y_pred = torch.Tensor.numpy(y_pred_t)
-    y_true = torch.Tensor.numpy(y_true)
+    y_pred = y_pred_t.cpu().numpy()
+    y_true = y_true.cpu().numpy()
 
     total_landslides = 0
     for i in range(len(y_pred)):
@@ -107,8 +107,8 @@ def precision_and_recall_threshold_pct_cov(y_true, y_pred, threshold, d_masks, p
 
     # Convert y_pred, y_true to numpy arrays to be able to do some pythonic
     # manipulation
-    y_pred = torch.Tensor.numpy(y_pred_t)
-    y_true = torch.Tensor.numpy(y_true)
+    y_pred = y_pred_t.cpu().numpy()
+    y_true = y_true.cpu().numpy()
 
     total_landslides = 0
     f1_score = []
