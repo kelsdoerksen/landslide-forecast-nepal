@@ -36,6 +36,10 @@ def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_
         unetmodel.load_state_dict(in_model['state_dict'])
     else:
         unetmodel.load_state_dict(torch.load(in_model)['state_dict'])
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # Move model to device
+    unetmodel.to(device)
     unetmodel.eval()
 
     # Data loader for test set
