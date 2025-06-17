@@ -71,8 +71,8 @@ def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_
             outputs_probs = torch.sigmoid(outputs)
 
             # Append first to preserve image shape for future plotting
-            gt.append(labels.detach().numpy())
-            preds.append(outputs_probs.detach().numpy())
+            gt.append(labels.cpu().numpy())
+            preds.append(outputs_probs.cpu().numpy())
 
             if test_loss == 'tversky':
                 loss = tversky_loss(outputs, labels)
