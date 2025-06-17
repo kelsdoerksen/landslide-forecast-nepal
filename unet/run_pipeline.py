@@ -228,9 +228,8 @@ if __name__ == '__main__':
     else:
         unet = models.UNet(n_channels=32, n_classes=1)
 
-        if torch.cuda.is_available():
-            unet.cuda()
-        #unet.to(device=device)
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        unet.to(device=device)
 
         set_seed(random.randint(0,1000))
 
