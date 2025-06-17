@@ -65,15 +65,15 @@ def train_model(model,
         criterion = nn.BCEWithLogitsLoss()
     if training_loss == 'bce_pos_weight_01':
         weight = 0.1
-        criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([weight]))    # penalizes false positives
+        criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([weight], device=device))    # penalizes false positives
         experiment.log({'bce_pos_weight': weight})
     if training_loss == 'bce_pos_weight_02':
         weight = 0.2
-        criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([weight]))    # penalizes false positives
+        criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([weight], device=device))    # penalizes false positives
         experiment.log({'bce_pos_weight': weight})
     if training_loss == 'bce_pos_weight_03':
         weight = 0.3
-        criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([weight]))    # penalizes false positives
+        criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([weight], device=device))    # penalizes false positives
         experiment.log({'bce_pos_weight': weight})
 
 
