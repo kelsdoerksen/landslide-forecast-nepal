@@ -79,6 +79,8 @@ def train_model(model,
         weight = 0.4
         criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([weight], device=device))    # penalizes false positives
         experiment.log({'bce_pos_weight': weight})
+    if training_loss == 'dice_bce':
+        criterion = DiceBCELoss()
 
 
     # --- Setting up schedulers
