@@ -78,6 +78,8 @@ def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_
 
             if test_loss == 'tversky':
                 loss = tversky_loss(outputs, labels)
+            elif test_loss == 'dice':
+                loss = dice_loss(outputs, labels)
             else:
                 loss = criterion(outputs, labels)       # Calculate loss
 
