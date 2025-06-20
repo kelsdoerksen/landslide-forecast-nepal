@@ -84,7 +84,7 @@ def roc_auc(y_test, probabilities, results_directory):
     plt.ylabel('True Positive Rate')
     # show the legend
     plt.legend()
-    plt.savefig('{}/roc_auc_curve.png'.format(results_directory))
+    #plt.savefig('{}/roc_auc_curve.png'.format(results_directory))
 
 
 def calc_perm_importance(model, X, y, save_dir):
@@ -173,7 +173,7 @@ def get_threshold_precision_and_recall(probabilities, labels, results_dir):
     plt.axhline(y=baseline, color='r', linestyle='dashed', label='No skill')
     plt.legend()
     #plt.show()
-    plt.savefig('{}/Precision-Recall_Curve.png'.format(results_dir), bbox_inches='tight')
+    #plt.savefig('{}/Precision-Recall_Curve.png'.format(results_dir), bbox_inches='tight')
     plt.clf()
 
     return thresholds[ix]
