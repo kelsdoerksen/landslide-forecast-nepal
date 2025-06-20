@@ -106,6 +106,8 @@ def train_model(model,
             outputs = model(inputs)                 # predict on input
             if training_loss == 'tversky':
                 loss = tversky_loss(outputs, labels)
+            elif training_loss == 'dice':
+                loss = dice_loss(outputs, labels)
             else:
                 loss = criterion(outputs, labels)       # Calculate loss
 
@@ -163,6 +165,8 @@ def train_model(model,
 
                 if training_loss == 'tversky':
                     vloss = tversky_loss(voutputs, vlabels)
+                elif training_loss == 'dice':
+                    loss = dice_loss(voutputs, vlabels)
                 else:
                     vloss = criterion(voutputs, vlabels)  # Calculate loss
 
