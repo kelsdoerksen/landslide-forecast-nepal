@@ -104,7 +104,7 @@ if __name__ == '__main__':
                             tags=["{}".format(tag)])
     experiment.config.update(
         dict(epochs=args.epochs, batch_size=args.batch_size, learning_rate=args.lr,
-             val_percent=0.1, save_checkpoint=True, exp_type=args.exp_type, forecast_model=args.ensemble,
+             val_percent=args.val_percent, save_checkpoint=True, exp_type=args.exp_type, forecast_model=args.ensemble,
              ensemble_num=args.ensemble_member, test_year=args.test_year)
     )
 
