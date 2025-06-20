@@ -30,6 +30,8 @@ def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_
         criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([0.2], device=device))    # penalizes false positives
     if test_loss == 'bce_pos_weight_03':
         criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([0.3], device=device))    # penalizes false positives
+    if test_loss == 'bce_pos_weight_04':
+        criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([0.4], device=device))  # penalizes false positives
 
     threshold = 0.2
     unetmodel = models.UNet(n_channels=32, n_classes=1)

@@ -20,7 +20,7 @@ parser.add_argument("--year",
 root_dir = '/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep/MODIS_Pixelwise'
 
 # Initialize ee
-ee.Initialize(opt_url='https://earthengine-highvolume.googleapis.com')
+ee.Initialize(project='sudsaq-kelsey',opt_url='https://earthengine-highvolume.googleapis.com')
 
 
 def generate_data(year):
@@ -37,7 +37,7 @@ def generate_data(year):
     collection = ee.ImageCollection('MODIS/061/MCD12Q1').filterDate(start,end)
     img_list = collection.toList(1)
     img = ee.Image(img_list.get(0)).select(['LC_Type1'])
-    img = img.resample('bilinear').reproject(crs='EPSG:4326', scale=11132)
+    img = img.reproject(crs='EPSG:4326', scale=11132)
     arr_img = geemap.ee_to_numpy(img, region=aoi)[:, :, 0]
 
     np.save('{}/MODIS_{}.npy'.format(root_dir, year), arr_img)
