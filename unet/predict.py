@@ -101,8 +101,8 @@ def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_
         'test set loss': epoch_loss / len(test_loader),
         'test set Precision': precision / len(test_loader),
         'test set Recall': recall / len(test_loader),
-        'train Precision pct cov': epoch_pct_cov_precision / len(test_loader),
-        'train Recall pct cov': epoch_pct_cov_recall / len(test_loader),
+        'test set Precision pct cov': epoch_pct_cov_precision / len(test_loader),
+        'test set Recall pct cov': epoch_pct_cov_recall / len(test_loader),
     })
 
 
