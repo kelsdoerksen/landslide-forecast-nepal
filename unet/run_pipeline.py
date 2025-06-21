@@ -294,9 +294,6 @@ if __name__ == '__main__':
                                                   save_dir, mean=mean, std=std, max_val=global_max, min_val=global_min,
                                                    norm=norm)
 
-        import ipdb
-        ipdb.set_trace()
-
         print('Training model...')
         trained_model = train_model(
             model=unet,
