@@ -197,7 +197,7 @@ def train_model(model,
         try:
             experiment.log({
                 'learning rate': optimizer.param_groups[0]['lr'],
-                'validation BCE loss': avg_vloss,
+                'validation loss': avg_vloss,
                 'validation Precision': avg_prec,
                 'validation Recall': avg_rec,
                 'validation Precision pct cov': avg_pct_cov_prec,
