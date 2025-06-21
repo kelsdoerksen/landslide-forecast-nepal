@@ -44,6 +44,8 @@ def get_args():
                         required=True)
     parser.add_argument('--exp_type', help='experiment type; in-monsoon and out-monsoon',
                         required=True)
+    parser.add_argument('--norm_type', help='Data normalization technique, must be one of zscore or minmax',
+                        required=True)
 
     return parser.parse_args()
 
@@ -98,6 +100,7 @@ if __name__ == '__main__':
     ens = args.ensemble
     ens_num = args.ensemble_member
     tag = args.tags
+    norm = args.norm_type
 
     # Initializing logging in wandb for experiment
     experiment = wandb.init(project='landslide-prediction', resume='allow', anonymous='must',
@@ -105,7 +108,7 @@ if __name__ == '__main__':
     experiment.config.update(
         dict(epochs=args.epochs, batch_size=args.batch_size, learning_rate=args.lr,
              val_percent=args.val_percent, save_checkpoint=True, exp_type=args.exp_type, forecast_model=args.ensemble,
-             ensemble_num=args.ensemble_member, test_year=args.test_year)
+             ensemble_num=args.ensemble_member, test_year=args.test_year, data_norm=norm)
     )
 
     # --- Setting Directories
@@ -233,18 +236,66 @@ if __name__ == '__main__':
 
         set_seed(random.randint(0,1000))
 
-        # ---- Grabbing Training Data ----
-        print('Grabbing training data...')
-        landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
+        # ---- Grabbing Training Data ---
+        print('Grabbing training data and normalizing...')
+        landslide_train = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
                                                    save_dir)
+        n_channels = 32
+        mean = torch.zeros(n_channels)
+        std = torch.zeros(n_channels)
+        global_min = torch.full((n_channels,), float('inf'))
+        global_max = torch.full((n_channels,), float('-inf'))
+        n_samples = 0
+
+        if norm == 'zscore':
+            print("Computing per-channel mean and std...")
+            for images, _ in landslide_train:
+                images = images.float().contiguous()
+                # Reshape to (32, 6000)
+                images_flat = images.view(n_channels, -1)
+
+                # Calculate mean and std
+                mean += images_flat.mean(dim=1)
+                std += images_flat.std(dim=1)
+                n_samples += 1
+
+            mean /= n_samples
+            std /= n_samples
+            max_val = None
+            min_val = None
+
+        if norm == 'minmax':
+            print("Computing per-channel min and max...")
+            for images, _ in landslide_train:
+                images = images.float().contiguous()
+                # Reshape to (32, 6000)
+                images_flat = images.view(n_channels, -1)
+
+                # Calculating min and max
+                min_vals = images_flat.min(dim=1).values
+                max_vals = images_flat.max(dim=1).values
+
+                global_min = torch.min(global_min, min_vals)
+                global_max = torch.max(global_max, max_vals)
+                mean = None
+                std = None
+
+        landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
+                                                   save_dir, mean=mean, std=std, max_val=global_max, min_val=global_min,
+                                                   norm=norm)
 
         # --- Grabbing Testing Data ----
         print('Grabbing testing data...')
         if args.exp_type == 'ukmo-train-ecmwf-test':
             # If experiment type is train on ukmo, test on ecmwf, test set comes from ecmwf
             sample_dir = '{}/UNet_Samples_14Day_GPMv07/ECMWF/ensemble_0'.format(root_dir)
+
         landslide_test_dataset = LandslideDataset(sample_dir, label_dir, 'test', args.exp_type, args.test_year,
-                                                  save_dir)
+                                                  save_dir, mean=mean, std=std, max_val=global_max, min_val=global_min,
+                                                   norm=norm)
+
+        import ipdb
+        ipdb.set_trace()
 
         print('Training model...')
         trained_model = train_model(
