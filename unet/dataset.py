@@ -30,13 +30,19 @@ def out_of_monsoon_dates(year):
     return date_list_pre + date_list_post
 
 class LandslideDataset(Dataset):
-    def __init__(self, image_dir, label_dir, split, exp_type, test_year, out_dir):
+    def __init__(self, image_dir, label_dir, split, exp_type, test_year, out_dir, mean=None, std=None,
+                 max_val=None, min_val=None, norm=None):
         self.image_dir = image_dir
         self.label_dir = label_dir
         self.split = split
         self.exp_type = exp_type
         self.test_year = test_year
         self.out_dir = out_dir
+        self.mean = mean
+        self.std = std
+        self.max_val = max_val
+        self.min_val = min_val
+        self.norm = norm
 
         # Apply valid date bounds depending on the experiment type
         years = [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
@@ -115,6 +121,20 @@ class LandslideDataset(Dataset):
             multichannel_image = torch.transpose(multichannel_image, 1, 2)
         if label_class.shape != torch.Size([1, 60, 100]):
             label_class = torch.transpose(label_class, 1, 2)
+
+        # Standardize from given mean and std if not None
+        # Normalize data
+        if self.mean is not None and self.std is not None:
+            if self.norm == 'zscore':
+                # Ensure shape (32, 1, 1) for broadcasting
+                mean = self.mean.view(-1, 1, 1)
+                std = self.std.view(-1, 1, 1)
+                multichannel_image = (multichannel_image - mean) / (std + 1e-8)
+        if self.max_val is not None and self.min_val is not None:
+            if self.norm == 'minmax':
+                min_vals = self.min_vals.view(-1, 1, 1)
+                max_vals = self.max_vals.view(-1, 1, 1)
+                multichannel_image = (multichannel_image - min_vals) / (max_vals - min_vals + 1e-8)
 
         return multichannel_image.float(), label_class.float()
 
