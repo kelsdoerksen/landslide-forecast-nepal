@@ -14,14 +14,14 @@ class UNet(nn.Module):
         self.dropout = dropout
 
         self.inc = (DoubleConv(n_channels, 32, dropout))     # input image size selecting 32 as smallest
-        self.down1 = (Down(32, 64))                 # doubling feature channels
-        self.down2 = (Down(64, 128))                # doubling feature channels
-        self.down3 = (Down(128, 256))               # doubling feature channels
-        self.down4 = (Down(256, 512 // 2))
-        self.up1 = (Up(512, 256 // 2))              # upsampling, halving number of features
-        self.up2 = (Up(256, 128 // 2))              # upsampling, halving number of features
-        self.up3 = (Up(128, 64 // 2))               # upsampling, halving number of features
-        self.up4 = (Up(64, 32))                     # supsampling, halving the number of features
+        self.down1 = (Down(32, 64, dropout))                 # doubling feature channels
+        self.down2 = (Down(64, 128, dropout))                # doubling feature channels
+        self.down3 = (Down(128, 256, dropout))               # doubling feature channels
+        self.down4 = (Down(256, 512 // 2, dropout))
+        self.up1 = (Up(512, 256 // 2, dropout))              # upsampling, halving number of features
+        self.up2 = (Up(256, 128 // 2, dropout))              # upsampling, halving number of features
+        self.up3 = (Up(128, 64 // 2, dropout))               # upsampling, halving number of features
+        self.up4 = (Up(64, 32, dropout))                     # supsampling, halving the number of features
         self.outc = (OutConv(32, n_classes))        # final output matches input size with number of classes specified (1 for regressiom)
 
 
