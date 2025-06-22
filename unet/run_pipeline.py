@@ -144,7 +144,7 @@ if __name__ == '__main__':
     #Below is old, I will remove this once I have written the new format
     if args.exp_type == 'monsoon-tool':
         print('Training model on all the latest data and saving for monsoon tool')
-        unet = models.UNet(n_channels=32, n_classes=1, dropout=dropout)
+        unet = models.UNet(n_channels=32, n_classes=1, dropout=float(dropout))
 
         if torch.cuda.is_available():
             unet.cuda()
@@ -174,7 +174,7 @@ if __name__ == '__main__':
             district_masks=district_masks)
 
     if args.exp_type == 'monsoon_test':
-        unet = models.UNet(n_channels=32, n_classes=1, dropout=dropout)
+        unet = models.UNet(n_channels=32, n_classes=1, dropout=float(dropout))
         set_seed(random.randint(0, 1000))
 
         print('Testing pre-trained model on latest Monsoon season...')
@@ -193,7 +193,7 @@ if __name__ == '__main__':
 
     if args.exp_type == 'monsoon-tool':
         print('Training model on UKMO-0 and ECMWF for the monsoon tool...')
-        unet = models.UNet(n_channels=32, n_classes=1, dropout=dropout)
+        unet = models.UNet(n_channels=32, n_classes=1, dropout=float(dropout))
 
         if torch.cuda.is_available():
             unet.cuda()
@@ -231,7 +231,7 @@ if __name__ == '__main__':
             district_masks=district_masks)
 
     else:
-        unet = models.UNet(n_channels=32, n_classes=1, dropout=dropout)
+        unet = models.UNet(n_channels=32, n_classes=1, dropout=float(dropout))
 
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         unet.to(device=device)
