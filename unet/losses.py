@@ -57,3 +57,24 @@ class DiceBCELoss(nn.Module):
         Dice_BCE = BCE + dice_loss
 
         return Dice_BCE
+
+class DiceWeightedBCELoss(nn.Module):
+    def __init__(self, weight=None, size_average=True):
+        super(DiceWeightedBCELoss, self).__init__()
+
+    def forward(self, inputs, targets, smooth=1):
+        # comment out if your model contains a sigmoid or equivalent activation layer
+        inputs = F.sigmoid(inputs)
+
+        BCE_weighted = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([0.3]))
+
+        # flatten label and prediction tensors
+        inputs = inputs.view(-1)
+        targets = targets.view(-1)
+
+        intersection = (inputs * targets).sum()
+        dice_loss = 1 - (2. * intersection + smooth) / (inputs.sum() + targets.sum() + smooth)
+        BCE = BCE_weighted(inputs, targets)
+        Dice_WeightedBCE = BCE + dice_loss
+
+        return Dice_WeightedBCE

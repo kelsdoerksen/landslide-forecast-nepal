@@ -36,7 +36,7 @@ def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_
         criterion = DiceBCELoss()
 
     threshold = 0.2
-    unetmodel = models.UNet(n_channels=32, n_classes=1)
+    unetmodel = models.UNet(n_channels=32, n_classes=1, dropout=0)
     # Setting model to eval mode
     if exp_type == 'monsoon_test':
         unetmodel.load_state_dict(in_model['state_dict'])
