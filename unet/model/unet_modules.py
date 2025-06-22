@@ -38,7 +38,8 @@ class DoubleConv(nn.Module):
 class Down(nn.Module):
     def __init__(self,
                  in_channels,
-                 out_channels):
+                 out_channels,
+                 dropout):
         super().__init__()
         self.maxpool_conv = nn.Sequential(
             nn.MaxPool2d(2),
@@ -53,12 +54,12 @@ class Up(nn.Module):
     """
     Upsample then take double convolution
     """
-    def __init__(self, in_channels, out_channels):
+    def __init__(self, in_channels, out_channels, dropout):
         super().__init__()
         self.up = nn.Upsample(scale_factor=2,
                               mode='bilinear',
                               align_corners=True)
-        self.conv = DoubleConv(in_channels, out_channels, in_channels // 2)
+        self.conv = DoubleConv(in_channels, out_channels, in_channels // 2, dropout)
 
     def forward(self, x1, x2):
         # transpose convolution -> upsample, pad, take convolution
