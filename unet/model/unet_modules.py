@@ -59,7 +59,7 @@ class Up(nn.Module):
         self.up = nn.Upsample(scale_factor=2,
                               mode='bilinear',
                               align_corners=True)
-        self.conv = DoubleConv(in_channels, out_channels, in_channels // 2, dropout)
+        self.conv = DoubleConv(in_channels, out_channels, dropout, in_channels // 2)
 
     def forward(self, x1, x2):
         # transpose convolution -> upsample, pad, take convolution
