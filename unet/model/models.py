@@ -7,12 +7,13 @@ segmentation implementation
 from model.unet_modules import *
 
 class UNet(nn.Module):
-    def __init__(self, n_channels, n_classes):
+    def __init__(self, n_channels, n_classes, dropout):
         super(UNet, self).__init__()
         self.n_channels = n_channels
         self.n_classes = n_classes
+        self.dropout = dropout
 
-        self.inc = (DoubleConv(n_channels, 32))     # input image size selecting 32 as smallest
+        self.inc = (DoubleConv(n_channels, 32, dropout))     # input image size selecting 32 as smallest
         self.down1 = (Down(32, 64))                 # doubling feature channels
         self.down2 = (Down(64, 128))                # doubling feature channels
         self.down3 = (Down(128, 256))               # doubling feature channels

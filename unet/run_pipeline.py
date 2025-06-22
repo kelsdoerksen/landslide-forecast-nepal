@@ -27,7 +27,8 @@ def get_args():
     parser.add_argument('--learning-rate', '-l', type=float, default=0.001, help='Learning rate', dest='lr')
     parser.add_argument('--optimizer', '-o', type=str, default='adam', help='Model optimizer')
     parser.add_argument('--classes', '-c', type=int, default=1, help='Number of classes'),
-    parser.add_argument('--loss', help='Loss function to use')
+    parser.add_argument('--loss', help='Loss function to use'),
+    parser.add_argument('--dropout', help='Dropout percentage for model'),
     parser.add_argument('--test_year', '-t', type=str, help='Test year for analysis (sets out of training)',
                         required=True)
     parser.add_argument('--root_dir', help='Specify root directory',
@@ -101,12 +102,13 @@ if __name__ == '__main__':
     ens_num = args.ensemble_member
     tag = args.tags
     norm = args.norm_type
+    dropout = args.dropout
 
     # Initializing logging in wandb for experiment
     experiment = wandb.init(project='landslide-prediction', resume='allow', anonymous='must',
                             tags=["{}".format(tag)])
     experiment.config.update(
-        dict(epochs=args.epochs, batch_size=args.batch_size, learning_rate=args.lr,
+        dict(epochs=args.epochs, batch_size=args.batch_size, learning_rate=args.lr, dropout=dropout,
              val_percent=args.val_percent, save_checkpoint=True, exp_type=args.exp_type, forecast_model=args.ensemble,
              ensemble_num=args.ensemble_member, test_year=args.test_year, data_norm=norm)
     )
@@ -142,7 +144,7 @@ if __name__ == '__main__':
     #Below is old, I will remove this once I have written the new format
     if args.exp_type == 'monsoon-tool':
         print('Training model on all the latest data and saving for monsoon tool')
-        unet = models.UNet(n_channels=32, n_classes=1)
+        unet = models.UNet(n_channels=32, n_classes=1, dropout=dropout)
 
         if torch.cuda.is_available():
             unet.cuda()
@@ -172,7 +174,7 @@ if __name__ == '__main__':
             district_masks=district_masks)
 
     if args.exp_type == 'monsoon_test':
-        unet = models.UNet(n_channels=32, n_classes=1)
+        unet = models.UNet(n_channels=32, n_classes=1, dropout=dropout)
         set_seed(random.randint(0, 1000))
 
         print('Testing pre-trained model on latest Monsoon season...')
@@ -191,7 +193,7 @@ if __name__ == '__main__':
 
     if args.exp_type == 'monsoon-tool':
         print('Training model on UKMO-0 and ECMWF for the monsoon tool...')
-        unet = models.UNet(n_channels=32, n_classes=1)
+        unet = models.UNet(n_channels=32, n_classes=1, dropout=dropout)
 
         if torch.cuda.is_available():
             unet.cuda()
@@ -229,7 +231,7 @@ if __name__ == '__main__':
             district_masks=district_masks)
 
     else:
-        unet = models.UNet(n_channels=32, n_classes=1)
+        unet = models.UNet(n_channels=32, n_classes=1, dropout=dropout)
 
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         unet.to(device=device)
