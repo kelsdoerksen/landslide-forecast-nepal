@@ -38,12 +38,15 @@ def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_
         criterion = DiceWeightedBCE03Loss()
 
     threshold = 0.2
-    unetmodel = models.UNet(n_channels=32, n_classes=1, dropout=0)
-    # Setting model to eval mode
-    if exp_type == 'monsoon_test':
-        unetmodel.load_state_dict(in_model['state_dict'])
-    else:
+    if exp_type == 'unet_mini':
+        unetmodel = models.UNetMini(n_channels=32, n_classes=1, dropout=0)
         unetmodel.load_state_dict(torch.load(in_model)['state_dict'])
+    else:
+        unetmodel = models.UNet(n_channels=32, n_classes=1, dropout=0)
+        if exp_type == 'monsoon_test':
+            unetmodel.load_state_dict(in_model['state_dict'])
+        else:
+            unetmodel.load_state_dict(torch.load(in_model)['state_dict'])
 
     # Move model to device
     unetmodel.to(device)
