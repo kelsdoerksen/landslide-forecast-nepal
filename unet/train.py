@@ -203,7 +203,7 @@ def train_model(model,
                 'validation Precision': avg_prec,
                 'validation Recall': avg_rec,
                 'validation Precision pct cov': avg_pct_cov_prec,
-                'valiation Recall pct cov': avg_pct_cov_recall,
+                'validation Recall pct cov': avg_pct_cov_recall,
                 'step': global_step,
                 'epoch': epoch,
                 **histograms
