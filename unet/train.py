@@ -81,6 +81,8 @@ def train_model(model,
         experiment.log({'bce_pos_weight': weight})
     if training_loss == 'dice_bce':
         criterion = DiceBCELoss()
+    if training_loss == 'dice_bce_w3':
+        criterion = DiceWeightedBCE03Loss()
 
 
     # --- Setting up schedulers

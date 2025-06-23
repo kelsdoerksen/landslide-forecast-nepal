@@ -110,7 +110,7 @@ if __name__ == '__main__':
     experiment.config.update(
         dict(epochs=args.epochs, batch_size=args.batch_size, learning_rate=args.lr, dropout=dropout,
              val_percent=args.val_percent, save_checkpoint=True, exp_type=args.exp_type, forecast_model=args.ensemble,
-             ensemble_num=args.ensemble_member, test_year=args.test_year, data_norm=norm)
+             ensemble_num=args.ensemble_member, test_year=args.test_year, data_norm=norm, loss=args.loss)
     )
 
     # --- Setting Directories
@@ -229,6 +229,10 @@ if __name__ == '__main__':
             opt=args.optimizer,
             save_checkpoint=True,
             district_masks=district_masks)
+
+    if args.exp_type == 'unet_mini':
+        # Let's try this out with the mini unet
+        print('running on smaller unet')
 
     else:
         unet = models.UNet(n_channels=32, n_classes=1, dropout=float(dropout))
