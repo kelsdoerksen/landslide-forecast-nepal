@@ -64,8 +64,8 @@ class DiceWeightedBCE03Loss(nn.Module):
     def forward(self, inputs, targets, smooth=1):
         # comment out if your model contains a sigmoid or equivalent activation layer
         inputs = F.sigmoid(inputs)
-
-        BCE_weighted = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([0.3]))
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        BCE_weighted = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([0.3], device=device))
 
         # flatten label and prediction tensors
         inputs = inputs.view(-1)
