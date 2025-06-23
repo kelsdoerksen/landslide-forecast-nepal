@@ -24,7 +24,7 @@ def precision_recall_threshold(y_true, y_pred, threshold, d_masks):
 
     #threshold_value = torch.Tensor([threshold])
     # Convert y_pred to 0s and 1s based on threshold
-    y_pred_t = (y_pred >= float(threshold)).float()
+    y_pred_t = (y_pred > float(threshold)).float()
 
     # Convert y_pred, y_true to numpy arrays to be able to do some pythonic
     # manipulation
