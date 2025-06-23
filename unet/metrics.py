@@ -78,7 +78,8 @@ def precision_recall_threshold(y_true, y_pred, threshold, d_masks):
     if total_landslides >= true_positives:
         false_negatives = total_landslides - true_positives
     else:
-        false_negatives = 0
+        raise ValueError("More TPs than actual landslides – logic error?")
+
 
     if false_positives == 0 and true_positives == 0:
         precision_ratio = 0
@@ -177,6 +178,7 @@ def precision_and_recall_threshold_pct_cov(y_true, y_pred, threshold, d_masks, p
 
         if total_landslides >= true_positives:
             false_negatives = total_landslides - true_positives
+        else:
             raise ValueError("More TPs than actual landslides – logic error?")
 
         true_positive_list.append(true_positives)
