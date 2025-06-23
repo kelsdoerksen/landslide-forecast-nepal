@@ -6,6 +6,7 @@ landslide occurred
 
 import numpy as np
 import torch
+import copy
 
 
 def precision_recall_threshold(y_true, y_pred, threshold, d_masks):
@@ -33,7 +34,7 @@ def precision_recall_threshold(y_true, y_pred, threshold, d_masks):
 
     total_landslides = 0
     for i in range(len(y_pred)):
-        non_landslide_districts = d_masks.copy()  # copy of landslides dict to manipulate
+        non_landslide_districts = copy.deepcopy(d_masks)  # copy of landslides dict to manipulate
         dummy_pred = np.copy(y_pred[i, 0, :, ])  # copy of y_pred to manipulate
         # Get what districts are in label
         district_pixels = []
@@ -129,7 +130,7 @@ def precision_and_recall_threshold_pct_cov(y_true, y_pred, threshold, d_masks, p
         false_negatives = 0
         total_landslides = 0
 
-        non_landslide_districts = d_masks.copy()  # copy of landslides dict to manipulate
+        non_landslide_districts = copy.deepcopy(d_masks)  # copy of landslides dict to manipulate
         dummy_pred = np.copy(y_pred[i, 0, :, ])  # copy of y_pred to manipulate
         # Get what districts are in label
         district_pixels = []
@@ -176,8 +177,7 @@ def precision_and_recall_threshold_pct_cov(y_true, y_pred, threshold, d_masks, p
 
         if total_landslides >= true_positives:
             false_negatives = total_landslides - true_positives
-        else:
-            false_negatives = 0
+            raise ValueError("More TPs than actual landslides – logic error?")
 
         true_positive_list.append(true_positives)
         false_positive_list.append(false_positives)
