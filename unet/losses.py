@@ -58,9 +58,9 @@ class DiceBCELoss(nn.Module):
 
         return Dice_BCE
 
-class DiceWeightedBCELoss(nn.Module):
+class DiceWeightedBCE03Loss(nn.Module):
     def __init__(self, weight=None, size_average=True):
-        super(DiceWeightedBCELoss, self).__init__()
+        super(DiceWeightedBCE03Loss, self).__init__()
 
     def forward(self, inputs, targets, smooth=1):
         # comment out if your model contains a sigmoid or equivalent activation layer
