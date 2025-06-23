@@ -190,7 +190,7 @@ def train_model(model,
 
         avg_vloss = running_vloss / len(val_loader)
         avg_prec = running_thr_precision / len(val_loader)
-        avg_rec = running_thr_precision / len(val_loader)
+        avg_rec = running_thr_recall / len(val_loader)
         avg_pct_cov_prec = running_pct_cov_precision / len(val_loader)
         avg_pct_cov_recall = running_pct_cov_recall / len(val_loader)
 
