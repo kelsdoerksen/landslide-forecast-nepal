@@ -24,7 +24,7 @@ def precision_recall_threshold(y_true, y_pred, threshold, d_masks):
 
     #threshold_value = torch.Tensor([threshold])
     # Convert y_pred to 0s and 1s based on threshold
-    y_pred_t = (y_pred > float(threshold)).float()
+    y_pred_t = (y_pred >= float(threshold)).float()
 
     # Convert y_pred, y_true to numpy arrays to be able to do some pythonic
     # manipulation
@@ -74,8 +74,10 @@ def precision_recall_threshold(y_true, y_pred, threshold, d_masks):
                         break
         false_positives += fp_count
 
-    if total_landslides > true_positives:
+    if total_landslides >= true_positives:
         false_negatives = total_landslides - true_positives
+    else:
+        false_negatives = 0
 
     if false_positives == 0 and true_positives == 0:
         precision_ratio = 0
@@ -118,6 +120,8 @@ def precision_and_recall_threshold_pct_cov(y_true, y_pred, threshold, d_masks, p
     false_positive_list = []
     false_negative_list = []
     total_landslides_list = []
+
+
     for i in range(len(y_pred)):
         # Set true positive and false positive count to 0
         true_positives = 0
@@ -170,26 +174,23 @@ def precision_and_recall_threshold_pct_cov(y_true, y_pred, threshold, d_masks, p
 
         total_landslides_list.append(total_landslides)
 
-        if total_landslides > true_positives:
+        if total_landslides >= true_positives:
             false_negatives = total_landslides - true_positives
+        else:
+            false_negatives = 0
 
         true_positive_list.append(true_positives)
         false_positive_list.append(false_positives)
         false_negative_list.append(false_negatives)
 
-    for tp, fp, fn in zip(true_positive_list, false_positive_list, false_negative_list):
-        precision = tp / (tp + fp) if (tp + fp) != 0 else 0
-        recall = tp / (tp + fn) if (tp + fn) != 0 else 0
-        precision_list.append(precision)
-        recall_list.append(recall)
-        f1 = (2 * precision * recall / (precision + recall)) if (precision + recall) != 0 else 0
-        f1_score.append(f1)
+    tp_total = sum(true_positive_list)
+    fp_total = sum(false_positive_list)
+    fn_total = sum(false_negative_list)
 
-    precision_ratio = np.mean(precision_list)
-    recall_ratio = np.mean(recall_list)
+    precision_ratio = tp_total / (tp_total + fp_total)
+    recall_ratio = tp_total / (tp_total + fn_total)
 
     return precision_ratio, recall_ratio
-
 
 
 """
