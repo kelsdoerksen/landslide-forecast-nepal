@@ -38,7 +38,6 @@ def dice_loss(pred, target, smooth=1):
 
     return 1 - dice
 
-
 class DiceBCELoss(nn.Module):
     def __init__(self, weight=None, size_average=True):
         super(DiceBCELoss, self).__init__()
