@@ -87,6 +87,8 @@ def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_
                 loss = tversky_loss(outputs, labels)
             elif test_loss == 'dice':
                 loss = dice_loss(outputs, labels)
+            elif test_loss == 'logcosh_dice':
+                loss = logcosh_dice_loss(outputs, labels)
             else:
                 loss = criterion(outputs, labels)       # Calculate loss
 
@@ -99,7 +101,7 @@ def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_
             epoch_pct_cov_recall += pct_cov_recall
             epoch_loss += loss.item()
 
-    print('test set BCE is: {}'.format(bce_score / len(test_loader)))
+    print('test set loss is: {}'.format(bce_score / len(test_loader)))
 
     # Writing things to file
     wandb_experiment.log({

@@ -112,6 +112,8 @@ def train_model(model,
                 loss = tversky_loss(outputs, labels)
             elif training_loss == 'dice':
                 loss = dice_loss(outputs, labels)
+            elif training_loss == 'logcosh_dice':
+                loss = logcosh_dice_loss(outputs, labels)
             else:
                 loss = criterion(outputs, labels)       # Calculate loss
 
@@ -171,6 +173,8 @@ def train_model(model,
                     vloss = tversky_loss(voutputs, vlabels)
                 elif training_loss == 'dice':
                     vloss = dice_loss(voutputs, vlabels)
+                elif training_loss == 'logcosh_dice':
+                    vloss = logcosh_dice_loss(voutputs, vlabels)
                 else:
                     vloss = criterion(voutputs, vlabels)  # Calculate loss
 
@@ -195,7 +199,7 @@ def train_model(model,
         avg_pct_cov_recall = running_pct_cov_recall / len(val_loader)
 
 
-        logging.info('Validation BCE score: {}'.format(avg_vloss))
+        logging.info('Validation loss score: {}'.format(avg_vloss))
         try:
             experiment.log({
                 'learning rate': optimizer.param_groups[0]['lr'],
