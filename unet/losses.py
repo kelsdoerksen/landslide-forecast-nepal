@@ -5,6 +5,7 @@ Script for other loss functions to use
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import numpy as np
 
 def tversky_loss(y_pred, y_true, alpha=0.7, beta=0.3, smooth=1e-6):
     y_pred = torch.sigmoid(y_pred)
@@ -37,6 +38,14 @@ def dice_loss(pred, target, smooth=1):
     dice = (2. * intersection + smooth) / (inputs.sum() + targets.sum() + smooth)
 
     return 1 - dice
+
+def logcosh_dice_loss(pred, target, smooth=1):
+    """
+    Wrap Dice loss in logcosh
+    """
+    dice = dice_loss(pred, target)
+
+    return  torch.log(torch.cosh(1-dice))
 
 class DiceBCELoss(nn.Module):
     def __init__(self, weight=None, size_average=True):
