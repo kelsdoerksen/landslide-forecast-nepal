@@ -31,7 +31,7 @@ def out_of_monsoon_dates(year):
 
 class LandslideDataset(Dataset):
     def __init__(self, image_dir, label_dir, split, exp_type, test_year, out_dir, mean=None, std=None,
-                 max_val=None, min_val=None, norm=None):
+                 max_val=None, min_val=None, norm=None, stride=0):
         self.image_dir = image_dir
         self.label_dir = label_dir
         self.split = split
@@ -43,6 +43,7 @@ class LandslideDataset(Dataset):
         self.max_val = max_val
         self.min_val = min_val
         self.norm = norm
+        self.stride = stride
 
         # Apply valid date bounds depending on the experiment type
         years = [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
@@ -84,16 +85,18 @@ class LandslideDataset(Dataset):
     def __len__(self):
         if self.split == 'train':
             image_fns = [x for x in self.image_fns if "{}".format(self.test_year) not in x]
-            image_fns = [x for x in image_fns if "{}".format(self.test_year) not in x]
+            if self.stride > 0:
+                image_fns = image_fns[::self.stride]
         elif self.split == 'test':
             image_fns = [x for x in self.image_fns if "{}".format(self.test_year) in x]
         return len(image_fns)
 
     def __getitem__(self, index):
         image_fns = sort(self.image_fns)
-
         if self.split == 'train':
             image_fns = [x for x in self.image_fns if "{}".format(self.test_year) not in x]
+            if self.stride > 0:
+                image_fns = image_fns[::self.stride]
             with open('{}/train_dates.txt'.format(self.out_dir), 'w') as f:
                 for line in image_fns:
                     f.write('{}'.format(line))

@@ -367,9 +367,15 @@ if __name__ == '__main__':
                 mean = None
                 std = None
 
-        landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
-                                                   save_dir, mean=mean, std=std, max_val=global_max, min_val=global_min,
-                                                   norm=norm)
+        if args.exp_type == 'stride':
+            landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
+                                                       save_dir, mean=mean, std=std, max_val=global_max, min_val=global_min,
+                                                       norm=norm, stride=2)
+        else:
+            landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
+                                                       save_dir, mean=mean, std=std, max_val=global_max,
+                                                       min_val=global_min,
+                                                       norm=norm)
 
         # --- Grabbing Testing Data ----
         print('Grabbing testing data...')
