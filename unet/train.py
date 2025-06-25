@@ -83,6 +83,14 @@ def train_model(model,
         criterion = DiceBCELoss()
     if training_loss == 'dice_bce_w3':
         criterion = DiceWeightedBCE03Loss()
+    if training_loss == 'bce_pos_weight_15':
+        weight = 1.5
+        criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([weight], device=device))  # penalizes false positives
+        experiment.log({'bce_pos_weight': weight})
+    if training_loss == 'bce_pos_weight_3':
+        weight = 3
+        criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([weight], device=device))  # penalizes false positives
+        experiment.log({'bce_pos_weight': weight})
 
 
     # --- Setting up schedulers
