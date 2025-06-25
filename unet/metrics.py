@@ -92,7 +92,7 @@ def precision_recall_threshold(y_true, y_pred, threshold, d_masks):
         recall_ratio = true_positives / (true_positives + false_negatives)
 
 
-    return precision_ratio, recall_ratio
+    return precision_ratio, recall_ratio, true_positives, false_positives, false_negatives
 
 
 def precision_and_recall_threshold_pct_cov(y_true, y_pred, threshold, d_masks, pct_cov=0.2):
