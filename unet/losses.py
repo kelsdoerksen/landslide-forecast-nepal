@@ -15,7 +15,7 @@ def tversky_loss(y_pred, y_true, alpha=0.7, beta=0.3, smooth=1e-6):
     tversky = (tp + smooth) / (tp + alpha * fp + beta * fn + smooth)
     return 1 - tversky
 
-def tversky_loss_penalize_fn(y_pred, y_true, alpha=0.9, beta=0.1, smooth=1e-6):
+def tversky_loss_penalize_fn(y_pred, y_true, alpha=0.2, beta=0.8, smooth=1e-6):
     y_pred = torch.sigmoid(y_pred)
     y_true = y_true.float()
     tp = (y_pred * y_true).sum()

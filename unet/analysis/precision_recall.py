@@ -71,7 +71,6 @@ def pr_generation(y_true, y_pred, threshold, d_masks):
     :param: y_pred: model prediction
     :param: d_masks: dictionary of
     '''
-    #
 
     # Set true positive and false positive count to 0
     true_positives = 0
@@ -79,10 +78,10 @@ def pr_generation(y_true, y_pred, threshold, d_masks):
     false_negatives = 0
 
     threshold_value = threshold
-    y_pred = y_pred[0]
-    y_true = y_true[0]
+    y_pred = y_pred[0,:,:,:,:]
+    y_true = y_true[0,:,:,:,:]
 
-    y_pred = (y_pred > threshold_value)*1
+    y_pred = (y_pred >= threshold_value)*1
 
     total_landslides = 0
     for i in range(len(y_pred)):
@@ -98,7 +97,6 @@ def pr_generation(y_true, y_pred, threshold, d_masks):
             if all(item in points for item in d_masks[district]):
                 district_pixels.append(d_masks[district])
                 non_landslide_districts.pop(district)
-
 
         total_overlap = 0
         for j in range(len(district_pixels)):
@@ -126,12 +124,18 @@ def pr_generation(y_true, y_pred, threshold, d_masks):
                     if dummy_pred[point[0], point[1]] == 1:
                         fp_count += 1
                         break
+
         false_positives += fp_count
 
-    if total_landslides > true_positives:
+    if total_landslides >= true_positives:
         false_negatives = total_landslides - true_positives
+    else:
+        false_negatives = 0
 
     if false_positives == 0 and true_positives == 0:
+        precision_ratio = 0
+        recall_ratio = 0
+    elif false_negatives == 0 and true_positives == 0:
         precision_ratio = 0
         recall_ratio = 0
     else:
@@ -149,7 +153,10 @@ def pr_generation(y_true, y_pred, threshold, d_masks):
         true_negatives = (77*len(y_true)) - false_negatives - true_positives - false_positives
         fpr = false_positives / (false_positives + true_negatives)
 
-    F1 = (true_positives) / (true_positives + (0.5*(false_positives+false_negatives)))
+    try:
+         F1 = 2 * (precision_ratio * recall_ratio) / (precision_ratio + recall_ratio)
+    except ZeroDivisionError as e:
+        F1 = 0
 
     results_dict = {}
 
@@ -166,84 +173,8 @@ def pr_generation(y_true, y_pred, threshold, d_masks):
 
     return results_dict
 
-"""
-def pr_generation_timeseries(y_true, y_pred, threshold, d_masks):
-    '''
-    Custom Precision-Recall metric.
-    Computes the precision over the batch using
-    the threshold_value indicated
-    :param: y_true: label
-    :param: y_pred: model prediction
-    :param: d_masks: dictionary of
-    '''
-    # Set true positive and false positive count to 0
-    true_positives = 0
-    false_positives = 0
-    false_negatives = 0
 
-    threshold_value = threshold
-    y_pred = y_pred[0]
-    y_true = y_true[0]
-
-    y_pred = (y_pred > threshold_value)*1
-
-    total_landslides = 0
-    f1_score = []
-    for i in range(len(y_pred)):
-        non_landslide_districts = d_masks.copy()  # copy of landslides dict to manipulate
-        dummy_pred = np.copy(y_pred[i, 0, :, ])  # copy of y_pred to manipulate
-        # Get what districts are in label
-        district_pixels = []
-        landslides = np.where(y_true[i, 0, :, :] == 1)
-        points = []
-        for k in range(len(landslides[0])):
-            points.append([landslides[0][k], landslides[1][k]])
-        for district in d_masks:
-            if all(item in points for item in d_masks[district]):
-                district_pixels.append(d_masks[district])
-                non_landslide_districts.pop(district)
-
-        total_overlap = 0
-        for j in range(len(district_pixels)):
-            # iterate through the list of points containing the landslide aka true_location
-            true_location = district_pixels[j]
-            overlap = 0
-            for w in range(len(true_location)):
-                if y_pred[i, 0, true_location[w][0], true_location[w][1]] == 1:
-                    overlap += 1
-                    # set the overlapped pixel to 0 and see if we have any left over for FP
-                    dummy_pred[true_location[w][0], true_location[w][1]] = 0
-            # check if at least one pixel overlapped district
-            if overlap > 0:
-                total_overlap += 1
-
-        true_positives += total_overlap
-        total_landslides += len(district_pixels)
-
-        fp_count = 0
-        # Check if any predictions don't overlap our districts
-        if np.amax(dummy_pred) > 0:
-            # We have FPs, check how many incorrect landslides we "predicted"
-            for d in non_landslide_districts:
-                for point in non_landslide_districts[d]:
-                    if dummy_pred[point[0], point[1]] == 1:
-                        fp_count += 1
-                        break
-        false_positives += fp_count
-
-        if total_landslides > true_positives:
-            false_negatives = total_landslides - true_positives
-
-        try:
-            F1 = (true_positives) / (true_positives + (0.5*(false_positives+false_negatives)))
-        except ZeroDivisionError as e:
-            F1 = 0
-        f1_score.append(F1)
-
-    return f1_score
-"""
-
-def pr_generation_timeseries(y_true, y_pred, threshold, d_masks, pct_cov):
+def pr_generation_threshold_pct_cov(y_true, y_pred, threshold, d_masks, pct_cov=0.2):
     '''
     Custom Precision-Recall metric.
     Computes the precision over the batch using the threshold_value indicated
@@ -253,11 +184,10 @@ def pr_generation_timeseries(y_true, y_pred, threshold, d_masks, pct_cov):
     :param: pct_cov: pct coverage of pixels in district to label as "landslide"
     '''
 
-    threshold_value = threshold
-    y_pred = y_pred[0]
-    y_true = y_true[0]
-
-    y_pred = (y_pred > threshold_value) * 1
+    # Convert y_pred to 0s and 1s based on threshold
+    y_pred = y_pred[0, :, :, :, :]
+    y_true = y_true[0,:,:,:,:]
+    y_pred_t = (y_pred > threshold)*1
 
     total_landslides = 0
     f1_score = []
@@ -267,7 +197,7 @@ def pr_generation_timeseries(y_true, y_pred, threshold, d_masks, pct_cov):
     false_positive_list = []
     false_negative_list = []
     total_landslides_list = []
-    for i in range(len(y_pred)):
+    for i in range(len(y_pred_t)):
         # Set true positive and false positive count to 0
         true_positives = 0
         false_positives = 0
@@ -309,45 +239,59 @@ def pr_generation_timeseries(y_true, y_pred, threshold, d_masks, pct_cov):
         for district in non_landslide_districts:
             nonlandslide_size = len(non_landslide_districts[district])
             overlap_count = 0
-            #thr_pct = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]           # Testing multiple overlap percentages
-            thr_pct = [pct_cov]
-            for t in thr_pct:
-                overlap_thr = int(t * nonlandslide_size)      # 20% overlap threshold
-                for point in non_landslide_districts[district]:
-                    if dummy_pred[point[0], point[1]] == 1:
-                        overlap_count += 1
-                if overlap_count >= overlap_thr:
-                    fp_count += 1
+            overlap_thr = int(pct_cov * nonlandslide_size)      # overlap threshold %
+            for point in non_landslide_districts[district]:
+                if dummy_pred[int(point[0]), int(point[1])] == 1:
+                    overlap_count += 1
+            if overlap_count >= overlap_thr:
+                fp_count += 1
         false_positives = fp_count
 
         total_landslides_list.append(total_landslides)
 
-        if total_landslides > true_positives:
+        if total_landslides >= true_positives:
             false_negatives = total_landslides - true_positives
+        else:
+            false_negatives = 0
 
         true_positive_list.append(true_positives)
         false_positive_list.append(false_positives)
         false_negative_list.append(false_negatives)
-    fnr_list = [fn / (tp + fn) if (tp + fn) != 0 else 0 for tp, fn in zip(true_positive_list, false_negative_list)]
-    tpr_list = [tp / (tp + fn) if (tp + fn) != 0 else 0 for tp, fn in zip(true_positive_list, false_negative_list)]
-    for tp, fp, fn in zip(true_positive_list, false_positive_list, false_negative_list):
-        precision = tp / (tp + fp) if (tp + fp) != 0 else 0
-        recall = tp / (tp + fn) if (tp + fn) != 0 else 0
-        precision_list.append(precision)
-        recall_list.append(recall)
-        f1 = (2 * precision * recall / (precision + recall)) if (precision + recall) != 0 else 0
-        f1_score.append(f1)
 
-    plt.plot(false_positive_list, color='red', label='false positives')
-    plt.plot(true_positive_list, color='green', label='true positives')
-    plt.plot(total_landslides_list, color='black', label='total landslides in next 2 weeks')
-    plt.legend()
-    #save_name = 'plot_fp_tp_pct_cov_{}.png'.format(pct_cov)
-    # hard-coding my save directory for now so I can refer to it for this testing run and come back later
-    #plt.savefig('/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep/Results/GPMv07/UKMO_ensemble_0_s94em8xz_testing/{}'.format(save_name))
-    plt.close()
+    tp_total = sum(true_positive_list)
+    fp_total = sum(false_positive_list)
+    fn_total = sum(false_negative_list)
 
-    return f1_score
+    precision = tp_total / (tp_total + fp_total)
+    recall = tp_total / (tp_total + fn_total)
+
+    F1 = (2 * precision * recall / (precision + recall)) if (precision + recall) != 0 else 0
+
+    if fn_total == 0:
+        fnr = 0
+    else:
+        fnr = fn_total / (fn_total + fp_total)
+
+    if fp_total == 0:
+        fpr = 0
+    else:
+        tn_total = (77*len(y_true)) - fn_total - tp_total - fp_total
+        fpr = fp_total / (fp_total + tn_total)
+
+    results_dict = {}
+
+    # Add all results to dictionary to return
+    results_dict['threshold'] = threshold
+    results_dict['precision'] = precision
+    results_dict['recall'] = recall
+    results_dict['TP'] = tp_total
+    results_dict['FP'] = fp_total
+    results_dict['FN'] = fn_total
+    results_dict['F1'] = F1
+    results_dict['FNR'] = fnr
+    results_dict['FPR'] = fpr
+
+    return results_dict
 
 
 def landslide_record_gen(y_true, y_pred, threshold, d_masks):
@@ -407,6 +351,8 @@ if __name__ == '__main__':
     run = args.run_name
     gt_dir = args.gt_dir
 
+    # --- Loading Data
+
     # Set up final results path with pointing to the run directory
     run_dir = '{}/{}'.format(results_dir, run)
 
@@ -430,7 +376,6 @@ if __name__ == '__main__':
             prediction_arrays.append(pred[j,:,:,:])
             groundtruth_arrays.append(gt[j,:,:,:])
 
-
     # Generating district masks to use for the precision, recall
     district_masks = generate_district_masks('{}/District_Labels.tif'.format(root_dir))
 
@@ -445,55 +390,44 @@ if __name__ == '__main__':
             points.append([district_masks[district][0][i], district_masks[district][1][i]])
         district_masks[district] = points
 
-    def timeseries_f1_plots(thr):
-        """
-        Generate time series of F1 score to see overtime
-        """
-        results_list = []
-        results_list.append(pr_generation_timeseries(np.array([groundtruth_arrays]), np.array([prediction_arrays]),
-                                          thr, district_masks, 0.1))
-        return results_list
-
-    # Generate results per date
-    def get_results_avg(t):
-        results_list = []
-        results_list.append(pr_generation(np.array([groundtruth_arrays]), np.array([prediction_arrays]),
-                                              t, district_masks))
-        results_df = pd.DataFrame(results_list)
-        return results_df.mean()
-
     # Get list of test dates from file
     with open('{}/test_dates.txt'.format(gt_dir), 'r') as file:
         text = file.read()
     substrings = ['sample' + part.strip() for part in text.split('sample') if part.strip()]
     doys = [s.replace('sample_', '') for s in substrings]
 
+    # --- Getting Precision-Recall for varying decision threshold using method "at least one overlap"
     # Running for all thresholds
     thr = [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1]
     thr_results = []
     for t in thr:
-        thr_results.append(get_results_avg(t))
-
+        pr = pr_generation(np.array([groundtruth_arrays]), np.array([prediction_arrays]),
+                                              t, district_masks)
+        thr_results.append(pr)
     df = pd.DataFrame(thr_results)
 
     # Save to csv
     df.to_csv('{}/{}/{}_analysis_results.csv'.format(results_dir, run, run))
-    #df.to_csv('{}/ICLR_CameraReady/{}_analysis_2023_results.csv'.format(results_dir, run))
+    # ----------------------------
 
-    # Running for date
-    f1_dates = timeseries_f1_plots(0.1)
-    df_f1 = pd.DataFrame()
-    df_f1['f1'] = f1_dates[0]
+    # --- Get Precision-Recall for pct cov metric
+    # Running for all decision thresholds
+    pct_cov = 0.2
+    thr = [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1]
+    thr_results_pct = []
+    for t in thr:
+        pr_pct = pr_generation_threshold_pct_cov(np.array([groundtruth_arrays]), np.array([prediction_arrays]),
+                                                 t, district_masks, pct_cov)
+        thr_results_pct.append(pr_pct)
+    df_pct = pd.DataFrame(thr_results_pct)
 
-    df_f1['doy'] = doys
-    #df_f1.to_csv('{}/ICLR_CameraReady/{}_2023_timeseries.csv'.format(results_dir, run))
-    df_f1.to_csv('{}/{}/{}_test_timeseries_01Threshold.csv'.format(results_dir, run, run))
+    df_pct.to_csv('{}/{}/{}_analysis_pctcov_{}_results.csv'.format(results_dir, run, run, pct_cov))
 
-    # Get list of gt and pred landslide districts for future plotting
+
+    # ---  Get list of gt and pred landslide districts for future plotting
     gt_landslide_districts, pred_landslide_districts = landslide_record_gen(np.array([groundtruth_arrays]),
                                                                             np.array([prediction_arrays]), 0.1,
                                                                             district_masks)
-
     gt_landslide_districts_dict = {}
     pred_landslide_districts_dict = {}
     for d in range(len(doys)):
