@@ -108,6 +108,9 @@ def train_model(model,
         epoch_thr_recall = 0
         epoch_pct_cov_precision = 0
         epoch_pct_cov_recall = 0
+        tp_count = 0
+        fp_count = 0
+        fn_count = 0
 
         for i, data in enumerate(train_loader):
             inputs, labels = data
@@ -118,6 +121,8 @@ def train_model(model,
             outputs = model(inputs)                 # predict on input
             if training_loss == 'tversky':
                 loss = tversky_loss(outputs, labels)
+            elif training_loss == 'tversky_FN_penalize':
+                loss = tversky_loss_penalize_fn(outputs, labels)
             elif training_loss == 'dice':
                 loss = dice_loss(outputs, labels)
             elif training_loss == 'logcosh_dice':
@@ -128,7 +133,7 @@ def train_model(model,
             # Apply sigmoid for probabilities for precision recall
             outputs_probs = torch.sigmoid(outputs)
 
-            thr_precision, thr_recall = precision_recall_threshold(labels, outputs_probs, threshold, district_masks)
+            thr_precision, thr_recall, tp, fp, fn = precision_recall_threshold(labels, outputs_probs, threshold, district_masks)
             pct_cov_precision, pct_cov_recall = precision_and_recall_threshold_pct_cov(labels, outputs_probs, threshold, district_masks)
 
             grad_scaler.scale(loss).backward()      # Compute partial derivative of the output f with respect to each of the input variables
@@ -141,6 +146,10 @@ def train_model(model,
             epoch_thr_recall += thr_recall
             epoch_pct_cov_precision += pct_cov_precision
             epoch_pct_cov_recall += pct_cov_recall
+
+            tp_count = tp_count + tp
+            fp_count = fp_count + fp
+            fn_count = fn_count + fn
 
         experiment.log({
             'train loss': epoch_loss/len(train_loader),
@@ -179,6 +188,8 @@ def train_model(model,
 
                 if training_loss == 'tversky':
                     vloss = tversky_loss(voutputs, vlabels)
+                elif training_loss == 'tversky_FN_penalize':
+                    vloss = tversky_loss_penalize_fn(voutputs, vlabels)
                 elif training_loss == 'dice':
                     vloss = dice_loss(voutputs, vlabels)
                 elif training_loss == 'logcosh_dice':
@@ -190,7 +201,7 @@ def train_model(model,
                 voutputs_probs = torch.sigmoid(voutputs)
 
                 # Calculating precision recall
-                v_prec, v_rec = precision_recall_threshold(vlabels, voutputs_probs, threshold, district_masks)
+                v_prec, v_rec, vtp, vfp, vfn = precision_recall_threshold(vlabels, voutputs_probs, threshold, district_masks)
                 v_pct_cov_precision, v_pct_cov_recall = precision_and_recall_threshold_pct_cov(vlabels, voutputs_probs,
                                                                                            threshold, district_masks)
 

@@ -36,6 +36,12 @@ def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_
         criterion = DiceBCELoss()
     if test_loss == 'dice_bce_w3':
         criterion = DiceWeightedBCE03Loss()
+    if test_loss == 'bce_pos_weight_15':
+        weight = 1.5
+        criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([weight], device=device))  # penalizes false negatives
+    if test_loss == 'bce_pos_weight_3':
+        weight = 3
+        criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([weight], device=device))  # penalizes false negatives
 
     threshold = 0.2
     if exp_type == 'unet_mini':
@@ -85,6 +91,8 @@ def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_
 
             if test_loss == 'tversky':
                 loss = tversky_loss(outputs, labels)
+            elif test_loss == 'tversky_FN_penalize':
+                loss = tversky_loss_penalize_fn(outputs, labels)
             elif test_loss == 'dice':
                 loss = dice_loss(outputs, labels)
             elif test_loss == 'logcosh_dice':
@@ -92,7 +100,7 @@ def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_
             else:
                 loss = criterion(outputs, labels)       # Calculate loss
 
-            p, r = precision_recall_threshold(labels, outputs_probs, threshold, district_masks)
+            p, r, tp, fp, fn = precision_recall_threshold(labels, outputs_probs, threshold, district_masks)
             pct_cov_precision, pct_cov_recall = precision_and_recall_threshold_pct_cov(labels, outputs_probs, threshold,
                                                                                        district_masks)
             precision += p
