@@ -189,8 +189,14 @@ def precision_and_recall_threshold_pct_cov(y_true, y_pred, threshold, d_masks, p
     fp_total = sum(false_positive_list)
     fn_total = sum(false_negative_list)
 
-    precision_ratio = tp_total / (tp_total + fp_total)
-    recall_ratio = tp_total / (tp_total + fn_total)
+    try:
+        precision_ratio = tp_total / (tp_total + fp_total)
+    except ZeroDivisionError as e:
+        precision_ratio = 0
+    try:
+        recall_ratio = tp_total / (tp_total + fn_total)
+    except ZeroDivisionError as e:
+        recall_ratio = 0
 
     return precision_ratio, recall_ratio
 
