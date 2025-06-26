@@ -101,12 +101,11 @@ def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_
                 loss = criterion(outputs, labels)       # Calculate loss
 
             p, r, tp, fp, fn = precision_recall_threshold(labels, outputs_probs, threshold, district_masks)
-            pct_cov_precision, pct_cov_recall = precision_and_recall_threshold_pct_cov(labels, outputs_probs, threshold,
-                                                                                       district_masks)
+            #pct_cov_precision, pct_cov_recall = precision_and_recall_threshold_pct_cov(labels, outputs_probs, threshold, district_masks)
             precision += p
             recall += r
-            epoch_pct_cov_precision += pct_cov_precision
-            epoch_pct_cov_recall += pct_cov_recall
+            #epoch_pct_cov_precision += pct_cov_precision
+            #epoch_pct_cov_recall += pct_cov_recall
             epoch_loss += loss.item()
 
     print('test set loss is: {}'.format(bce_score / len(test_loader)))
@@ -116,8 +115,8 @@ def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_
         'test set loss': epoch_loss / len(test_loader),
         'test set Precision': precision / len(test_loader),
         'test set Recall': recall / len(test_loader),
-        'test set Precision pct cov': epoch_pct_cov_precision / len(test_loader),
-        'test set Recall pct cov': epoch_pct_cov_recall / len(test_loader),
+        'test set Precision pct cov': 'N/A',
+        'test set Recall pct cov': 'N/A',
     })
 
 

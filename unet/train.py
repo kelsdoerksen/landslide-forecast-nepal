@@ -134,7 +134,7 @@ def train_model(model,
             outputs_probs = torch.sigmoid(outputs)
 
             thr_precision, thr_recall, tp, fp, fn = precision_recall_threshold(labels, outputs_probs, threshold, district_masks)
-            pct_cov_precision, pct_cov_recall = precision_and_recall_threshold_pct_cov(labels, outputs_probs, threshold, district_masks)
+            #pct_cov_precision, pct_cov_recall = precision_and_recall_threshold_pct_cov(labels, outputs_probs, threshold, district_masks)
 
             grad_scaler.scale(loss).backward()      # Compute partial derivative of the output f with respect to each of the input variables
             grad_scaler.step(optimizer)             # Updates value of parameters according to strategy
@@ -144,8 +144,8 @@ def train_model(model,
             epoch_loss += loss.item()
             epoch_thr_precision += thr_precision
             epoch_thr_recall += thr_recall
-            epoch_pct_cov_precision += pct_cov_precision
-            epoch_pct_cov_recall += pct_cov_recall
+            #epoch_pct_cov_precision += pct_cov_precision
+            #epoch_pct_cov_recall += pct_cov_recall
 
             tp_count = tp_count + tp
             fp_count = fp_count + fp
@@ -155,8 +155,8 @@ def train_model(model,
             'train loss': epoch_loss/len(train_loader),
             'train Precision': epoch_thr_precision/len(train_loader),
             'train Recall': epoch_thr_recall/ len(train_loader),
-            'train Precision pct cov': epoch_pct_cov_precision/len(train_loader),
-            'train Recall pct cov': epoch_pct_cov_recall/len(train_loader),
+            'train Precision pct cov': 'N/A',
+            'train Recall pct cov': 'N/A',
             'step': global_step,
             'epoch': epoch,
             'optimizer': opt
@@ -202,20 +202,19 @@ def train_model(model,
 
                 # Calculating precision recall
                 v_prec, v_rec, vtp, vfp, vfn = precision_recall_threshold(vlabels, voutputs_probs, threshold, district_masks)
-                v_pct_cov_precision, v_pct_cov_recall = precision_and_recall_threshold_pct_cov(vlabels, voutputs_probs,
-                                                                                           threshold, district_masks)
+                #v_pct_cov_precision, v_pct_cov_recall = precision_and_recall_threshold_pct_cov(vlabels, voutputs_probs, threshold, district_masks)
 
                 running_vloss += vloss
                 running_thr_recall += v_rec
                 running_thr_precision += v_prec
-                running_pct_cov_precision += v_pct_cov_precision
-                running_pct_cov_recall += v_pct_cov_recall
+                #running_pct_cov_precision += v_pct_cov_precision
+                #running_pct_cov_recall += v_pct_cov_recall
 
         avg_vloss = running_vloss / len(val_loader)
         avg_prec = running_thr_precision / len(val_loader)
         avg_rec = running_thr_recall / len(val_loader)
-        avg_pct_cov_prec = running_pct_cov_precision / len(val_loader)
-        avg_pct_cov_recall = running_pct_cov_recall / len(val_loader)
+        #avg_pct_cov_prec = running_pct_cov_precision / len(val_loader)
+        #avg_pct_cov_recall = running_pct_cov_recall / len(val_loader)
 
 
         logging.info('Validation loss score: {}'.format(avg_vloss))
@@ -225,8 +224,8 @@ def train_model(model,
                 'validation loss': avg_vloss,
                 'validation Precision': avg_prec,
                 'validation Recall': avg_rec,
-                'validation Precision pct cov': avg_pct_cov_prec,
-                'validation Recall pct cov': avg_pct_cov_recall,
+                'validation Precision pct cov': 'N/A',
+                'validation Recall pct cov': 'N/A',
                 'step': global_step,
                 'epoch': epoch,
                 **histograms
