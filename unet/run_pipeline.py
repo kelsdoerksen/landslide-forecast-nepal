@@ -230,7 +230,7 @@ if __name__ == '__main__':
             save_checkpoint=True,
             district_masks=district_masks)
 
-    if args.exp_type == 'unet_mini':
+    if 'unet_mini' in args.exp_type:
         # Let's try this out with the mini unet
         print('Running on smaller unet')
         unet = models.UNetMini(n_channels=32, n_classes=1, dropout=float(dropout))
@@ -283,9 +283,15 @@ if __name__ == '__main__':
                 mean = None
                 std = None
 
-        landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
-                                                   save_dir, mean=mean, std=std, max_val=global_max, min_val=global_min,
-                                                   norm=norm)
+        if 'stride' in args.exp_type:
+            landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
+                                                       save_dir, mean=mean, std=std, max_val=global_max, min_val=global_min,
+                                                       norm=norm, stride=2)
+        else:
+            landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
+                                                       save_dir, mean=mean, std=std, max_val=global_max,
+                                                       min_val=global_min,
+                                                       norm=norm)
         # --- Grabbing Testing Data ----
         print('Grabbing testing data...')
         if args.exp_type == 'ukmo-train-ecmwf-test':
