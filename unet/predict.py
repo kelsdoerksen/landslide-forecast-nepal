@@ -44,7 +44,7 @@ def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_
         criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([weight], device=device))  # penalizes false negatives
 
     threshold = 0.2
-    if exp_type == 'unet_mini':
+    if 'unet_mini' in exp_type:
         unetmodel = models.UNetMini(n_channels=32, n_classes=1, dropout=0)
         unetmodel.load_state_dict(torch.load(in_model)['state_dict'])
     else:
