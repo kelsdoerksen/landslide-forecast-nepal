@@ -58,6 +58,11 @@ def train_model(model,
         optimizer = optim.Adam(model.parameters(),
                                lr=learning_rate, weight_decay=weight_decay)
 
+    if opt =='adam_explr':
+        optimizer = optim.Adam(model.parameters(),
+                               lr=learning_rate)
+        scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.1)
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Setting up loss

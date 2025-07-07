@@ -2,7 +2,7 @@
 Script to generate precision, recall,
 confusion matrix metrics to plot further
 """
-
+import ipdb
 import numpy as np
 from PIL import Image
 import argparse
@@ -72,6 +72,7 @@ def pr_generation(y_true, y_pred, threshold, d_masks):
     :param: d_masks: dictionary of
     '''
 
+    f1_list = []
     # Set true positive and false positive count to 0
     true_positives = 0
     false_positives = 0
@@ -126,6 +127,21 @@ def pr_generation(y_true, y_pred, threshold, d_masks):
                         break
 
         false_positives += fp_count
+
+        if threshold == 0.1:
+            # Get F1 for DOY
+            landslides_doy = len(district_pixels)
+            fp_doy = false_positives
+            fn_doy = landslides_doy - total_overlap
+            tp_doy = total_overlap
+            tn_doy = 77 - fp_doy - fn_doy
+            try:
+                p_doy = tp_doy / (tp_doy + fp_doy)
+                r_doy = tp_doy / (tp_doy + fn_doy)
+                f1_doy = 2 * (p_doy * r_doy) / (p_doy + r_doy)
+            except ZeroDivisionError as e:
+                f1_doy = 0
+            f1_list.append(f1_doy)
 
     if total_landslides >= true_positives:
         false_negatives = total_landslides - true_positives
