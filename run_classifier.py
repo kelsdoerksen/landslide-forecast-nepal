@@ -95,7 +95,7 @@ def calc_perm_importance(model, X, y, save_dir):
     # convert to df and sort by importance val
     df = pd.DataFrame(permimp.values(), columns=feature_names, index=['importance', 'stddev'])
     df = df.sort_values(by='importance', axis=1, ascending=False)
-    #df.to_csv('{}/PermI.csv'.format(save_dir))
+    df.to_csv('{}/PermI.csv'.format(save_dir))
     return df
 
 
@@ -246,12 +246,10 @@ def calc_model_performance(model, labels, probs, xtest, results_dir, wandb_id, m
     calc_confusion_matrix(labels, predictions, results_dir)
 
     # Calculate importances
-    '''
     if model_type == 'rf':
         importances = calc_importance(model, xtest, results_dir)
         perm_importances = calc_perm_importance(model, xtest, labels, results_dir)
-        plot_importances(importances, perm_importances, results_dir)
-    '''
+        #plot_importances(importances, perm_importances, results_dir)
 
     # Calc precision recall
     print('--------------------')
@@ -290,23 +288,29 @@ def get_monsoon_season(year):
     return monsoon_dates
 
 
-def load_data(test_year, data_dir, experiment_type, results_dir):
+def load_data(test_year, data_dir, experiment_type, results_dir, tag):
     """
     Function to load in train, test, validation (for param tuning) datasets
     Specify test year, all other years used for training
     """
-    year_split_dict = {
-        '2017': ['2016'],
-        '2018': ['2016', '2017'],
-        '2019': ['2016', '2017', '2018'],
-        '2020': ['2016', '2017', '2018', '2019'],
-        '2021': ['2016', '2017', '2018', '2019', '2020'],
-        '2022': ['2016', '2017', '2018', '2019', '2020', '2021'],
-        '2023': ['2016', '2017', '2018', '2019', '2020', '2021', '2022'],
-        '2024': ['2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023']
-    }
+    if tag != 'temporal-cv':
+        year_split_dict = {
+            '2017': ['2016'],
+            '2018': ['2016', '2017'],
+            '2019': ['2016', '2017', '2018'],
+            '2020': ['2016', '2017', '2018', '2019'],
+            '2021': ['2016', '2017', '2018', '2019', '2020'],
+            '2022': ['2016', '2017', '2018', '2019', '2020', '2021'],
+            '2023': ['2016', '2017', '2018', '2019', '2020', '2021', '2022'],
+            '2024': ['2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023']
+        }
 
-    train_years = year_split_dict[test_year]
+        train_years = year_split_dict[test_year]
+    else:
+        years = ['2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024']
+        years.remove(test_year)
+        train_years = years
+
 
     df_train_list = []
     monsoon_train_list = []
@@ -401,8 +405,8 @@ def load_data(test_year, data_dir, experiment_type, results_dir):
     val_data = pd.concat([X_val, y_val], axis=1)
     val_data = val_data.rename(columns={0: 'label'})
 
-    train_data.to_csv('{}/train_data_2016-2022.csv'.format(results_dir), index=False)
-    val_data.to_csv('{}/val_data_2016-2022.csv'.format(results_dir), index=False)
+    #train_data.to_csv('{}/train_data_2016-2022.csv'.format(results_dir), index=False)
+    #val_data.to_csv('{}/val_data_2016-2022.csv'.format(results_dir), index=False)
 
     if experiment_type == 'no_hindcast':
         X_train = X_train.drop(X_train.filter(regex='tminus').columns, axis=1)
@@ -462,8 +466,9 @@ def run_rf(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wand
             forest = RandomForestClassifier(criterion='gini',
                                             random_state=random.randint(1, 1000),
                                             n_estimators=200,
-                                            n_jobs=-1,
-                                            class_weight='balanced')
+                                            min_samples_split=6,
+                                            max_depth=7,
+                                            n_jobs=-1)
         else:
             with open('{}/best_model.pkl'.format(data_dir), 'rb') as f:
                 forest = pickle.load(f)
@@ -533,6 +538,9 @@ def run_rf(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wand
             pickle.dump(max_dict['best_model'], file)
         forest = max_dict['best_model']
 
+        # Fit the model
+        print('Fitting best model...')
+        forest.fit(X_train, ytrain)
     '''
     scoring = ['accuracy', 'f1']
     cv_scoring = cross_validate(forest, Xtrain, ytrain, scoring=scoring, cv=5)
@@ -620,7 +628,8 @@ def run_gb(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wand
         model_state = 'No tuning'
         if not os.path.exists('{}/best_model.pkl'.format(data_dir)):
             # Create an instance of XGB
-            clf = GradientBoostingClassifier(random_state=random.randint(1, 1000))
+            clf = GradientBoostingClassifier(random_state=random.randint(1, 1000), min_samples_leaf=1,
+                                             min_samples_split=2, n_estimators=300)
         else:
             with open('{}/best_model.pkl'.format(data_dir), 'rb') as f:
                 clf = pickle.load(f)
@@ -773,8 +782,7 @@ def run_xgb(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wan
         model_state = 'No tuning'
         if not os.path.exists('{}/best_model.pkl'.format(data_dir)):
             # Create an instance of XGB
-            clf = XGBClassifier(random_state=random.randint(1, 1000), eta=0.05, max_depth=3, min_child_weight=0,
-                                     max_delta_step=2, subsample=1, tree_method='approx')
+            clf = XGBClassifier(random_state=random.randint(1, 1000), eta=0.2, max_depth=6, min_child_weight=2)
         else:
             with open('{}/best_model.pkl'.format(data_dir), 'rb') as f:
                 clf = pickle.load(f)
@@ -1166,8 +1174,6 @@ if __name__ == '__main__':
     tuning = args.parameter_tuning
     tag = args.tag
 
-    #root_dir = '/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
-
     # Set up wandb experiment for tracking
     experiment = wandb.init(project='landslide-prediction',
                             dir=results_dir,
@@ -1195,15 +1201,11 @@ if __name__ == '__main__':
         ecmwf_data_dir = '{}/LabelledData_{}/ECMWF/ensemble_0'.format(root_dir, hindcast_model)
         run_rf_monsoon_tool_training(ukmo_data_dir, ecmwf_data_dir)
 
-
-
-
-
     else:
         # Load data
         print('Loading data...')
         data_dir = '{}/LabelledData_{}/{}/ensemble_{}'.format(root_dir, hindcast_model, forecast_model, ensemble_num)
-        X_train, y_train, X_test, y_test, X_val, y_val = load_data(test_y, data_dir, exp, results_dir)
+        X_train, y_train, X_test, y_test, X_val, y_val = load_data(test_y, data_dir, exp, results_dir, tag)
 
         if model == 'rf':
             run_rf(data_dir, X_train, y_train, X_test, y_test, X_val, y_val, results, experiment, model, test_y, tuning)

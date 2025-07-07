@@ -41,36 +41,40 @@ def generate_f1_fig(df, year, save_dir):
     date_list = df['date'].unique()
     sorted_dates = sorted(date_list)
 
-    f1_all = f1_score_gen(df, 0.2)
-    if not os.path.exists('{}/F1'.format(save_dir)):
-        os.mkdir('{}/F1'.format(save_dir))
+    year = sorted_dates[0][0:4]
 
-    # Iterate through date list and make nepal array
-    f1_scores = []
-    start_dates = []
-    end_dates = []
-
-    #apr = sorted_dates.index("{}-04-01".format(year))
+    '''
+    # apr = sorted_dates.index("{}-04-01".format(year))
     may = sorted_dates.index("{}-05-01".format(year))
     june = sorted_dates.index("{}-06-01".format(year))
     july = sorted_dates.index("{}-07-01".format(year))
     aug = sorted_dates.index("{}-08-01".format(year))
     sept = sorted_dates.index("{}-09-01".format(year))
+    '''
 
-    for date in sorted_dates:
-        # subset date
-        df_subset = df[df['date'] == date]
-        start = datetime.strptime(date, '%Y-%m-%d') + timedelta(days=1)
-        start_dates.append(start)
-        end = start + timedelta(days=14)
-        end_dates.append(end)
-        f1 = f1_score_gen(df_subset, 0.2)
-        f1_scores.append(f1)
+    thr = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
+    for t in thr:
+        f1_all = f1_score_gen(df, t)
 
-    df = pd.DataFrame()
-    df['f1'] = f1_scores
-    df['doy'] = sorted_dates
-    df.to_csv('{}/f1_timeseries.csv'.format(save_dir))
+        # Iterate through date list and make nepal array
+        f1_scores = []
+        start_dates = []
+        end_dates = []
+
+        for date in sorted_dates:
+            # subset date
+            df_subset = df[df['date'] == date]
+            start = datetime.strptime(date, '%Y-%m-%d') + timedelta(days=1)
+            start_dates.append(start)
+            end = start + timedelta(days=14)
+            end_dates.append(end)
+            f1 = f1_score_gen(df_subset, 0.2)
+            f1_scores.append(f1)
+
+        df_f1 = pd.DataFrame()
+        df_f1['f1'] = f1_scores
+        df_f1['doy'] = sorted_dates
+        df_f1.to_csv('{}/f1_timeseries_{}_thr{}.csv'.format(save_dir, year, t))
 
     '''
 
