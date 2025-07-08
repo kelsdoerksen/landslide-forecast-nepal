@@ -4,7 +4,13 @@ Aggregating RF runs and generating feature importance plots/csvs for Nature Comm
 
 import pandas as pd
 import matplotlib.pyplot as plt
-from setuptools.command.easy_install import is_python_script
+import argparse
+
+def get_args():
+    parser = argparse.ArgumentParser(description='Feature Importance Plotting')
+    parser.add_argument('--year', help='Year of analysis')
+
+    return parser.parse_args()
 
 # This is hard-coded list for nature
 rf_list_2023 = ["restful-yogurt-1841", "fearless-frog-1840", "glorious-hill-1839", "hardy-mountain-1838",
@@ -15,7 +21,6 @@ rf_list_2024 = ["hearty-resonance-1836", "effortless-disco-1835", "charmed-energ
 
 root_dir = '/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep/Results/GPMv07'
 save_dir = '/Users/kelseydoerksen/Desktop/Nature_Comms_Analysis_Plotting/RF_FI'
-
 
 
 def agg_fi(year):
@@ -35,20 +40,51 @@ def agg_fi(year):
     avg_dict = {k: sum((d[k] for d in dict_list)) / len(dict_list) for k in fi_dict.keys()}
     return avg_dict
 
-# Run for 2023
-dict_avg_2023 = agg_fi(2024)
-names = dict_avg_2023.keys()
-colors = ['slateblue' if 'UKMO' in feat else 'mediumseagreen' if 'dem' in feat else 'mediumseagreen' if 'slope' in feat else 'mediumseagreen' if 'aspect' in feat else 'mediumseagreen' if 'lc' in feat else 'deepskyblue' for feat in names]
+if __name__ == '__main__':
+    args = get_args()
+    year = args.year
 
-# Bar Plotting
-fig, ax = plt.subplots(figsize=(18, 10))
-ax.bar(dict_avg_2023.keys(), dict_avg_2023.values(), align='edge', width=0.5, color=colors)
-plt.xticks(rotation=90)
-plt.ylabel('Feature Importance Score')
-plt.ylim(0,0.08)
-plt.show()
+    # Run for year
+    dict_avg = agg_fi(int(year))
+    names = dict_avg.keys()
+    colors = ['slateblue' if 'UKMO' in feat else 'mediumseagreen' if 'dem' in feat else 'mediumseagreen' if 'slope' in feat else 'mediumseagreen' if 'aspect' in feat else 'mediumseagreen' if 'lc' in feat else 'deepskyblue' for feat in names]
 
-# Pie Chart Plotting
+    # Bar Plotting
+    fig, ax = plt.subplots(figsize=(18, 10))
+    ax.bar(dict_avg.keys(), dict_avg.values(), align='edge', width=0.5, color=colors)
+    plt.xticks(rotation=90)
+    plt.ylabel('Feature Importance Score')
+    plt.ylim(0,0.08)
+    #plt.show()
+    plt.close()
+
+    # Pie Chart Plotting
+    forecast_list = [v for k, v in dict_avg.items() if 'UKMO' in k]
+    slope_list = [v for k, v in dict_avg.items() if 'slope' in k]
+    aspect_list = [v for k, v in dict_avg.items() if 'aspect' in k]
+    dem_list = [v for k, v in dict_avg.items() if 'dem' in k]
+    lc_list = [v for k, v in dict_avg.items() if 'lc' in k]
+
+    forecast_val = sum(forecast_list)
+    geo_val = sum(slope_list) + sum(aspect_list) + sum(dem_list) + sum(lc_list)
+    obs_val = sum(dict_avg.values()) - forecast_val - geo_val
+
+    vals = [forecast_val, obs_val, geo_val]
+    labels=['Precipitation Forecast', 'Precipitation Observation', 'Geomorphic']
+    colors=['slateblue', 'deepskyblue', 'mediumseagreen']
+    fig, ax = plt.subplots()
+    ax.pie(vals, labels=labels, colors=colors, autopct='%1.1f%%', textprops={'color':"w"})
+    plt.show()
+
+
+
+
+
+
+
+
+
+
 
 
 
