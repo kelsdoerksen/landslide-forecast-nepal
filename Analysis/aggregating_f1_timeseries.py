@@ -4,7 +4,6 @@ Script to read in and aggregate f1 csvs so I don't have to do things by hand
 
 import pandas as pd
 import matplotlib.pyplot as plt
-import os
 
 # This is hard-coded list for nature
 rf_list_2023 = ["laced-yogurt-1740", "worldly-monkey-1739", "easy-planet-1738", "glad-pyramid-1737",
