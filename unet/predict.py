@@ -1,7 +1,6 @@
 """
 Script to predict on test set after training model
 """
-
 from dataset import *
 import numpy as np
 from model import models, unet_modules
@@ -13,13 +12,24 @@ from operator import add
 from utils import *
 from metrics import *
 from losses import *
+from torchvision.transforms import v2
+from augmentation import drop_channels
 
 
-def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_masks, exp_type, test_loss):
+def predict(in_model,
+            test_dataset,
+            wandb_experiment,
+            out_dir,
+            device,
+            district_masks,
+            exp_type,
+            test_loss,
+            channel_drop=0):
     """
-    Predict
+    Prediction pipeline
     """
 
+    # Setup device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     if test_loss == 'bce':
@@ -60,6 +70,9 @@ def predict(in_model, test_dataset, wandb_experiment, out_dir, device, district_
 
     # Data loader for test set
     test_loader = DataLoader(test_dataset, batch_size=10, shuffle=False)
+
+    if int(channel_drop) > 0:
+        test_loader = drop_channels(test_loader, channel_drop, batch_size=10)
 
     loss_criterion = nn.BCEWithLogitsLoss()
     bce_score = 0

@@ -73,6 +73,10 @@ def pr_generation(y_true, y_pred, threshold, d_masks):
     '''
 
     f1_list = []
+    p_list = []
+    r_list = []
+    fpr_list = []
+    fnr_list = []
     # Set true positive and false positive count to 0
     true_positives = 0
     false_positives = 0
@@ -82,9 +86,10 @@ def pr_generation(y_true, y_pred, threshold, d_masks):
     y_pred = y_pred[0,:,:,:,:]
     y_true = y_true[0,:,:,:,:]
 
-    y_pred = (y_pred >= threshold_value)*1
+    y_pred = (y_pred >= threshold)*1
 
     total_landslides = 0
+    no_pred_count = 0
     for i in range(len(y_pred)):
         non_landslide_districts = d_masks.copy()  # copy of landslides dict to manipulate
         dummy_pred = np.copy(y_pred[i, 0, :, ])  # copy of y_pred to manipulate
@@ -131,17 +136,41 @@ def pr_generation(y_true, y_pred, threshold, d_masks):
         if threshold == 0.1:
             # Get F1 for DOY
             landslides_doy = len(district_pixels)
-            fp_doy = false_positives
+            fp_doy = fp_count
             fn_doy = landslides_doy - total_overlap
             tp_doy = total_overlap
             tn_doy = 77 - fp_doy - fn_doy
-            try:
-                p_doy = tp_doy / (tp_doy + fp_doy)
-                r_doy = tp_doy / (tp_doy + fn_doy)
-                f1_doy = 2 * (p_doy * r_doy) / (p_doy + r_doy)
-            except ZeroDivisionError as e:
-                f1_doy = 0
+            if landslides_doy == 0:
+                p_doy = np.nan
+                r_doy = np.nan
+                f1_doy = np.nan
+            else:
+                try:
+                    p_doy = tp_doy / (tp_doy + fp_doy)
+                    r_doy = tp_doy / (tp_doy + fn_doy)
+                    f1_doy = 2 * (p_doy * r_doy) / (p_doy + r_doy)
+                except ZeroDivisionError as e:
+                    f1_doy = 0
+                try:
+                    fpr = fp_doy / (fp_doy + tn_doy)
+                except ZeroDivisionError as e:
+                    fpr = 0
+                try:
+                    fnr = fn_doy / (fn_doy + tp_doy)
+                except ZeroDivisionError as e:
+                    fnr = 0
             f1_list.append(f1_doy)
+            p_list.append(p_doy)
+            r_list.append(r_doy)
+            fpr_list.append(fpr)
+            fnr_list.append(fnr)
+            if tp_doy == 0 and fp_doy == 0:
+                #print('No landslides predicted')
+                no_pred_count = no_pred_count + 1
+
+    if threshold == 0.1:
+        import ipdb
+        ipdb.set_trace()
 
     if total_landslides >= true_positives:
         false_negatives = total_landslides - true_positives
