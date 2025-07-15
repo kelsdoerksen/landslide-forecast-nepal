@@ -25,7 +25,7 @@ def predict(in_model,
             exp_type,
             test_loss,
             channel_drop=0,
-            channel_drop_iter=0):
+            channel_drop_iter=1):
     """
     Prediction pipeline
     """

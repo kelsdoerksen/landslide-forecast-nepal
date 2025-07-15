@@ -36,7 +36,7 @@ def train_model(model,
                 save_checkpoint: bool=True,
                 district_masks = None,
                 channel_drop=0,
-                channel_drop_iter=0
+                channel_drop_iter=1
                 ):
 
 
