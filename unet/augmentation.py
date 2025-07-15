@@ -5,11 +5,13 @@ Data Augmentations
 import random
 from torch.utils.data import DataLoader, TensorDataset
 import torch
+import wandb
 
-def drop_channels(data_loader, num_channels, batch_size):
+def drop_channels(data_loader, num_channels, batch_size, wandb_experiment, split):
     """
     Function to drop n number of channels to generate new samples
     and run this num_iters times
+    :split: train, test, or val
     """
 
     # Load all data in one batch
@@ -21,6 +23,10 @@ def drop_channels(data_loader, num_channels, batch_size):
     for i in range(num_channels):
         n = random.randint(0,31)
         random_list.append(n)
+
+    wandb_experiment.log({
+        '{} split channels dropped'.format(split): random_list
+    })
 
     aug_data = original_data.clone()
     for c in random_list:
