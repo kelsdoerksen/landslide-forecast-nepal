@@ -16,8 +16,10 @@ import wandb
 from torch import optim
 from pathlib import Path
 from predict import *
+from augmentation import drop_channels
 from utils import *
 import random
+from torchvision.transforms import v2
 
 def train_model(model,
                 device,
@@ -32,8 +34,10 @@ def train_model(model,
                 val_percent,
                 weight_decay: float = 0.00001,
                 save_checkpoint: bool=True,
-                district_masks = None
+                district_masks = None,
+                channel_drop=0
                 ):
+
 
     # --- Split dataset into training and validation
     n_val = int(len(dataset) * val_percent)
@@ -46,6 +50,10 @@ def train_model(model,
     # and returns them for consumption by your training loop.
     train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=True)
+
+    if int(channel_drop) > 0:
+        train_loader = drop_channels(train_loader, channel_drop, batch_size=32)
+        val_loader = drop_channels(val_loader, channel_drop, batch_size=32)
 
     threshold = 0.1
 
@@ -120,6 +128,7 @@ def train_model(model,
         for i, data in enumerate(train_loader):
             inputs, labels = data
             inputs, labels = inputs.to(device), labels.to(device)
+
             # Zero gradients for every batch
             optimizer.zero_grad()  # if set_to_none=True, sets gradients of all optimized torch.Tensors to None, will have a lower memory footprint, can modestly improve performance
 

@@ -18,6 +18,7 @@ import logging
 from osgeo import gdal
 import random
 from torch.utils.data import ConcatDataset
+from distutils.util import strtobool
 
 
 def get_args():
@@ -46,6 +47,10 @@ def get_args():
     parser.add_argument('--exp_type', help='experiment type; in-monsoon and out-monsoon',
                         required=True)
     parser.add_argument('--norm_type', help='Data normalization technique, must be one of zscore or minmax',
+                        required=True),
+    parser.add_argument('--channel_drop', help='Specify Channel Drop count for data augmentation',
+                        required=True),
+    parser.add_argument('--channel_drop_iter', help='Specify the iterations of channel dropping to do',
                         required=True)
 
     return parser.parse_args()
@@ -103,6 +108,8 @@ if __name__ == '__main__':
     tag = args.tags
     norm = args.norm_type
     dropout = args.dropout
+    channel_drop = int(args.channel_drop)
+    channel_drop_iter = int(args.channel_drop_iter)
 
     # Initializing logging in wandb for experiment
     experiment = wandb.init(project='landslide-prediction', resume='allow', anonymous='must',
@@ -171,7 +178,8 @@ if __name__ == '__main__':
             training_loss=args.loss,
             opt=args.optimizer,
             save_checkpoint=True,
-            district_masks=district_masks)
+            district_masks=district_masks,
+            channel_drop=channel_drop)
 
     if args.exp_type == 'monsoon_test':
         unet = models.UNet(n_channels=32, n_classes=1, dropout=float(dropout))
@@ -189,7 +197,7 @@ if __name__ == '__main__':
 
         print('Predicting on 2024 Monsoon season...')
         predict(unet, landslide_test_dataset, experiment, save_dir, device=device,
-                district_masks=district_masks, exp_type = args.exp_type)
+                district_masks=district_masks, exp_type = args.exp_type, channel_drop=channel_drop)
 
     if args.exp_type == 'monsoon-tool':
         print('Training model on UKMO-0 and ECMWF for the monsoon tool...')
@@ -228,7 +236,9 @@ if __name__ == '__main__':
             training_loss=args.loss,
             opt=args.optimizer,
             save_checkpoint=True,
-            district_masks=district_masks)
+            district_masks=district_masks,
+            channel_drop=channel_drop
+        )
 
     if 'unet_mini' in args.exp_type:
         # Let's try this out with the mini unet
@@ -301,6 +311,7 @@ if __name__ == '__main__':
         landslide_test_dataset = LandslideDataset(sample_dir, label_dir, 'test', args.exp_type, args.test_year,
                                                   save_dir, mean=mean, std=std, max_val=global_max, min_val=global_min,
                                                   norm=norm)
+
         print('Training model...')
         trained_model = train_model(
             model=unet,
@@ -315,11 +326,13 @@ if __name__ == '__main__':
             training_loss=args.loss,
             opt=args.optimizer,
             save_checkpoint=True,
-            district_masks=district_masks)
+            district_masks=district_masks,
+            channel_drop=channel_drop
+        )
 
         print('Running Test set...')
         predict(trained_model, landslide_test_dataset, experiment, save_dir, device=device,
-                district_masks=district_masks, exp_type=args.exp_type, test_loss=args.loss)
+                district_masks=district_masks, exp_type=args.exp_type, test_loss=args.loss, channel_drop=channel_drop)
 
     else:
         unet = models.UNet(n_channels=32, n_classes=1, dropout=float(dropout))
@@ -407,8 +420,11 @@ if __name__ == '__main__':
             training_loss=args.loss,
             opt = args.optimizer,
             save_checkpoint=True,
-            district_masks = district_masks)
+            district_masks = district_masks,
+            channel_drop=channel_drop
+        )
 
         print('Running Test set...')
         predict(trained_model, landslide_test_dataset, experiment, save_dir, device=device,
-                district_masks = district_masks, exp_type = args.exp_type, test_loss=args.loss)
+                district_masks = district_masks, exp_type = args.exp_type, test_loss=args.loss,
+                channel_drop=channel_drop)
