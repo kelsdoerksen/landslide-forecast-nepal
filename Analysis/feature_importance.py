@@ -69,9 +69,9 @@ if __name__ == '__main__':
 
     # Run for year
     dict_avg = agg_fi(int(year))
-    fi_avg_df = pd.DataFrame(columns=dict_avg.keys())
-    fi_avg_df.loc[0] = dict_avg.values()
-    fi_avg_df.to_csv('{}/FI_avg_scores_{}.csv'.format(save_dir, year))
+    fi_avg_df = pd.DataFrame()
+    fi_avg_df['Feature'] = dict_avg.keys()
+    fi_avg_df['FI'] = dict_avg.values()
     names = dict_avg.keys()
     colors = ['slateblue' if 'UKMO' in feat else 'mediumseagreen' if 'dem' in feat else 'mediumseagreen' if 'slope' in feat else 'mediumseagreen' if 'aspect' in feat else 'mediumseagreen' if 'lc' in feat else 'deepskyblue' for feat in names]
 
@@ -107,22 +107,23 @@ if __name__ == '__main__':
     # Permutation Importance Plotting
     # Run for year
     dict_avg, std_avg = agg_pi(int(year))
-    pi_avg_df = pd.DataFrame(columns=dict_avg.keys())
-    pi_avg_df.loc[0] = dict_avg.values()
-    pi_avg_df.to_csv('{}/PI_avg_scores_{}.csv'.format(save_dir, year))
     names = dict_avg.keys()
 
-    df = pd.DataFrame()
-    df['feature'] = dict_avg.keys()
-    df['PI'] = dict_avg.values()
-    df['std_err'] = std_avg.values()
-    df = df.sort_values(by='PI', ascending=False)
+    pi_avg_df = pd.DataFrame()
+    pi_avg_df['Feature'] = dict_avg.keys()
+    pi_avg_df['PI'] = dict_avg.values()
+    pi_avg_df['std_err'] = std_avg.values()
+    pi_avg_df = pi_avg_df.sort_values(by='PI', ascending=False)
 
     # Bar Plotting
     fig, ax = plt.subplots(figsize=(18, 10))
-    ax.bar(df['feature'], df['PI'], align='edge', width=0.5, color=colors, yerr=df['std_err'])
+    ax.bar(pi_avg_df['Feature'], pi_avg_df['PI'], align='edge', width=0.5, color=colors, yerr=pi_avg_df['std_err'])
     plt.xticks(rotation=90)
     plt.ylabel('Permutation Importance Score')
-    #plt.show()
+    #plt.show()0-
     plt.close()
+
+    # Join dfs
+    df_combined = pd.merge(fi_avg_df, pi_avg_df, on='Feature')
+    df_combined.to_csv('{}/FI_PI_{}.csv'.format(save_dir, year))
 
