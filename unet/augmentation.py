@@ -19,7 +19,7 @@ def drop_channels(data_loader, num_channels, batch_size):
     # Generate list of channels to drop
     random_list = []
     for i in range(num_channels):
-        n = random.randint(0,32)
+        n = random.randint(0,31)
         random_list.append(n)
 
     aug_data = original_data.clone()
