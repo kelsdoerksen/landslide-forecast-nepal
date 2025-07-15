@@ -179,7 +179,8 @@ if __name__ == '__main__':
             opt=args.optimizer,
             save_checkpoint=True,
             district_masks=district_masks,
-            channel_drop=channel_drop)
+            channel_drop=channel_drop,
+            channel_drop_iter=channel_drop_iter)
 
     if args.exp_type == 'monsoon_test':
         unet = models.UNet(n_channels=32, n_classes=1, dropout=float(dropout))
@@ -197,7 +198,8 @@ if __name__ == '__main__':
 
         print('Predicting on 2024 Monsoon season...')
         predict(unet, landslide_test_dataset, experiment, save_dir, device=device,
-                district_masks=district_masks, exp_type = args.exp_type, channel_drop=channel_drop)
+                district_masks=district_masks, exp_type = args.exp_type, channel_drop=channel_drop,
+                channel_drop_iter=channel_drop_iter)
 
     if args.exp_type == 'monsoon-tool':
         print('Training model on UKMO-0 and ECMWF for the monsoon tool...')
@@ -237,7 +239,8 @@ if __name__ == '__main__':
             opt=args.optimizer,
             save_checkpoint=True,
             district_masks=district_masks,
-            channel_drop=channel_drop
+            channel_drop=channel_drop,
+            channel_drop_iter=channel_drop_iter
         )
 
     if 'unet_mini' in args.exp_type:
@@ -327,12 +330,14 @@ if __name__ == '__main__':
             opt=args.optimizer,
             save_checkpoint=True,
             district_masks=district_masks,
-            channel_drop=channel_drop
+            channel_drop=channel_drop,
+            channel_drop_iter=channel_drop_iter
         )
 
         print('Running Test set...')
         predict(trained_model, landslide_test_dataset, experiment, save_dir, device=device,
-                district_masks=district_masks, exp_type=args.exp_type, test_loss=args.loss, channel_drop=channel_drop)
+                district_masks=district_masks, exp_type=args.exp_type, test_loss=args.loss, channel_drop=channel_drop,
+                channel_drop_iter=channel_drop_iter)
 
     else:
         unet = models.UNet(n_channels=32, n_classes=1, dropout=float(dropout))
@@ -421,10 +426,11 @@ if __name__ == '__main__':
             opt = args.optimizer,
             save_checkpoint=True,
             district_masks = district_masks,
-            channel_drop=channel_drop
+            channel_drop=channel_drop,
+            channel_drop_iter=channel_drop_iter
         )
 
         print('Running Test set...')
         predict(trained_model, landslide_test_dataset, experiment, save_dir, device=device,
                 district_masks = district_masks, exp_type = args.exp_type, test_loss=args.loss,
-                channel_drop=channel_drop)
+                channel_drop=channel_drop, channel_drop_iter=channel_drop_iter)

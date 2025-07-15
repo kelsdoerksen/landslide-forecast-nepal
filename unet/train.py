@@ -35,7 +35,8 @@ def train_model(model,
                 weight_decay: float = 0.00001,
                 save_checkpoint: bool=True,
                 district_masks = None,
-                channel_drop=0
+                channel_drop=0,
+                channel_drop_iter=0
                 ):
 
 
@@ -52,8 +53,9 @@ def train_model(model,
     val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=True)
 
     if int(channel_drop) > 0:
-        train_loader = drop_channels(train_loader, channel_drop, batch_size=32)
-        val_loader = drop_channels(val_loader, channel_drop, batch_size=32)
+        for i in range(channel_drop_iter):
+            train_loader = drop_channels(train_loader, channel_drop, batch_size=32)
+            val_loader = drop_channels(val_loader, channel_drop, batch_size=32)
 
     threshold = 0.1
 
