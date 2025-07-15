@@ -54,8 +54,10 @@ def train_model(model,
 
     if int(channel_drop) > 0:
         for i in range(channel_drop_iter):
-            train_loader = drop_channels(train_loader, channel_drop, batch_size=32)
-            val_loader = drop_channels(val_loader, channel_drop, batch_size=32)
+            train_loader = drop_channels(train_loader, channel_drop, batch_size=32, split='train',
+                                         wandb_experiment=experiment)
+            val_loader = drop_channels(val_loader, channel_drop, batch_size=32, split='validation',
+                                       wandb_experiment=experiment)
 
     threshold = 0.1
 
