@@ -16,7 +16,7 @@ import wandb
 from torch import optim
 from pathlib import Path
 from predict import *
-from augmentation import drop_channels
+from augmentation import *
 from utils import *
 import random
 from torchvision.transforms import v2
@@ -36,9 +36,12 @@ def train_model(model,
                 save_checkpoint: bool=True,
                 district_masks = None,
                 channel_drop=0,
-                channel_drop_iter=1
+                channel_drop_iter=1,
+                cutmix_aug=False,
+                cutmix_alpha=1.0
                 ):
 
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # --- Split dataset into training and validation
     n_val = int(len(dataset) * val_percent)
@@ -58,6 +61,10 @@ def train_model(model,
                                          wandb_experiment=experiment)
             val_loader = drop_channels(val_loader, channel_drop, batch_size=32, split='validation',
                                        wandb_experiment=experiment)
+    if cutmix_aug:
+        train_loader = cutmix(train_loader, alpha=cutmix_alpha, batch_size=32)
+        val_loader = cutmix(val_loader, alpha=cutmix_alpha, batch_size=32)
+        experiment.log({'CutMix alpha': cutmix_alpha})
 
     threshold = 0.1
 
@@ -74,8 +81,6 @@ def train_model(model,
         optimizer = optim.Adam(model.parameters(),
                                lr=learning_rate)
         scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.1)
-
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Setting up loss
     if training_loss == 'bce':

@@ -18,7 +18,6 @@ import logging
 from osgeo import gdal
 import random
 from torch.utils.data import ConcatDataset
-from distutils.util import strtobool
 
 
 def get_args():
@@ -51,6 +50,10 @@ def get_args():
     parser.add_argument('--channel_drop', help='Specify Channel Drop count for data augmentation',
                         required=True),
     parser.add_argument('--channel_drop_iter', help='Specify the iterations of channel dropping to do',
+                        required=True)
+    parser.add_argument('--cutmix', help='Specify if implementing cutmix during training',
+                        required=True, action=argparse.BooleanOptionalAction)
+    parser.add_argument('--cutmix_alpha', type=float, help='Specify cutmix alpha value during training',
                         required=True)
 
     return parser.parse_args()
@@ -110,6 +113,8 @@ if __name__ == '__main__':
     dropout = args.dropout
     channel_drop = int(args.channel_drop)
     channel_drop_iter = int(args.channel_drop_iter)
+    cutmix_aug = args.cutmix
+    cutmix_alpha = args.cutmix_alpha
 
     # Initializing logging in wandb for experiment
     experiment = wandb.init(project='landslide-prediction', resume='allow', anonymous='must',
@@ -180,7 +185,10 @@ if __name__ == '__main__':
             save_checkpoint=True,
             district_masks=district_masks,
             channel_drop=channel_drop,
-            channel_drop_iter=channel_drop_iter)
+            channel_drop_iter=channel_drop_iter,
+            cutmix_aug=cutmix_aug,
+            cutmix_alpha=cutmix_alpha
+        )
 
     if args.exp_type == 'monsoon_test':
         unet = models.UNet(n_channels=32, n_classes=1, dropout=float(dropout))
@@ -240,7 +248,9 @@ if __name__ == '__main__':
             save_checkpoint=True,
             district_masks=district_masks,
             channel_drop=channel_drop,
-            channel_drop_iter=channel_drop_iter
+            channel_drop_iter=channel_drop_iter,
+            cutmix_aug=cutmix_aug,
+            cutmix_alpha=cutmix_alpha
         )
 
     if 'unet_mini' in args.exp_type:
@@ -331,7 +341,9 @@ if __name__ == '__main__':
             save_checkpoint=True,
             district_masks=district_masks,
             channel_drop=channel_drop,
-            channel_drop_iter=channel_drop_iter
+            channel_drop_iter=channel_drop_iter,
+            cutmix_aug=cutmix_aug,
+            cutmix_alpha=cutmix_alpha
         )
 
         print('Running Test set...')
@@ -427,7 +439,9 @@ if __name__ == '__main__':
             save_checkpoint=True,
             district_masks = district_masks,
             channel_drop=channel_drop,
-            channel_drop_iter=channel_drop_iter
+            channel_drop_iter=channel_drop_iter,
+            cutmix_aug=cutmix_aug,
+            cutmix_alpha=cutmix_alpha
         )
 
         print('Running Test set...')
