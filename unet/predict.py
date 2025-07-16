@@ -72,11 +72,6 @@ def predict(in_model,
     # Data loader for test set
     test_loader = DataLoader(test_dataset, batch_size=10, shuffle=False)
 
-    if int(channel_drop) > 0:
-        for i in range(channel_drop_iter):
-            test_loader = drop_channels(test_loader, channel_drop, batch_size=10, split='test',
-                                       wandb_experiment=wandb_experiment)
-
     loss_criterion = nn.BCEWithLogitsLoss()
     bce_score = 0
     precision = 0
