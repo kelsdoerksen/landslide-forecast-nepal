@@ -151,6 +151,9 @@ def pr_generation(y_true, y_pred, threshold, d_masks):
                     f1_doy = 2 * (p_doy * r_doy) / (p_doy + r_doy)
                 except ZeroDivisionError as e:
                     f1_doy = 0
+                    p_doy = np.nan
+                    r_doy = np.nan
+                    f1_doy = np.nan
                 try:
                     fpr = fp_doy / (fp_doy + tn_doy)
                 except ZeroDivisionError as e:
@@ -169,8 +172,11 @@ def pr_generation(y_true, y_pred, threshold, d_masks):
                 no_pred_count = no_pred_count + 1
 
     if threshold == 0.1:
-        import ipdb
-        ipdb.set_trace()
+        plt.plot(f1_list)
+        plt.title('F1 Score timeseries for threshold 0.1')
+        plt.xlabel('Days after April 1 2023')
+        plt.ylabel('F1-Score')
+        plt.show()
 
     if total_landslides >= true_positives:
         false_negatives = total_landslides - true_positives

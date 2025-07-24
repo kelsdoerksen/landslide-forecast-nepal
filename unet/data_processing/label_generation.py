@@ -8,15 +8,24 @@ from datetime import datetime, timedelta, date
 import pandas as pd
 
 # Setting data directories to query from
-#root_dir = '/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
 root_dir = '/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep'
 
 # Loading landslide records and Nepal District Array
 #landslide_records = pd.read_csv('{}/Wards_with_Bipad_events_one_to_many_landslides_only.csv'.format(root_dir))
 #landslide_records = pd.read_csv('{}/incidents_April_October_2024.csv'.format(root_dir))
 #landslide_records = pd.read_csv('{}/incidents_2024_Downloaded_14-04-2025.csv'.format(root_dir))
-landslide_records = pd.read_csv('{}/Bipad_Incidents_2023-2024_May82025Download.csv'.format(root_dir))
+#landslide_records = pd.read_csv('{}/Bipad_Incidents_2023-2024_May82025Download.csv'.format(root_dir))
+landslide_records = pd.read_csv('{}/bipad_records_2016-2024_july172025download.csv'.format(root_dir))
 nepal_im = Image.open('{}/District_Labels.tif'.format(root_dir))
+
+# Replace for naming scheme
+landslide_records['District'].replace({'Chitwan': 'Chitawan',
+                                                           'Rukum West': 'Rukum_W',
+                                                           'Rukum East': 'Rukum_E',
+                                                           'Kabhrepalanchok': 'Kavrepalanchok',
+                                                           'Nawalparasi East': 'Nawalparasi_E',
+                                                           'Nawalparasi West': 'Nawalparasi_W',
+                                                           'Makwanpur': 'Makawanpur'})
 
 
 district_dict = {
@@ -56,11 +65,8 @@ def generate_daily_labels(doy, landslide_df):
         nepal_arr = np.array(nepal_im)
         increment = i + 1
         delta = dt_formatted.date() + timedelta(days=increment)
-        #lookahead = delta.strftime("%d/%m/%Y")
-        lookahead = delta.strftime("%m/%d/%y")
-        # Removing 0 at the beginning as this is not in the 2024 monsoon records
-        if lookahead[0] == '0':
-            lookahead = lookahead[1:]
+        lookahead = delta.strftime("%Y-%m-%d")
+        print('Finding if landslide occurred on {}'.format(lookahead))
         landslide_subset = landslide_df[landslide_df['Incident on'] == lookahead]
         if len(landslide_subset) == 0:
             landslide_list.append(np.zeros((60, 100)))
@@ -79,7 +85,7 @@ def generate_daily_labels(doy, landslide_df):
     return combined_label
 
 
-date_list = daterange(date(2023,10,17), date(2024,12,31))
+date_list = daterange(date(2016,1,1), date(2024,12,31))
 for d in date_list:
     print('Generating label for doy: {}'.format(d))
     generate_daily_labels(d, landslide_records)
