@@ -8,6 +8,7 @@ from PIL import Image
 import copy
 import argparse
 from datetime import datetime, timedelta
+import geopandas as gpd
 
 
 def get_args():
@@ -81,6 +82,12 @@ def generate_tp_rate_map(df, nepal_mask, save_dir, decision_threshold=0.2):
     """
     Generate map of TP rate over monsoon season
     """
+
+    nepal_mask['DISTRICT'] = nepal_mask['DISTRICT'].replace('Rukum East', 'Rukum_E')
+    nepal_mask['DISTRICT'] = nepal_mask['DISTRICT'].replace('Parasi', 'Nawalparasi_W')
+    nepal_mask['DISTRICT'] = nepal_mask['DISTRICT'].replace('Rukum West', 'Rukum_W')
+    nepal_mask['DISTRICT'] = nepal_mask['DISTRICT'].replace('Nawalpur', 'Nawalparasi_E')
+
     district_list = df['district'].unique()
     nepal_arr = np.array(nepal_mask)
     FP_arr = copy.deepcopy(nepal_arr)
@@ -88,9 +95,18 @@ def generate_tp_rate_map(df, nepal_mask, save_dir, decision_threshold=0.2):
     FP_arr[FP_arr ==0] = np.nan
 
     tp_df = pd.DataFrame()
-    tp_dist = []
-    tp_count = []
+
+    cm_dict = {}
+    districts = []
+    tp = []
+    fp = []
+    tn = []
+    fn = []
     landslide_count = []
+    tp_rate = []
+    fp_rate = []
+    fn_rate = []
+    tn_rate = []
 
     for district in district_list:
         print('running for district: {}'.format(district))
@@ -99,56 +115,126 @@ def generate_tp_rate_map(df, nepal_mask, save_dir, decision_threshold=0.2):
         labels = df_dist['groundtruth']
         preds = df_dist['model soft predictions']
         threshold_preds = (preds >= decision_threshold) * 1
-        CM = confusion_matrix(labels, threshold_preds)
-        TN = CM[0][0]
         try:
-            FN = CM[1][0]
-        except IndexError as e:
-            FN = 0
-        try:
-            TP = CM[1][1]
-        except IndexError as e:
-            TP = 0
-        try:
-            FP = CM[0][1]
-        except IndexError as e:
-            FP = 0
+            CM = confusion_matrix(labels, threshold_preds)
+        except UserWarning as e:
+            continue
+
+        if len(CM) == 1:
+            # There was only one label aka there were no landslides -> would still be good to check if we got FP, TN
+            TP, FN, TP_Rate, FP_Rate = 0, 0, 0, 0
+            FP = sum(threshold_preds)
+            TN = len(threshold_preds) - FP
+        else:
+            TN = CM[0][0]
+            try:
+                FN = CM[1][0]
+            except IndexError as e:
+                FN = 0
+            try:
+                TP = CM[1][1]
+            except IndexError as e:
+                TP = 0
+            try:
+                FP = CM[0][1]
+            except IndexError as e:
+                FP = 0
 
         FP_Rate = FP / (FP + TN)
+        TN_Rate = TN / (TN + FP)
         if (TP+FN) == 0:
             TP_Rate = 0
+            FN_Rate = 0
         else:
             TP_Rate = TP / (TP + FN)
+            FN_Rate = FN / (FN + TP)
 
-        tp_dist.append(district)
-        tp_count.append(TP)
+        tp.append(TP)
+        fp.append(FP)
+        fn.append(FN)
+        tn.append(TN)
+        tp_rate.append(TP_Rate)
+        fp_rate.append(FP_Rate)
+        tn_rate.append(TN_Rate)
+        fn_rate.append(FN_Rate)
+        districts.append(district)
         landslide_count.append(sum(labels))
 
-        district_val = district_dict[district]
-        nepal_arr[nepal_arr == district_val] = TP_Rate
-        FP_arr[FP_arr == district_val] = FP_Rate
+    cm_dict['DISTRICT'] = districts
+    cm_dict['tp'] = tp
+    cm_dict['fp'] = fp
+    cm_dict['fn'] = fn
+    cm_dict['tn'] = tn
+    cm_dict['fp_rate'] = fp_rate
+    cm_dict['tp_rate'] = tp_rate
+    cm_dict['fn_rate'] = fn_rate
+    cm_dict['tn_rate'] = tn_rate
+    cm_dict['Landslide Count'] = landslide_count
 
-    tp_df['District'] = tp_dist
-    tp_df['TP Count over Monsoon'] = tp_count
-    tp_df['Landslide Count over Monsoon Moving Window'] = landslide_count
+    df_metrics = pd.DataFrame.from_dict(cm_dict)
+    combined = nepal_mask.merge(df_metrics, on='DISTRICT')
+    combined['f1'] = 2 * combined['tp'] / (2 * combined['tp'] +
+                                                            combined['fp'] +
+                                                            combined['fn'])
+    combined = combined.fillna(0)
 
-    tp_df.to_csv('{}/tp_count_df.csv'.format(save_dir))
-    plt.imshow(nepal_arr, cmap='gist_heat')
-    cbar = plt.colorbar()
-    plt.clim(0, 1)
-    cbar.set_label('ML Classifier True Positive Rate', labelpad=15)
-    plt.tight_layout()
-    plt.savefig('{}/tp_rate_dist.png'.format(save_dir))
+    # Get max val
+    max_vals = {'fp': max(combined['fp']),
+                'fn': max(combined['fn']),
+                'tp': max(combined['tp']),
+                'tn': max(combined['tn'])}
+    fig, ax = plt.subplots(2, 2)
+    tp = combined.plot(ax=ax[0, 0], column='tp', edgecolor='black', cmap='Reds', vmin=0,
+                       vmax=max_vals['tp'])
+    ax[0, 0].set_title('True Positives')
+    fig.colorbar(tp.collections[0], ax=ax[0, 0], label='Count')
+
+    fp = combined.plot(ax=ax[0, 1], column='fp', edgecolor='black', cmap='Blues', vmin=0,
+                       vmax=max_vals['fp'])
+    ax[0, 1].set_title('False Positives')
+    fig.colorbar(fp.collections[0], ax=ax[0, 1], label='Count')
+
+    fn = combined.plot(ax=ax[1, 0], column='fn', edgecolor='black', cmap='Greens', vmin=0,
+                       vmax=max_vals['fn'])
+    ax[1, 0].set_title('False Negatives')
+    fig.colorbar(fn.collections[0], ax=ax[1, 0], label='Count')
+
+    tn = combined.plot(ax=ax[1, 1], column='tn', edgecolor='black', cmap='Oranges', vmin=0,
+                       vmax=max_vals['tn'])
+    ax[1, 1].set_title('True Negatives')
+    fig.colorbar(tn.collections[0], ax=ax[1, 1], label='Count')
+    plt.show()
     plt.close()
 
-    # Plot FP Rate
-    plt.imshow(FP_arr, cmap='gist_heat')
-    cbar = plt.colorbar()
-    plt.clim(0,1)
-    cbar.set_label('ML Classifier False Positive Rate', labelpad=15)
-    plt.tight_layout()
-    plt.savefig('{}/fp_rate_dist.png'.format(save_dir))
+    # Plotting Rates
+    fig, ax = plt.subplots(2, 2)
+    tp = combined.plot(ax=ax[0, 0], column='tp_rate', edgecolor='black', linewidth=1, cmap='Reds', vmin=0, vmax=1)
+    ax[0, 0].set_title('True Positive Rate')
+    fig.colorbar(tp.collections[0], ax=ax[0, 0], label='%')
+
+    fp = combined.plot(ax=ax[0, 1], column='fp_rate', edgecolor='black', linewidth=1, cmap='Blues', vmin=0, vmax=1)
+    ax[0, 1].set_title('False Positive Rate')
+    fig.colorbar(fp.collections[0], ax=ax[0, 1], label='%')
+
+    fn = combined.plot(ax=ax[1, 0], column='fn_rate', edgecolor='black', linewidth=1, cmap='Greens', vmin=0, vmax=1)
+    ax[1, 0].set_title('False Negative Rate')
+    fig.colorbar(fn.collections[0], ax=ax[1, 0], label='%')
+
+    tn = combined.plot(ax=ax[1, 1], column='tn_rate', edgecolor='black', linewidth=1, cmap='Oranges', vmin=0, vmax=1)
+    ax[1, 1].set_title('True Negative Rate')
+    fig.colorbar(tn.collections[0], ax=ax[1, 1], label='%')
+
+    plt.show()
     plt.close()
+
+    # Plotting F1
+    fig, ax = plt.subplots()
+    f1 = combined.plot(column='f1', edgecolor='black', linewidth=1, cmap='Reds', vmin=0, vmax=1)
+    ax.set_title('F1')
+    fig.colorbar(f1.collections[0], label='F1 Score')
+    plt.show()
+    plt.close()
+
 
 
 def generate_monsoon_plots(results_df, year):
@@ -202,13 +288,14 @@ if __name__ == '__main__':
     root_dir = args.root_dir
     year = args.test_year
 
-    nepal_im = Image.open('{}/District_Labels.tif'.format(root_dir))
+    nepal_gdf = gpd.read_file('/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/'
+                              'Nature_Comms/Nepal_District_Boundaries.geojson')
 
     if not run_dir:
         results_dir = '{}/FullSeason_Results'.format(root_dir)
         results_df = pd.read_csv('{}/predictions_and_groundtruth_trainsource_gpm.csv'.format(results_dir))
     else:
-        results_dir = '{}/Results/{}'.format(root_dir, run_dir)
+        results_dir = '{}/Results/GPMv07/{}'.format(root_dir, run_dir)
         results_df = pd.read_csv('{}/predictions_and_groundtruth.csv'.format(results_dir))
 
 
@@ -216,5 +303,5 @@ if __name__ == '__main__':
         os.mkdir('{}/CM'.format(results_dir))
 
     # Get overall TP rate per Dist
-    generate_tp_rate_map(results_df, nepal_im, results_dir)
-    generate_monsoon_plots(results_df, year)
+    generate_tp_rate_map(results_df, nepal_gdf, results_dir)
+    #generate_monsoon_plots(results_df, year)
