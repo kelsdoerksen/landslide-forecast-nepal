@@ -5,7 +5,7 @@ split: monsoon_train refers to training the model with all the latest data (2016
 to run it on the 2024 test set
 monsoon_test refers to the 2024 monsoon season testing model performance
 """
-
+import ipdb
 from torch.utils.data import Dataset
 from torchvision import transforms
 from numpy import load, sort
@@ -112,6 +112,7 @@ class LandslideDataset(Dataset):
         label_fns = list(map(lambda x: x.replace('sample', 'label'), image_fns))
         image_fn = image_fns[index]
         label_fn = label_fns[index]
+
         image_fp = os.path.join(self.image_dir, image_fn)
         label_fp = os.path.join(self.label_dir, label_fn)
         multichannel_image = load('{}'.format(image_fp), allow_pickle=True).astype('float32')

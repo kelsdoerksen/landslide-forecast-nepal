@@ -92,7 +92,7 @@ def pr_generation(y_true, y_pred, threshold, d_masks):
     no_pred_count = 0
     for i in range(len(y_pred)):
         non_landslide_districts = d_masks.copy()  # copy of landslides dict to manipulate
-        dummy_pred = np.copy(y_pred[i, 0, :, ])  # copy of y_pred to manipulate
+        dummy_pred = np.copy(y_pred[i, 0, :, :])  # copy of y_pred to manipulate
         # Get what districts are in label
         district_pixels = []
         landslides = np.where(y_true[i, 0, :, :] == 1)
@@ -103,7 +103,6 @@ def pr_generation(y_true, y_pred, threshold, d_masks):
             if all(item in points for item in d_masks[district]):
                 district_pixels.append(d_masks[district])
                 non_landslide_districts.pop(district)
-
         total_overlap = 0
         for j in range(len(district_pixels)):
             # iterate through the list of points containing the landslide aka true_location

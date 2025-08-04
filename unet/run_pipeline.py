@@ -55,7 +55,7 @@ def get_args():
                         required=True, action=argparse.BooleanOptionalAction)
     parser.add_argument('--cutmix_alpha', type=float, help='Specify cutmix alpha value during training',
                         required=True)
-
+    parser.add_argument('--overfit', dest='overfit', action='store_true')
     return parser.parse_args()
 
 
@@ -187,7 +187,8 @@ if __name__ == '__main__':
             channel_drop=channel_drop,
             channel_drop_iter=channel_drop_iter,
             cutmix_aug=cutmix_aug,
-            cutmix_alpha=cutmix_alpha
+            cutmix_alpha=cutmix_alpha,
+            overfit=args.overfit
         )
 
     if args.exp_type == 'monsoon_test':
@@ -250,7 +251,8 @@ if __name__ == '__main__':
             channel_drop=channel_drop,
             channel_drop_iter=channel_drop_iter,
             cutmix_aug=cutmix_aug,
-            cutmix_alpha=cutmix_alpha
+            cutmix_alpha=cutmix_alpha,
+            overfit=args.overfit
         )
 
     if 'unet_mini' in args.exp_type:
@@ -343,7 +345,8 @@ if __name__ == '__main__':
             channel_drop=channel_drop,
             channel_drop_iter=channel_drop_iter,
             cutmix_aug=cutmix_aug,
-            cutmix_alpha=cutmix_alpha
+            cutmix_alpha=cutmix_alpha,
+            overfit=args.overfit
         )
 
         print('Running Test set...')
@@ -441,7 +444,8 @@ if __name__ == '__main__':
             channel_drop=channel_drop,
             channel_drop_iter=channel_drop_iter,
             cutmix_aug=cutmix_aug,
-            cutmix_alpha=cutmix_alpha
+            cutmix_alpha=cutmix_alpha,
+            overfit=args.overfit
         )
 
         print('Running Test set...')
