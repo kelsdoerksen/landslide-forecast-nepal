@@ -72,7 +72,7 @@ def train_model(model,
     if overfit:
         random_indices = random.sample(range(500), 10) # Choosing ten random indices
         subset = Subset(train_set, random_indices)
-        train_loader = DataLoader(subset, batch_size=2, shuffle=False)
+        train_loader = DataLoader(subset, batch_size=10, shuffle=False)
 
     # --- Setting up optimizer
     if opt == 'rms':
