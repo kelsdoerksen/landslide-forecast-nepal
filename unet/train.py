@@ -11,7 +11,7 @@ from losses import *
 import torch
 import torch.nn as nn
 import logging
-from torch.utils.data import DataLoader, random_split
+from torch.utils.data import DataLoader, random_split, Subset
 import wandb
 from torch import optim
 from pathlib import Path
@@ -38,7 +38,8 @@ def train_model(model,
                 channel_drop=0,
                 channel_drop_iter=1,
                 cutmix_aug=False,
-                cutmix_alpha=1.0
+                cutmix_alpha=1.0,
+                overfit=False
                 ):
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -67,6 +68,11 @@ def train_model(model,
         experiment.log({'CutMix alpha': cutmix_alpha})
 
     threshold = 0.1
+
+    if overfit:
+        random_indices = random.sample(range(500), 10) # Choosing ten random indices
+        subset = Subset(train_set, random_indices)
+        train_loader = DataLoader(subset, batch_size=2, shuffle=False)
 
     # --- Setting up optimizer
     if opt == 'rms':
@@ -182,7 +188,8 @@ def train_model(model,
             'train Recall pct cov': 'N/A',
             'step': global_step,
             'epoch': epoch,
-            'optimizer': opt
+            'optimizer': opt,
+            'overfit': overfit
         })
 
         # Evaluation -> Validation set
@@ -256,16 +263,6 @@ def train_model(model,
         except:
             pass
 
-        '''
-        if save_checkpoint:
-            out_model = '{}/checkpoint_epoch{}.pth'.format(save_dir, epoch)
-            Path(save_dir).mkdir(parents=True, exist_ok=True)
-            torch.save({'epoch': epoch,
-                        'state_dict': model.state_dict(),
-                        'optimizer': optimizer.state_dict()},
-                       out_model)
-            logging.info(f'Checkpoint {epoch} saved!')
-        '''
     # Saving model at end of epoch with experiment name
     out_model = '{}/{}_last_epoch.pth'.format(save_dir, experiment.name)
     Path(save_dir).mkdir(parents=True, exist_ok=True)
