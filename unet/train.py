@@ -188,8 +188,7 @@ def train_model(model,
             'train Recall pct cov': 'N/A',
             'step': global_step,
             'epoch': epoch,
-            'optimizer': opt,
-            'overfit': overfit
+            'optimizer': opt
         })
 
         # Evaluation -> Validation set
