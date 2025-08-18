@@ -19,7 +19,7 @@ from predict import *
 from augmentation import *
 from utils import *
 import random
-from torchvision.transforms import v2
+from torchvision.transforms import v2, Lambda
 
 def train_model(model,
                 device,
@@ -70,9 +70,54 @@ def train_model(model,
     threshold = 0.1
 
     if overfit:
-        random_indices = random.sample(range(500), 3) # Choosing 3 random indices
-        subset = Subset(train_set, random_indices)
-        train_loader = DataLoader(subset, batch_size=3, shuffle=True)
+        # Hardcoding for now just to check things
+        overfit_dir = '/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep/overfit_dir'
+        files = os.listdir(overfit_dir)
+        files.sort()
+        sample_list = []
+        label_list = []
+        for file in files:
+            if 'sample' in file:
+                sample_list.append(np.load('{}/{}'.format(overfit_dir, file)))
+            else:
+                label_list.append(np.load('{}/{}'.format(overfit_dir, file)))
+
+        sample_tensor = torch.Tensor(sample_list)
+        label_tensor = torch.Tensor(label_list)
+
+        overfit_dataset = TensorDataset(sample_tensor, label_tensor)
+
+        # then normalize
+        mean = torch.zeros(32)
+        std = torch.zeros(32)
+        n_samples = len(overfit_dataset)
+        for images, _ in overfit_dataset:
+            images = images.float().contiguous()
+            images_flat = images.view(32, -1)
+
+            # Calculate mean and std
+            mean += images_flat.mean(dim=1)
+            std += images_flat.std(dim=1)
+            n_samples += 1
+
+        mean /= n_samples
+        std /= n_samples
+
+        mean = mean.view(-1, 1, 1)
+        std = std.view(-1, 1, 1)
+
+        mean = mean.detach().cpu().numpy()
+        std = std.detach().cpu().numpy()
+
+        norm_sample_list = []
+        for sample in sample_list:
+            norm_sample = (sample - mean) / (std + 1e-8)
+            norm_sample_list.append(norm_sample)
+
+        norm_sample_tensor = torch.Tensor(norm_sample_list)
+        label_tensor = label_tensor.unsqueeze(1)
+        overfit_dataset_norm = TensorDataset(norm_sample_tensor, label_tensor)
+        train_loader = DataLoader(overfit_dataset_norm, batch_size=3, shuffle=False)
 
     # --- Setting up optimizer
     if opt == 'rms':
@@ -140,6 +185,8 @@ def train_model(model,
         fp_count = 0
         fn_count = 0
 
+        epoch_check = [100, 200, 300, 400, 500, 600, 700, 800, 900, 999]
+
         for i, data in enumerate(train_loader):
             inputs, labels = data
             inputs, labels = inputs.to(device), labels.to(device)
@@ -161,6 +208,11 @@ def train_model(model,
 
             # Apply sigmoid for probabilities for precision recall
             outputs_probs = torch.sigmoid(outputs)
+
+            if epoch_number in epoch_check:
+                if overfit:
+                    overfit_check = outputs_probs.detach().numpy()
+                    np.save('{}/{}_pred_{}.npy'.format(overfit_dir, experiment.name, epoch_number), overfit_check)
 
             thr_precision, thr_recall, tp, fp, fn = precision_recall_threshold(labels, outputs_probs, threshold, district_masks)
             #pct_cov_precision, pct_cov_recall = precision_and_recall_threshold_pct_cov(labels, outputs_probs, threshold, district_masks)
@@ -272,6 +324,10 @@ def train_model(model,
 
     # Save final model with the weights and architecture itself
     torch.save(model, "{}/pretrained_model.pth".format(save_dir))
+
+
+    import ipdb
+    ipdb.set_trace()
 
     return out_model
 
