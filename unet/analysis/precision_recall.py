@@ -11,6 +11,9 @@ import os
 import pandas as pd
 import pickle
 import matplotlib.pyplot as plt
+import torch
+from torch import tensor
+from torchmetrics.classification import BinaryJaccardIndex
 
 
 def get_args():
@@ -344,6 +347,83 @@ def pr_generation_threshold_pct_cov(y_true, y_pred, threshold, d_masks, pct_cov=
     return results_dict
 
 
+def intersection_calc(groundtruth, prediction, district_masks):
+    """
+    Get the IoU for the Districts
+    """
+    metric = BinaryJaccardIndex()
+
+    f1_list = []
+    p_list = []
+    r_list = []
+    for i in range(len(groundtruth)):
+        gt = groundtruth[i][0,:,:]
+        pred = prediction[i][0,:,:]
+        if np.amax(gt) == 0:
+            continue
+        landslide_districts = []
+        landslide_district_names = []
+        non_landslide_districts = []
+        non_landslide_district_names = []
+        gt_torch = torch.from_numpy(gt)
+
+        threshold_prediction = (pred >= 0.1)*1
+
+        for district in district_masks.keys():
+            district_torch = torch.from_numpy(district_masks[district])
+            if metric(district_torch, gt_torch) > 0:
+                landslide_districts.append(district_masks[district])
+                landslide_district_names.append(district)
+            else:
+                non_landslide_districts.append(district_masks[district])
+                non_landslide_district_names.append(district)
+
+        tp_count = 0
+        fn_count = 0
+        # Let's get the true positives and false negatives
+        print('Calculating True Positives...')
+        for i in range(len(landslide_districts)):
+            predicted_in_district = threshold_prediction[landslide_districts[i] == 1]
+            total_gt_pixels = np.sum(landslide_districts[i])
+            coverage = np.sum(predicted_in_district == 1) / total_gt_pixels
+            print('Coverage for landslide', landslide_district_names[i], ':', coverage)
+            if coverage >= 0.8:
+                tp_count += 1
+            else:
+                fn_count +=1
+
+        # Let's get false positives
+        fp_count = 0
+        print('Calculating False Positives...')
+        for i in range(len(non_landslide_districts)):
+            predicted_in_district = threshold_prediction[non_landslide_districts[i] == 1]
+            total_gt_pixels = np.sum(non_landslide_districts[i])
+            coverage = np.sum(predicted_in_district == 1) / total_gt_pixels
+            print('Coverage for landslide', non_landslide_district_names[i], ':', coverage)
+            if coverage >= 0.5:
+                fp_count += 1
+        try:
+            precision = tp_count / (tp_count + fp_count)
+            recall = tp_count / (tp_count + fn_count)
+            f1 = 2 * (precision * recall) / (precision + recall)
+        except ZeroDivisionError:
+            import ipdb; ipdb.set_trace()
+            precision = 0
+            recall = 0
+            f1 = 0
+        print('Precision:', precision)
+        print('Recall:', recall)
+        print('F1:', f1)
+
+        f1_list.append(f1)
+        p_list.append(precision)
+        r_list.append(recall)
+
+    import ipdb; ipdb.set_trace()
+
+    return f1_list
+
+
 def landslide_record_gen(y_true, y_pred, threshold, d_masks):
     '''
     Record the landslide predicted by model and true landslide locations for further plotting in future
@@ -428,6 +508,10 @@ if __name__ == '__main__':
 
     # Generating district masks to use for the precision, recall
     district_masks = generate_district_masks('{}/District_Labels.tif'.format(root_dir))
+
+
+    # Get the overlap calculation
+    intersection_calc(groundtruth_arrays, prediction_arrays, district_masks)
 
     # We can locate now here where all the ones in the district are
     for district in district_masks:
