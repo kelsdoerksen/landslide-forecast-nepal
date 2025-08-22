@@ -93,7 +93,7 @@ def binary_classification_precision_recall(threshold, logits, labels, batch_size
         recall_list.append(recall)
         f1_list.append(f1)
 
-    return np.sum(precision_list)/batch_size, np.sum(recall_list)/batch_size, np.sum(f1_list)/batch_size
+    return precision_list, recall_list, f1_list
 
 
 def precision_recall_threshold(y_true, y_pred, threshold, d_masks):

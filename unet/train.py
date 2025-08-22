@@ -126,9 +126,9 @@ def train_binary_classification_model(model,
 
             global_step += 1
             epoch_loss += loss.item()
-            epoch_precision += precision
-            epoch_recall += recall
-            epoch_f1 += f1
+            epoch_precision += np.sum(precision)/len(precision)
+            epoch_recall += np.sum(recall)/len(recall)
+            epoch_f1 += np.sum(f1)/len(f1)
 
 
         experiment.log({
@@ -177,9 +177,9 @@ def train_binary_classification_model(model,
                                                                                   binary_labels, batch_size)
 
                 running_vloss += vloss
-                running_recall += vrecall
-                running_precision += vprecision
-                running_f1 += vf1
+                running_recall += np.sum(vrecall)/len(vrecall)
+                running_precision += np.sum(vprecision)/len(vprecision)
+                running_f1 += np.sum(vf1)/len(vf1)
 
         avg_vloss = running_vloss / len(val_loader)
         avg_prec = running_precision / len(val_loader)

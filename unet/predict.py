@@ -14,6 +14,7 @@ from metrics import *
 from losses import *
 from torchvision.transforms import v2
 from augmentation import drop_channels
+import pandas as pd
 
 
 def predict(in_model,
@@ -182,13 +183,14 @@ def predict_binary_classification(in_model,
 
     loss_criterion = nn.BCEWithLogitsLoss()
     bce_score = 0
-    precision = 0
-    recall = 0
-    f1_epoch = 0
+    precision = []
+    recall = []
+    f1 = []
     epoch_loss = 0
     # iterate over the test set
     preds = []
     gt = []
+    sample_count = 0
 
     print('length of test dataset is: {}'.format(len(test_loader)))
 
@@ -206,14 +208,12 @@ def predict_binary_classification(in_model,
             loss = criterion(district_logits.squeeze(2), binary_labels.float())  # Calculate loss
 
             # Probability conversion so I can do the other metric calculations
-            p, r, f1 = binary_classification_precision_recall(threshold, district_logits,
+            p, r, f1score = binary_classification_precision_recall(threshold, district_logits,
                                                                               binary_labels, batch_size=10)
 
-            precision += p
-            recall += r
-            f1_epoch += f1
-            # epoch_pct_cov_precision += pct_cov_precision
-            # epoch_pct_cov_recall += pct_cov_recall
+            precision.extend(p)
+            recall.extend(r)
+            f1.extend(f1)
             epoch_loss += loss.item()
 
     print('test set loss is: {}'.format(bce_score / len(test_loader)))
@@ -221,13 +221,16 @@ def predict_binary_classification(in_model,
     # Writing things to file
     wandb_experiment.log({
         'test set loss': epoch_loss / len(test_loader),
-        'test set Precision': precision / len(test_loader),
-        'test set Recall': recall / len(test_loader),
-        'test set F1': f1 / len(test_loader),
+        'test set Precision': precision / len(precision),
+        'test set Recall': recall / len(recall),
+        'test set F1': f1 / len(f1),
         'test set Precision pct cov': 'N/A',
         'test set Recall pct cov': 'N/A',
     })
 
     with open('{}/model_testing_results.txt'.format(out_dir), 'w') as f:
-        f.write('Test set Precision is: {}'.format(precision / len(test_loader)))
-        f.write('Test set Recall is: {}'.format(recall / len(test_loader)))
+        f.write('Test set Precision is: {}'.format(precision / len(precision)))
+        f.write('Test set Recall is: {}'.format(recall / len(recall)))
+
+    df = pd.DataFrame({'precision': precision, 'recall': recall, 'f1': f1})
+    df.to_csv('{}/model_testing_results.csv'.format(out_dir), index=False)
