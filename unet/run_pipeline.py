@@ -8,8 +8,8 @@ Pipeline script to:
 import torch
 import argparse
 import os
-from train import train_model
-from predict import predict
+from train import train_model, train_binary_classification_model
+from predict import predict, predict_binary_classification
 import wandb
 from utils import *
 from model import models, unet_modules
@@ -141,9 +141,101 @@ if __name__ == '__main__':
     # Generating district masks to use for the precision, recall
     district_masks = generate_district_masks('{}/District_Labels.tif'.format(root_dir))
 
+    if args.exp_type == 'embedding':
+        unet = models.UNetDistrict(n_channels=32, n_classes=1, dropout=float(dropout), embedding_dim=32,
+                                   district_masks=district_masks)
+
+        print('Grabbing training data and normalizing...')
+        landslide_train = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
+                                           save_dir)
+        n_channels = 32
+        mean = torch.zeros(n_channels)
+        std = torch.zeros(n_channels)
+        global_min = torch.full((n_channels,), float('inf'))
+        global_max = torch.full((n_channels,), float('-inf'))
+        n_samples = 0
+
+        if norm == 'zscore':
+            print("Computing per-channel mean and std...")
+            for images, _ in landslide_train:
+                images = images.float().contiguous()
+                # Reshape to (32, 6000)
+                images_flat = images.view(n_channels, -1)
+
+                # Calculate mean and std
+                mean += images_flat.mean(dim=1)
+                std += images_flat.std(dim=1)
+                n_samples += 1
+
+            mean /= n_samples
+            std /= n_samples
+            max_val = None
+            min_val = None
+
+        if norm == 'minmax':
+            print("Computing per-channel min and max...")
+            for images, _ in landslide_train:
+                images = images.float().contiguous()
+                # Reshape to (32, 6000)
+                images_flat = images.view(n_channels, -1)
+
+                # Calculating min and max
+                min_vals = images_flat.min(dim=1).values
+                max_vals = images_flat.max(dim=1).values
+
+                global_min = torch.min(global_min, min_vals)
+                global_max = torch.max(global_max, max_vals)
+                mean = None
+                std = None
+
+        if 'stride' in args.exp_type:
+            landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
+                                                       save_dir, mean=mean, std=std, max_val=global_max,
+                                                       min_val=global_min,
+                                                       norm=norm, stride=2)
+        else:
+            landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
+                                                       save_dir, mean=mean, std=std, max_val=global_max,
+                                                       min_val=global_min,
+                                                       norm=norm)
+        # --- Grabbing Testing Data ----
+        print('Grabbing testing data...')
+        landslide_test_dataset = LandslideDataset(sample_dir, label_dir, 'test', args.exp_type, args.test_year,
+                                                  save_dir, mean=mean, std=std, max_val=global_max, min_val=global_min,
+                                                  norm=norm)
+
+        trained_model = train_binary_classification_model(
+            model=unet,
+            device=device,
+            dataset=landslide_train_dataset,
+            save_dir=save_dir,
+            experiment=experiment,
+            val_percent=float(args.val_percent),
+            epochs=args.epochs,
+            batch_size=args.batch_size,
+            learning_rate=args.lr,
+            training_loss=args.loss,
+            opt=args.optimizer,
+            save_checkpoint=True,
+            district_masks=district_masks,
+            channel_drop=channel_drop,
+            channel_drop_iter=channel_drop_iter,
+            cutmix_aug=cutmix_aug,
+            cutmix_alpha=cutmix_alpha,
+            overfit=args.overfit
+        )
+
+        print('Running Test set...')
+        predict_binary_classification(trained_model, landslide_test_dataset, experiment, save_dir, device=device,
+                district_masks=district_masks, exp_type=args.exp_type, test_loss=args.loss,
+                channel_drop=channel_drop, channel_drop_iter=channel_drop_iter)
+
+    # -----------------------
+
     # We can locate now here where all the ones in the district are
     for district in district_masks:
         district_masks[district] = np.where(district_masks[district] == 1)
+
 
     # Want to change the list to be of pair type so we can compare more easily
     for district in district_masks:
