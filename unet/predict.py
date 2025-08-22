@@ -139,3 +139,95 @@ def predict(in_model,
         f.write('Test set Precision is: {}'.format(precision / len(test_loader)))
         f.write('Test set Recall is: {}'.format(recall / len(test_loader)))
 
+
+def predict_binary_classification(in_model,
+            test_dataset,
+            wandb_experiment,
+            out_dir,
+            device,
+            district_masks,
+            exp_type,
+            test_loss,
+            channel_drop=0,
+            channel_drop_iter=1):
+    """
+    Prediction pipeline
+    """
+
+    # Setup device
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    criterion = nn.BCEWithLogitsLoss()
+
+    threshold = 0.2
+    if exp_type == 'embedding':
+        unetmodel = models.UNetDistrict(n_channels=32, n_classes=1, dropout=0, embedding_dim=32,
+                                   district_masks=district_masks)
+    elif 'unet_mini' in exp_type:
+        unetmodel = models.UNetMini(n_channels=32, n_classes=1, dropout=0)
+        unetmodel.load_state_dict(torch.load(in_model)['state_dict'])
+    else:
+        unetmodel = models.UNet(n_channels=32, n_classes=1, dropout=0)
+        if exp_type == 'monsoon_test':
+            unetmodel.load_state_dict(in_model['state_dict'])
+        else:
+            unetmodel.load_state_dict(torch.load(in_model)['state_dict'])
+
+    # Move model to device
+    unetmodel.to(device)
+    unetmodel.eval()
+
+    # Data loader for test set
+    test_loader = DataLoader(test_dataset, batch_size=10, shuffle=False)
+
+    loss_criterion = nn.BCEWithLogitsLoss()
+    bce_score = 0
+    precision = 0
+    recall = 0
+    f1_epoch = 0
+    epoch_loss = 0
+    # iterate over the test set
+    preds = []
+    gt = []
+
+    print('length of test dataset is: {}'.format(len(test_loader)))
+
+    with torch.no_grad():
+        for i, data in enumerate(test_loader):
+            inputs, labels = data
+            inputs, labels = inputs.to(device), labels.to(device)
+
+            # Get embeddings from input
+            embeddings, district_logits = unetmodel(inputs)
+
+            # Get binary labels
+            binary_labels = get_binary_label(labels, district_masks)
+
+            loss = criterion(district_logits.squeeze(2), binary_labels.float())  # Calculate loss
+
+            # Probability conversion so I can do the other metric calculations
+            p, r, f1 = binary_classification_precision_recall(threshold, district_logits,
+                                                                              binary_labels, batch_size=10)
+
+            precision += p
+            recall += r
+            f1_epoch += f1
+            # epoch_pct_cov_precision += pct_cov_precision
+            # epoch_pct_cov_recall += pct_cov_recall
+            epoch_loss += loss.item()
+
+    print('test set loss is: {}'.format(bce_score / len(test_loader)))
+
+    # Writing things to file
+    wandb_experiment.log({
+        'test set loss': epoch_loss / len(test_loader),
+        'test set Precision': precision / len(test_loader),
+        'test set Recall': recall / len(test_loader),
+        'test set F1': f1 / len(test_loader),
+        'test set Precision pct cov': 'N/A',
+        'test set Recall pct cov': 'N/A',
+    })
+
+    with open('{}/model_testing_results.txt'.format(out_dir), 'w') as f:
+        f.write('Test set Precision is: {}'.format(precision / len(test_loader)))
+        f.write('Test set Recall is: {}'.format(recall / len(test_loader)))

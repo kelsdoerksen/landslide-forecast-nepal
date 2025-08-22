@@ -7,6 +7,93 @@ landslide occurred
 import numpy as np
 import torch
 import copy
+from sklearn.metrics import precision_score, recall_score, f1_score
+
+
+def get_binary_label(labels, district_masks):
+    """
+    Retreive the binary labels (0,1) for landslide from the labels to do linear classification
+    To do: once I have access to the internet and can look it up, go through the labels and then return
+    in the shape (B, H, W) as is fed in
+    """
+    district_labels = []
+    for i in range(labels.shape[0]):
+        binary_labels = []
+        for d in district_masks.keys():
+            mask_torch = torch.from_numpy(district_masks[d])  # shape (H, W)
+            masked = labels * mask_torch.unsqueeze(0)
+            district_sum = masked.sum()
+            if district_sum > 0:
+                # Need to append this as a torch value that do the torch.stack part
+                binary_labels.append(torch.tensor(1))
+            else:
+                binary_labels.append(torch.tensor(0))
+
+        district_labels.append(binary_labels)
+
+    total_labels = [torch.stack(inner_list) for inner_list in district_labels]
+    # want to return shape (B, District_count)
+
+    return torch.stack(total_labels)
+
+
+def district_embedding_pooling(embeddings, district_masks):
+    """
+    Calculate the pooled embeddings for each district and return to make final classification
+    embedding is size (B, C, H, W)
+    Per each district, I will get a feature space of 32 embedding values that I use in final classifier to make the
+    binary prediction of Y/N landslide
+    """
+
+    def masked_avg_pool(emb, mask):
+        """
+        Average pooling over masked district region
+        Want to return the shape (B, C, H, W) same as the original embedding shape
+        """
+        mask_torch = torch.from_numpy(mask) # shape (H, W)
+        masked = emb * mask_torch
+        total = mask.sum()  # Number of pixels in the region
+        if total == 0:
+            return torch.zeros(emb.shape[0], device=emb.device)
+        return masked.sum(dim=(1, 2)) / total   # this will return size 32 which represents the embedding from each channel
+
+    # apply function and get pooled avg of embeddings over the region
+    # Need to iterate through the batch correctly and then make back into shape B, C, H, W -> use torch.stack to do this
+    district_embedding_list = []
+    for i in range(embeddings.shape[0]):
+        pooled_emb = []
+        for district in district_masks.keys():
+            pooled_emb.append(masked_avg_pool(embeddings[i,:,:,:], district_masks[district]))
+        pooled_emb = torch.stack(pooled_emb)
+        district_embedding_list.append(pooled_emb)
+
+    return torch.stack(district_embedding_list)
+
+
+def binary_classification_precision_recall(threshold, logits, labels, batch_size):
+    """
+    Take in the logits and labels and return the precision and recall
+    """
+    # logits to predictions
+    probs = torch.sigmoid(logits)
+
+    # apply threshold
+    preds = (probs >= threshold).int()
+
+    precision_list = []
+    recall_list = []
+    f1_list = []
+    for i in range(preds.shape[0]):
+        district_prediction = preds[i,:,0]
+        label = labels[i,:]
+        precision = precision_score(label.cpu(), district_prediction.cpu())
+        recall = recall_score(label.cpu(), district_prediction.cpu())
+        f1 = f1_score(label.cpu(), district_prediction.cpu())
+        precision_list.append(precision)
+        recall_list.append(recall)
+        f1_list.append(f1)
+
+    return np.sum(precision_list)/batch_size, np.sum(recall_list)/batch_size, np.sum(f1_list)/batch_size
 
 
 def precision_recall_threshold(y_true, y_pred, threshold, d_masks):

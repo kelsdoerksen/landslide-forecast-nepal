@@ -21,6 +21,203 @@ from utils import *
 import random
 from torchvision.transforms import v2, Lambda
 
+
+def train_binary_classification_model(model,
+                device,
+                dataset,
+                save_dir,
+                experiment,
+                epochs: int,
+                batch_size: int,
+                learning_rate: float,
+                training_loss,
+                opt,
+                val_percent,
+                weight_decay: float = 0.00001,
+                save_checkpoint: bool=True,
+                district_masks = None,
+                channel_drop=0,
+                channel_drop_iter=1,
+                cutmix_aug=False,
+                cutmix_alpha=1.0,
+                overfit=False):
+    """
+    Train model for binary classificaiton based on the masks and pooling
+    """
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    # --- Split dataset into training and validation
+    n_val = int(len(dataset) * val_percent)
+    n_train = len(dataset) - n_val
+    train_set, val_set = random_split(dataset, [n_train, n_val], generator=torch.Generator().
+                                      manual_seed(random.randint(0, 1000)))
+
+    # --- DataLoaders
+    # The DataLoader pulls instances of data from the Dataset, collects them in batches,
+    # and returns them for consumption by your training loop.
+    train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True)
+    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=True)
+
+    if int(channel_drop) > 0:
+        for i in range(channel_drop_iter):
+            train_loader = drop_channels(train_loader, channel_drop, batch_size=32, split='train',
+                                         wandb_experiment=experiment)
+            val_loader = drop_channels(val_loader, channel_drop, batch_size=32, split='validation',
+                                       wandb_experiment=experiment)
+    if cutmix_aug:
+        train_loader = cutmix(train_loader, alpha=cutmix_alpha, batch_size=32)
+        val_loader = cutmix(val_loader, alpha=cutmix_alpha, batch_size=32)
+        experiment.log({'CutMix alpha': cutmix_alpha})
+
+    threshold = 0.1
+
+    # --- Setting up optimizer
+    if opt == 'rms':
+        optimizer = optim.RMSprop(model.parameters(),
+                                  lr=learning_rate, weight_decay=weight_decay)
+
+    if opt == 'adam':
+        optimizer = optim.Adam(model.parameters(),
+                               lr=learning_rate, weight_decay=weight_decay)
+
+    if opt == 'adam_explr':
+        optimizer = optim.Adam(model.parameters(),
+                               lr=learning_rate)
+        scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.1)
+
+    # Setting up loss for final binary classification
+    criterion = nn.BCEWithLogitsLoss()
+
+    grad_scaler = torch.cuda.amp.GradScaler()
+
+    model.train()
+
+    global_step = 0
+    epoch_number = 0
+    for epoch in range(epochs):
+        print('Training EPOCH {}:'.format(epoch_number))
+        epoch_number += 1
+        epoch_loss = 0
+        epoch_precision = 0
+        epoch_recall = 0
+        epoch_f1 = 0
+
+        for i, data in enumerate(train_loader):
+            inputs, labels = data
+            inputs, labels = inputs.to(device), labels.to(device)
+
+            # Zero gradients for every batch
+            optimizer.zero_grad()
+
+            # Get embeddings from input
+            embeddings, district_logits = model(inputs)
+
+            # Get binary labels
+            binary_labels = get_binary_label(labels, district_masks)
+
+            loss = criterion(district_logits.squeeze(2), binary_labels.float())       # Calculate loss
+
+            # Probability conversion so I can do the other metric calculations
+            precision, recall, f1 = binary_classification_precision_recall(threshold, district_logits, binary_labels, batch_size)
+
+            grad_scaler.scale(loss).backward()
+            grad_scaler.step(optimizer)
+            grad_scaler.update()
+
+            global_step += 1
+            epoch_loss += loss.item()
+            epoch_precision += precision
+            epoch_recall += recall
+            epoch_f1 += f1
+
+
+        experiment.log({
+            'train loss': epoch_loss / len(train_loader),
+            'train Precision': epoch_precision / len(train_loader),
+            'train Recall': epoch_recall / len(train_loader),
+            'train F1': epoch_f1 / len(train_loader),
+            'train Precision pct cov': 'N/A',
+            'train Recall pct cov': 'N/A',
+            'step': global_step,
+            'epoch': epoch,
+            'optimizer': opt
+        })
+
+        # Evaluation -> Validation set
+        histograms = {}
+        for tag, value in model.named_parameters():
+            tag = tag.replace('/', '.')
+            if not (torch.isinf(value) | torch.isnan(value)).any():
+                histograms['Weights/' + tag] = wandb.Histogram(value.data.cpu())
+            if not (torch.isinf(value.grad) | torch.isnan(value.grad)).any():
+                histograms['Gradients/' + tag] = wandb.Histogram(value.grad.data.cpu())
+
+        # Run validation
+        model.eval()
+        # Disable gradient computation and reduce memory consumption.
+        running_vloss = 0.0
+        running_precision = 0
+        running_recall = 0
+        running_f1 = 0
+        with torch.no_grad():
+            for k, vdata in enumerate(val_loader):
+                vinputs, vlabels = vdata
+                vinputs, vlabels = vinputs.to(device), vlabels.to(device)
+
+                # Get embeddings from input
+                embeddings, district_logits = model(vinputs)
+
+                # Get binary labels
+                binary_labels = get_binary_label(vlabels, district_masks)
+
+                vloss = criterion(district_logits.squeeze(2), binary_labels.float())  # Calculate loss
+
+                # Probability conversion so I can do the other metric calculations
+                vprecision, vrecall, vf1 = binary_classification_precision_recall(threshold, district_logits,
+                                                                                  binary_labels, batch_size)
+
+                running_vloss += vloss
+                running_recall += vrecall
+                running_precision += vprecision
+                running_f1 += vf1
+
+        avg_vloss = running_vloss / len(val_loader)
+        avg_prec = running_precision / len(val_loader)
+        avg_rec = running_recall / len(val_loader)
+        avg_f1 = running_f1 / len(val_loader)
+
+        logging.info('Validation loss score: {}'.format(avg_vloss))
+        try:
+            experiment.log({
+                'learning rate': optimizer.param_groups[0]['lr'],
+                'validation loss': avg_vloss,
+                'validation Precision': avg_prec,
+                'validation Recall': avg_rec,
+                'validation F1': avg_f1,
+                'validation Precision pct cov': 'N/A',
+                'validation Recall pct cov': 'N/A',
+                'step': global_step,
+                'epoch': epoch,
+                **histograms
+            })
+        except:
+            pass
+
+        # Saving model at end of epoch with experiment name
+    out_model = '{}/{}_last_epoch.pth'.format(save_dir, experiment.name)
+    Path(save_dir).mkdir(parents=True, exist_ok=True)
+    torch.save({'epoch': epoch,
+                'state_dict': model.state_dict(),
+                'optimizer': optimizer.state_dict()},
+               out_model)
+
+    # Save final model with the weights and architecture itself
+    torch.save(model, "{}/pretrained_model.pth".format(save_dir))
+
+    return out_model
+
+
+
 def train_model(model,
                 device,
                 dataset,
@@ -170,12 +367,14 @@ def train_model(model,
     #scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=5)  # goal: minimize MSE score.
     grad_scaler = torch.cuda.amp.GradScaler()
 
+    # Set to training mode
+    model.train()
+
     global_step = 0
     epoch_number = 0
     for epoch in range(epochs):
         print('Training EPOCH {}:'.format(epoch_number))
         epoch_number += 1
-        model.train()
         epoch_loss = 0
         epoch_thr_precision = 0
         epoch_thr_recall = 0
@@ -324,10 +523,6 @@ def train_model(model,
 
     # Save final model with the weights and architecture itself
     torch.save(model, "{}/pretrained_model.pth".format(save_dir))
-
-
-    import ipdb
-    ipdb.set_trace()
 
     return out_model
 
