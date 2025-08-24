@@ -89,7 +89,7 @@ def train_binary_classification_model(model,
     criterion = nn.BCEWithLogitsLoss()
 
     grad_scaler = torch.cuda.amp.GradScaler()
-
+    model = model.to(device)
     model.train()
 
     global_step = 0
