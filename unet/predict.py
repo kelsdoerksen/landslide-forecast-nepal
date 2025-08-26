@@ -200,6 +200,8 @@ def predict_binary_classification(in_model,
 
             # Get binary labels
             binary_labels = get_binary_label(labels, district_masks)
+            binary_labels = binary_labels.to(device)
+            district_logits = district_logits.to(device)
 
             loss = criterion(district_logits.squeeze(2), binary_labels.float())  # Calculate loss
 

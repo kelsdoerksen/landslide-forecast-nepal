@@ -172,6 +172,8 @@ def train_binary_classification_model(model,
 
                 # Get binary labels
                 binary_labels = get_binary_label(vlabels, district_masks)
+                binary_labels = binary_labels.to(device)
+                district_logits = district_logits.to(device)
 
                 vloss = criterion(district_logits.squeeze(2), binary_labels.float())  # Calculate loss
 
