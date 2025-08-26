@@ -20,7 +20,7 @@ def get_binary_label(labels, district_masks):
     for i in range(labels.shape[0]):
         binary_labels = []
         for d in district_masks.keys():
-            mask_torch = torch.from_numpy(district_masks[d])  # shape (H, W)
+            mask_torch = torch.from_numpy(district_masks[d]).to(labels.device)  # shape (H, W)
             masked = labels * mask_torch.unsqueeze(0)
             district_sum = masked.sum()
             if district_sum > 0:
