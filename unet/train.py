@@ -111,9 +111,12 @@ def train_binary_classification_model(model,
 
             # Get embeddings from input
             embeddings, district_logits = model(inputs)
+            embeddings = embeddings.to(device)
+            district_logits = district_logits.to(device)
 
             # Get binary labels
             binary_labels = get_binary_label(labels, district_masks)
+            binary_labels = binary_labels.to(device)
 
             loss = criterion(district_logits.squeeze(2), binary_labels.float())       # Calculate loss
 

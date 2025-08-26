@@ -187,10 +187,6 @@ def predict_binary_classification(in_model,
     recall = []
     f1 = []
     epoch_loss = 0
-    # iterate over the test set
-    preds = []
-    gt = []
-    sample_count = 0
 
     print('length of test dataset is: {}'.format(len(test_loader)))
 
@@ -213,7 +209,7 @@ def predict_binary_classification(in_model,
 
             precision.extend(p)
             recall.extend(r)
-            f1.extend(f1)
+            f1.extend(f1score)
             epoch_loss += loss.item()
 
     print('test set loss is: {}'.format(bce_score / len(test_loader)))
@@ -221,16 +217,16 @@ def predict_binary_classification(in_model,
     # Writing things to file
     wandb_experiment.log({
         'test set loss': epoch_loss / len(test_loader),
-        'test set Precision': precision / len(precision),
-        'test set Recall': recall / len(recall),
-        'test set F1': f1 / len(f1),
+        'test set Precision': np.sum(precision) / len(precision),
+        'test set Recall': np.sum(recall) / len(recall),
+        'test set F1': np.sum(f1) / len(f1),
         'test set Precision pct cov': 'N/A',
         'test set Recall pct cov': 'N/A',
     })
 
     with open('{}/model_testing_results.txt'.format(out_dir), 'w') as f:
-        f.write('Test set Precision is: {}'.format(precision / len(precision)))
-        f.write('Test set Recall is: {}'.format(recall / len(recall)))
+        f.write('Test set Precision is: {}'.format(np.sum(precision) / len(precision)))
+        f.write('Test set Recall is: {}'.format(np.sum(recall) / len(recall)))
 
     df = pd.DataFrame({'precision': precision, 'recall': recall, 'f1': f1})
     df.to_csv('{}/model_testing_results.csv'.format(out_dir), index=False)
