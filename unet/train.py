@@ -86,7 +86,14 @@ def train_binary_classification_model(model,
         scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.1)
 
     # Setting up loss for final binary classification
-    criterion = nn.BCEWithLogitsLoss()
+    if training_loss == 'bce':
+        criterion = nn.BCEWithLogitsLoss()
+    if training_loss == 'bce_fp_2':
+        criterion = BCE_FP(false_positive_weight=2.0, false_negative_weight=1.0, eps=1e-7)
+    if training_loss == 'bce_fp_3':
+        criterion = BCE_FP(false_positive_weight=3.0, false_negative_weight=1.0, eps=1e-7)
+    if training_loss == 'bce_fp_4':
+        criterion = BCE_FP(false_positive_weight=4.0, false_negative_weight=1.0, eps=1e-7)
 
     grad_scaler = torch.cuda.amp.GradScaler()
     model = model.to(device)
@@ -117,6 +124,8 @@ def train_binary_classification_model(model,
             # Get binary labels
             binary_labels = get_binary_label(labels, district_masks)
             binary_labels = binary_labels.to(device)
+
+            import ipdb; ipdb.set_trace()
 
             loss = criterion(district_logits.squeeze(2), binary_labels.float())       # Calculate loss
 

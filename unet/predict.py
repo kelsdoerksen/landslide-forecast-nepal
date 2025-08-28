@@ -158,7 +158,14 @@ def predict_binary_classification(in_model,
     # Setup device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    criterion = nn.BCEWithLogitsLoss()
+    if test_loss == 'bce':
+        criterion = nn.BCEWithLogitsLoss()
+    if test_loss == 'bce_fp_2':
+        criterion = BCE_FP(false_positive_weight=2.0, false_negative_weight=1.0, eps=1e-7)
+    if test_loss == 'bce_fp_3':
+        criterion = BCE_FP(false_positive_weight=3.0, false_negative_weight=1.0, eps=1e-7)
+    if test_loss == 'bce_fp_4':
+        criterion = BCE_FP(false_positive_weight=4.0, false_negative_weight=1.0, eps=1e-7)
 
     threshold = 0.2
     if exp_type == 'embedding':
