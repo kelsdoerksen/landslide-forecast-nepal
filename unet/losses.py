@@ -6,6 +6,35 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+
+class BCE_FP(nn.Module):
+    def __init__(self, false_positive_weight=2.0, false_negative_weight=1.0, eps=1e-7):
+        """
+        Custom BCE loss that penalizes false positives more heavily.
+
+        false_positive_weight: penalty multiplier for false positives (label=0, pred=1)
+        false_negative_weight: penalty multiplier for false negatives (label=1, pred=0)
+        eps: small value to prevent division by zero
+        """
+        super().__init__()
+        self.fp_weight = false_positive_weight
+        self.fn_weight = false_negative_weight
+        self.eps = eps
+
+    def forward(self, logits, targets):
+        # logits: shape [batch_size]
+        # targets: binary labels [batch_size]
+        probs = torch.sigmoid(logits)
+        targets = targets.float()
+
+        # Apply asymmetric weighting
+        loss_pos = -self.fn_weight * targets * torch.log(probs + self.eps)
+        loss_neg = -self.fp_weight * (1 - targets) * torch.log(1 - probs + self.eps)
+
+        loss = loss_pos + loss_neg
+        return loss.mean()
+
+
 def tversky_loss(y_pred, y_true, alpha=0.7, beta=0.3, smooth=1e-6):
     y_pred = torch.sigmoid(y_pred)
     y_true = y_true.float()
