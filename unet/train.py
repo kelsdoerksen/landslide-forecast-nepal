@@ -140,6 +140,11 @@ def train_binary_classification_model(model,
             epoch_recall += np.sum(recall)/len(recall)
             epoch_f1 += np.sum(f1)/len(f1)
 
+            # Printing some probabilities to see what is fucked up (if any)
+            with torch.no_grad():
+                probs = torch.sigmoid(district_logits)
+                print("Predicted probabilities:", probs[0].cpu().numpy())
+                print("Ground truth labels:", binary_labels[0].cpu().numpy())
 
         experiment.log({
             'train loss': epoch_loss / len(train_loader),
