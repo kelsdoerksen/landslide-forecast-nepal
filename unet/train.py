@@ -128,7 +128,7 @@ def train_binary_classification_model(model,
             loss = criterion(district_logits.squeeze(2), binary_labels.float())       # Calculate loss
 
             # Probability conversion so I can do the other metric calculations
-            precision, recall, f1 = binary_classification_precision_recall(threshold, district_logits, binary_labels, batch_size)
+            precision, recall, f1 = binary_classification_precision_recall(threshold, district_logits, binary_labels)
 
             grad_scaler.scale(loss).backward()
             grad_scaler.step(optimizer)
@@ -186,7 +186,7 @@ def train_binary_classification_model(model,
 
                 # Probability conversion so I can do the other metric calculations
                 vprecision, vrecall, vf1 = binary_classification_precision_recall(threshold, district_logits,
-                                                                                  binary_labels, batch_size)
+                                                                                  binary_labels)
 
                 running_vloss += vloss
                 running_recall += np.sum(vrecall)/len(vrecall)

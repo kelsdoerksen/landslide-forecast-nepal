@@ -70,7 +70,7 @@ def district_embedding_pooling(embeddings, district_masks):
     return torch.stack(district_embedding_list)
 
 
-def binary_classification_precision_recall(threshold, logits, labels, batch_size):
+def binary_classification_precision_recall(threshold, logits, labels):
     """
     Take in the logits and labels and return the precision and recall
     """
