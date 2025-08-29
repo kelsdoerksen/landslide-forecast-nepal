@@ -194,6 +194,8 @@ def predict_binary_classification(in_model,
     recall = []
     f1 = []
     epoch_loss = 0
+    gt = []
+    probabilities = []
 
     print('length of test dataset is: {}'.format(len(test_loader)))
 
@@ -208,13 +210,17 @@ def predict_binary_classification(in_model,
             # Get binary labels
             binary_labels = get_binary_label(labels, district_masks)
             binary_labels = binary_labels.to(device)
+
             district_logits = district_logits.to(device)
 
             loss = criterion(district_logits.squeeze(2), binary_labels.float())  # Calculate loss
 
             # Probability conversion so I can do the other metric calculations
             p, r, f1score = binary_classification_precision_recall(threshold, district_logits,
-                                                                              binary_labels, batch_size=10)
+                                                                              binary_labels)
+
+            gt.append(binary_labels.cpu().numpy())
+            probabilities.append(torch.sigmoid(district_logits.squeeze(2)).cpu().numpy())
 
             precision.extend(p)
             recall.extend(r)
@@ -236,6 +242,10 @@ def predict_binary_classification(in_model,
     with open('{}/model_testing_results.txt'.format(out_dir), 'w') as f:
         f.write('Test set Precision is: {}'.format(np.sum(precision) / len(precision)))
         f.write('Test set Recall is: {}'.format(np.sum(recall) / len(recall)))
+
+    for i in range(len(gt)):
+        np.save('{}/groundtruth_{}.npy'.format(out_dir, i), gt[i])
+        np.save('{}/pred_{}.npy'.format(out_dir, i), probabilities[i])
 
     df = pd.DataFrame({'precision': precision, 'recall': recall, 'f1': f1})
     df.to_csv('{}/model_testing_results.csv'.format(out_dir), index=False)
