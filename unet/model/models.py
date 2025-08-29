@@ -108,7 +108,7 @@ class DistrictClassifier(nn.Module):
         """
         mask_torch = torch.from_numpy(mask).float().to(emb.device)  # shape (H, W)
         masked = emb * mask_torch
-        total = mask.sum()  # Number of pixels in the region
+        total = mask_torch.sum()  # Number of pixels in the region
         if total == 0:
             return torch.zeros(emb.shape[0], device=emb.device)
         return masked.sum(dim=(1, 2)) / total
