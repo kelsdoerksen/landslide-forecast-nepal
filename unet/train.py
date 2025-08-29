@@ -125,8 +125,6 @@ def train_binary_classification_model(model,
             binary_labels = get_binary_label(labels, district_masks)
             binary_labels = binary_labels.to(device)
 
-            import ipdb; ipdb.set_trace()
-
             loss = criterion(district_logits.squeeze(2), binary_labels.float())       # Calculate loss
 
             # Probability conversion so I can do the other metric calculations
