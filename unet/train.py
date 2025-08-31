@@ -69,7 +69,7 @@ def train_binary_classification_model(model,
         val_loader = cutmix(val_loader, alpha=cutmix_alpha, batch_size=32)
         experiment.log({'CutMix alpha': cutmix_alpha})
 
-    threshold = 0.1
+    threshold = 0.75
 
     # --- Setting up optimizer
     if opt == 'rms':
@@ -140,11 +140,13 @@ def train_binary_classification_model(model,
             epoch_recall += np.sum(recall)/len(recall)
             epoch_f1 += np.sum(f1)/len(f1)
 
+            '''
             # Printing some probabilities to see what is fucked up (if any)
             with torch.no_grad():
                 probs = torch.sigmoid(district_logits)
                 print("Predicted probabilities:", probs[0].cpu().numpy())
                 print("Ground truth labels:", binary_labels[0].cpu().numpy())
+            '''
 
         experiment.log({
             'train loss': epoch_loss / len(train_loader),
@@ -220,7 +222,7 @@ def train_binary_classification_model(model,
         except:
             pass
 
-        # Saving model at end of epoch with experiment name
+    # Saving model at end of epoch with experiment name
     out_model = '{}/{}_last_epoch.pth'.format(save_dir, experiment.name)
     Path(save_dir).mkdir(parents=True, exist_ok=True)
     torch.save({'epoch': epoch,

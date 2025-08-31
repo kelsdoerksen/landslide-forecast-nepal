@@ -167,10 +167,11 @@ def predict_binary_classification(in_model,
     if test_loss == 'bce_fp_4':
         criterion = BCE_FP(false_positive_weight=4.0, false_negative_weight=1.0, eps=1e-7)
 
-    threshold = 0.2
+    threshold = 0.75
     if exp_type == 'embedding':
         unetmodel = models.UNetDistrict(n_channels=32, n_classes=1, dropout=0, embedding_dim=32,
                                    district_masks=district_masks)
+        unetmodel.load_state_dict(torch.load(in_model)['state_dict'])
     elif 'unet_mini' in exp_type:
         unetmodel = models.UNetMini(n_channels=32, n_classes=1, dropout=0)
         unetmodel.load_state_dict(torch.load(in_model)['state_dict'])
@@ -214,6 +215,10 @@ def predict_binary_classification(in_model,
             district_logits = district_logits.to(device)
 
             loss = criterion(district_logits.squeeze(2), binary_labels.float())  # Calculate loss
+
+            probs = torch.sigmoid(district_logits)
+            print("Predicted probabilities:", probs[0].cpu().numpy())
+            print("Ground truth labels:", binary_labels[0].cpu().numpy())
 
             # Probability conversion so I can do the other metric calculations
             p, r, f1score = binary_classification_precision_recall(threshold, district_logits,
