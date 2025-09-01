@@ -78,43 +78,34 @@ class LandslideDataset(Dataset):
 
         image_fns_valid = ['sample_' + x for x in fns_valid]
         label_fns_valid = ['label_' + x for x in fns_valid]
-        self.image_fns = [x + '.npy' for x in image_fns_valid]
-        self.label_fns = [x + '.npy' for x in label_fns_valid]
+
+        image_fns = [x + '.npy' for x in image_fns_valid]
+        label_fns = [x + '.npy' for x in label_fns_valid]
+
+        if self.split == 'train':
+            image_fns = [x for x in image_fns if "{}".format(self.test_year) not in x]
+            if self.stride > 0:
+                image_fns = image_fns[::self.stride]
+        elif self.split == 'test':
+            image_fns = [x for x in image_fns if "{}".format(self.test_year) in x]
+            with open('{}/test_dates.txt'.format(self.out_dir), 'w') as f:
+                for line in image_fns:
+                    f.write('{}'.format(line))
+
+        self.image_fns = sorted(image_fns)
+        self.label_fns = [x.replace("sample", "label") for x in self.image_fns]
 
 
     def __len__(self):
-        if self.split == 'train':
-            image_fns = [x for x in self.image_fns if "{}".format(self.test_year) not in x]
-            if self.stride > 0:
-                image_fns = image_fns[::self.stride]
-        elif self.split == 'test':
-            image_fns = [x for x in self.image_fns if "{}".format(self.test_year) in x]
-        return len(image_fns)
+        return len(self.image_fns)
 
     def __getitem__(self, index):
-        image_fns = sort(self.image_fns)
-        if self.split == 'train':
-            image_fns = [x for x in self.image_fns if "{}".format(self.test_year) not in x]
-            if self.stride > 0:
-                image_fns = image_fns[::self.stride]
-            with open('{}/train_dates.txt'.format(self.out_dir), 'w') as f:
-                for line in image_fns:
-                    f.write('{}'.format(line))
-        elif self.split == 'test':
-            image_fns = [x for x in self.image_fns if "{}".format(self.test_year) in x]
-            # Save list of image_fns to file so we know what dates were used
-            image_fns_save = [s.strip('sample_') for s in image_fns]
-            image_fns_save = [s.strip('.npy') for s in image_fns]
-            with open('{}/test_dates.txt'.format(self.out_dir), 'w') as f:
-                for line in image_fns_save:
-                    f.write('{}'.format(line))
-
-        label_fns = list(map(lambda x: x.replace('sample', 'label'), image_fns))
-        image_fn = image_fns[index]
-        label_fn = label_fns[index]
+        image_fn = self.image_fns[index]
+        label_fn = self.label_fns[index]
 
         image_fp = os.path.join(self.image_dir, image_fn)
         label_fp = os.path.join(self.label_dir, label_fn)
+
         multichannel_image = load('{}'.format(image_fp), allow_pickle=True).astype('float32')
         label_class = load('{}'.format(label_fp), allow_pickle=True)
         multichannel_image = self.transform(multichannel_image)
