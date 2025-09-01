@@ -207,6 +207,9 @@ def predict_binary_classification(in_model,
             inputs, labels = data
             inputs, labels = inputs.to(device), labels.to(device)
 
+            import ipdb;
+            ipdb.set_trace()
+
             # Get embeddings from input
             embeddings, district_logits = unetmodel(inputs)
 
@@ -256,3 +259,13 @@ def predict_binary_classification(in_model,
 
     df = pd.DataFrame({'precision': precision, 'recall': recall, 'f1': f1})
     df.to_csv('{}/model_testing_results.csv'.format(out_dir), index=False)
+
+    flattened_gt = [arr.flatten() for arr in gt]
+    flattened_pred = [arr.flatten() for arr in probabilities]
+    all_gt = np.concatenate(flattened_gt)
+    all_pred = np.concatenate(flattened_pred)
+    prob_df = pd.DataFrame({
+        'label': all_gt,
+        'prediction': all_pred
+    })
+    prob_df.to_csv('{}/model_testing_probs.csv'.format(out_dir), index=False)
