@@ -69,7 +69,7 @@ def train_binary_classification_model(model,
         val_loader = cutmix(val_loader, alpha=cutmix_alpha, batch_size=32)
         experiment.log({'CutMix alpha': cutmix_alpha})
 
-    threshold = 0.75
+    threshold = 0.2
 
     # --- Setting up optimizer
     if opt == 'rms':
@@ -94,6 +94,8 @@ def train_binary_classification_model(model,
         criterion = BCE_FP(false_positive_weight=3.0, false_negative_weight=1.0, eps=1e-7)
     if training_loss == 'bce_fp_4':
         criterion = BCE_FP(false_positive_weight=4.0, false_negative_weight=1.0, eps=1e-7)
+    if training_loss == 'bce_fn_5':
+        criterion = BCE_FP(false_positive_weight=1.0, false_negative_weight=5.0, eps=1e-7)
 
     grad_scaler = torch.cuda.amp.GradScaler()
     model = model.to(device)
