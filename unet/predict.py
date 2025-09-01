@@ -171,7 +171,7 @@ def predict_binary_classification(in_model,
 
     threshold = 0.2
     if exp_type == 'embedding':
-        unetmodel = models.UNetDistrict(n_channels=32, n_classes=1, dropout=0, embedding_dim=32,
+        unetmodel = models.UNetDistrict(n_channels=32, n_classes=1, dropout=0, embedding_dim=32, hidden_dim=64,
                                    district_masks=district_masks)
         unetmodel.load_state_dict(torch.load(in_model)['state_dict'])
     elif 'unet_mini' in exp_type:
@@ -234,7 +234,7 @@ def predict_binary_classification(in_model,
             f1.extend(f1score)
             epoch_loss += loss.item()
 
-    print('test set loss is: {}'.format(bce_score / len(test_loader)))
+    print('test set loss is: {}'.format(epoch_loss / len(test_loader)))
 
     # Writing things to file
     wandb_experiment.log({

@@ -25,9 +25,9 @@ def get_binary_label(labels, district_masks):
             district_sum = masked.sum()
             if district_sum > 0:
                 # Need to append this as a torch value that do the torch.stack part
-                binary_labels.append(torch.tensor(1))
+                binary_labels.append(torch.tensor(1, device=labels.device))
             else:
-                binary_labels.append(torch.tensor(0))
+                binary_labels.append(torch.tensor(0, device=labels.device))
 
         district_labels.append(binary_labels)
 

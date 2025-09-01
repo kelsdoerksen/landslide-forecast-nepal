@@ -142,7 +142,7 @@ if __name__ == '__main__':
     district_masks = generate_district_masks('{}/District_Labels.tif'.format(root_dir))
 
     if args.exp_type == 'embedding':
-        unet = models.UNetDistrict(n_channels=32, n_classes=1, dropout=float(dropout), embedding_dim=32,
+        unet = models.UNetDistrict(n_channels=32, n_classes=1, dropout=float(dropout), embedding_dim=32, hidden_dim=64,
                                    district_masks=district_masks)
 
         print('Grabbing training data and normalizing...')
