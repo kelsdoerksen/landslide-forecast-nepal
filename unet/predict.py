@@ -207,9 +207,6 @@ def predict_binary_classification(in_model,
             inputs, labels = data
             inputs, labels = inputs.to(device), labels.to(device)
 
-            import ipdb;
-            ipdb.set_trace()
-
             # Get embeddings from input
             embeddings, district_logits = unetmodel(inputs)
 
