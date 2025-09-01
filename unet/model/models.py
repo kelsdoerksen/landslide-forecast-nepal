@@ -97,9 +97,14 @@ class UNetEmbedding(nn.Module):
 
 
 class DistrictClassifier(nn.Module):
-    def __init__(self, embedding_dim):
+    def __init__(self, embedding_dim, hidden_dim):
         super().__init__()
-        self.classifier = nn.Linear(embedding_dim, 1)
+        self.norm = nn.LayerNorm(embedding_dim)
+        self.mlp = nn.Sequential(
+            nn.Linear(embedding_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, 1)
+        )
 
     def masked_avg_pool(self, emb, mask):
         """
@@ -128,20 +133,22 @@ class DistrictClassifier(nn.Module):
                 district_embedding_list.append(pooled_emb)
 
             torch_embeddings = torch.stack(district_embedding_list)
-            logits = self.classifier(torch_embeddings)
+            normed_embeddings = self.norm(torch_embeddings)  # normalize per district
+            logits = self.mlp(normed_embeddings)  # (B, num_districts, 1)
 
             return logits
 
 
 class UNetDistrict(nn.Module):
-    def __init__(self, n_channels, n_classes, dropout, embedding_dim, district_masks):
+    def __init__(self, n_channels, n_classes, dropout, embedding_dim, hidden_dim, district_masks):
         super().__init__()
         self.n_channels = n_channels
         self.n_classes = n_classes
         self.dropout = dropout
         self.embedding_dim = embedding_dim
+        self.hidden_dim = hidden_dim
         self.unet = UNetEmbedding(n_channels, n_classes, dropout)
-        self.district_classifier = DistrictClassifier(embedding_dim)
+        self.district_classifier = DistrictClassifier(embedding_dim, hidden_dim)
         self.district_masks = district_masks
 
     def forward(self, x):
