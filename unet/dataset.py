@@ -125,11 +125,14 @@ class LandslideDataset(Dataset):
                 mean = self.mean.view(-1, 1, 1)
                 std = self.std.view(-1, 1, 1)
                 multichannel_image = (multichannel_image - mean) / (std + 1e-8)
+                print("Normalization mean:", mean)
+                print("Normalization std:", std)
         if self.max_val is not None and self.min_val is not None:
             if self.norm == 'minmax':
                 min_val = self.min_val.view(-1, 1, 1)
                 max_val = self.max_val.view(-1, 1, 1)
                 multichannel_image = (multichannel_image - min_val) / (max_val - min_val + 1e-8)
+
 
         return multichannel_image.float(), label_class.float()
 

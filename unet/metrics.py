@@ -16,10 +16,12 @@ def get_binary_label(labels, district_masks):
     To do: once I have access to the internet and can look it up, go through the labels and then return
     in the shape (B, H, W) as is fed in
     """
+    print('Getting binary labels for district')
     district_labels = []
     for i in range(labels.shape[0]):
         binary_labels = []
-        for d in district_masks.keys():
+        for d in sorted(district_masks.keys()):
+            print(d)
             mask_torch = torch.from_numpy(district_masks[d]).to(labels.device)  # shape (H, W)
             masked = labels[i,0,:,:] * mask_torch
             district_sum = masked.sum()
