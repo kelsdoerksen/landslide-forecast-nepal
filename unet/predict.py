@@ -222,6 +222,11 @@ def predict_binary_classification(in_model,
             print("Predicted probabilities:", probs[0].cpu().numpy())
             print("Ground truth labels:", binary_labels[0].cpu().numpy())
 
+            print("Sigmoid min/max:", probs.min().item(), probs.max().item())
+            for t in [0.05, 0.1, 0.15, 0.2, 0.25]:
+                precision, recall, f1 = binary_classification_precision_recall(t, district_logits, binary_labels)
+                print(f"Threshold {t:.2f}: F1 = {np.mean(f1):.4f}")
+
             # Probability conversion so I can do the other metric calculations
             p, r, f1score = binary_classification_precision_recall(threshold, district_logits,
                                                                               binary_labels)
