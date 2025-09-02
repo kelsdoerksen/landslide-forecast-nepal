@@ -64,7 +64,7 @@ def district_embedding_pooling(embeddings, district_masks):
     district_embedding_list = []
     for i in range(embeddings.shape[0]):
         pooled_emb = []
-        for district in district_masks.keys():
+        for district in sorted(district_masks.keys()):
             pooled_emb.append(masked_avg_pool(embeddings[i,:,:,:], district_masks[district]))
         pooled_emb = torch.stack(pooled_emb)
         district_embedding_list.append(pooled_emb)
