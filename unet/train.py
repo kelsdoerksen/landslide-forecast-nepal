@@ -51,7 +51,7 @@ def train_binary_classification_model(model,
     # from 2021 and 2022 to check the overfitting issue
 
     val_years = [2021, 2022]
-    val_months = [5, 7, 9]
+    val_months = [5, 8, 10]
 
     def parse_year_month_from_fn(fn):
         date_str = fn.replace('sample_', '').replace('.npy', '')
