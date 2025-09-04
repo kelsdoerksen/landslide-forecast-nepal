@@ -17,7 +17,7 @@ from dataset import *
 import logging
 from osgeo import gdal
 import random
-from torch.utils.data import ConcatDataset
+from torch.utils.data import ConcatDataset, DataLoader
 
 
 def get_args():
@@ -148,45 +148,79 @@ if __name__ == '__main__':
         print('Grabbing training data and normalizing...')
         landslide_train = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
                                            save_dir)
+
         n_channels = 32
-        mean = torch.zeros(n_channels)
-        std = torch.zeros(n_channels)
-        global_min = torch.full((n_channels,), float('inf'))
-        global_max = torch.full((n_channels,), float('-inf'))
-        n_samples = 0
+        channel_sum = torch.zeros(n_channels)
+        channel_sq_sum = torch.zeros(n_channels)
+        num_pixels = 0
 
-        if norm == 'zscore':
-            print("Computing per-channel mean and std...")
-            for images, _ in landslide_train:
-                images = images.float().contiguous()
-                # Reshape to (32, 6000)
-                images_flat = images.view(n_channels, -1)
+        train_loader = DataLoader(landslide_train, batch_size=1, shuffle=False)
+        for images, _ in train_loader:
+            images = images.float().contiguous()  # (32, 60, 100)
+            images_flat = images.view(n_channels, -1)  # (32, 6000)
 
-                # Calculate mean and std
-                mean += images_flat.mean(dim=1)
-                std += images_flat.std(dim=1)
-                n_samples += 1
+            channel_sum += images_flat.sum(dim=1)
+            channel_sq_sum += (images_flat ** 2).sum(dim=1)
+            num_pixels += images_flat.shape[1]
 
-            mean /= n_samples
-            std /= n_samples
-            max_val = None
-            min_val = None
+        mean = channel_sum / num_pixels
+        std = torch.sqrt(channel_sq_sum / num_pixels - mean ** 2)
+
+        static_channels = [0, 1, 2] # static channels and slope, elevation, aspect
+
+        # For static channels, compute mean/std across spatial pixels only from the first sample since its always the same
+        static_sample, _ = next(iter(train_loader))
+        static_sample = static_sample.float().contiguous()
+        static_sample_flat = static_sample.view(n_channels, -1)
+
+        for idx in static_channels:
+            mean[idx] = static_sample_flat[idx].mean()
+            std[idx] = static_sample_flat[idx].std()
+
+        global_min = None
+        global_max = None
+
 
         if norm == 'minmax':
             print("Computing per-channel min and max...")
-            for images, _ in landslide_train:
-                images = images.float().contiguous()
-                # Reshape to (32, 6000)
-                images_flat = images.view(n_channels, -1)
+            # Start with extremes
+            global_min = torch.full((n_channels,), float('inf'))
+            global_max = torch.full((n_channels,), float('-inf'))
 
-                # Calculating min and max
+            train_loader = DataLoader(landslide_train, batch_size=1, shuffle=False)
+            for images, _ in train_loader:
+                images = images.float().contiguous()  # (32, 60, 100)
+                images_flat = images.view(n_channels, -1)  # (32, 6000)
+
+                # Get per-channel min and max for this sample
                 min_vals = images_flat.min(dim=1).values
                 max_vals = images_flat.max(dim=1).values
 
-                global_min = torch.min(global_min, min_vals)
-                global_max = torch.max(global_max, max_vals)
+                # Update global min/max
+                global_min = torch.minimum(global_min, min_vals)
+                global_max = torch.maximum(global_max, max_vals)
                 mean = None
                 std = None
+
+            static_channels = [0, 1, 2]
+            dynamic_channels = [i for i in range(n_channels) if i not in static_channels]
+
+            # For static channels: take from first sample
+            static_sample, _ = next(iter(DataLoader(landslide_train, batch_size=1, shuffle=False)))
+            static_sample = static_sample.float().contiguous().view(n_channels, -1)
+            for idx in static_channels:
+                global_min[idx] = static_sample[idx].min()
+                global_max[idx] = static_sample[idx].max()
+
+            # For dynamic channels: loop over dataset
+            for images, _ in train_loader:
+                images = images.float().contiguous().view(n_channels, -1)
+                min_vals = images.min(dim=1).values
+                max_vals = images.max(dim=1).values
+
+                for idx in dynamic_channels:
+                    global_min[idx] = torch.minimum(global_min[idx], min_vals[idx])
+                    global_max[idx] = torch.maximum(global_max[idx], max_vals[idx])
 
         if 'stride' in args.exp_type:
             landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
@@ -198,11 +232,14 @@ if __name__ == '__main__':
                                                        save_dir, mean=mean, std=std, max_val=global_max,
                                                        min_val=global_min,
                                                        norm=norm)
+
         # --- Grabbing Testing Data ----
         print('Grabbing testing data...')
+
         landslide_test_dataset = LandslideDataset(sample_dir, label_dir, 'test', args.exp_type, args.test_year,
                                                   save_dir, mean=mean, std=std, max_val=global_max, min_val=global_min,
                                                   norm=norm)
+
 
         trained_model = train_binary_classification_model(
             model=unet,

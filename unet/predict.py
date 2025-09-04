@@ -207,8 +207,13 @@ def predict_binary_classification(in_model,
             inputs, labels = data
             inputs, labels = inputs.to(device), labels.to(device)
 
+            print("Sum of labels in test sample:", labels.sum().item())
+
             # Get embeddings from input
             embeddings, district_logits = unetmodel(inputs)
+
+            print("Input stats - mean:", inputs.mean().item(), "std:", inputs.std().item(),
+                  "min:", inputs.min().item(), "max:", inputs.max().item())
 
             # Get binary labels
             binary_labels = get_binary_label(labels, district_masks)

@@ -115,6 +115,9 @@ def train_binary_classification_model(model,
             inputs, labels = data
             inputs, labels = inputs.to(device), labels.to(device)
 
+            print("Input stats - mean:", inputs.mean().item(), "std:", inputs.std().item(),
+                  "min:", inputs.min().item(), "max:", inputs.max().item())
+
             # Zero gradients for every batch
             optimizer.zero_grad()
 
