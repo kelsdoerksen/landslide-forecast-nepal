@@ -78,6 +78,29 @@ def train_binary_classification_model(model,
     train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False)
 
+    '''
+    # If I want to look at class balance of data loader
+    def get_class_balance(loader, district_masks):
+        pos, neg = 0, 0
+        for inputs, labels in loader:
+            # Convert labels to binary mask
+            binary_labels = get_binary_label(labels, district_masks)  # same function you use in training
+
+            pos += binary_labels.sum().item()
+            neg += (binary_labels.numel() - binary_labels.sum().item())
+
+        total = pos + neg
+        pos_ratio = pos / total if total > 0 else 0
+        neg_ratio = neg / total if total > 0 else 0
+
+        print(f"Total samples: {total}")
+        print(f"Positive: {pos} ({pos_ratio:.2%})")
+        print(f"Negative: {neg} ({neg_ratio:.2%})")
+        return pos, neg, pos_ratio, neg_ratio
+
+    pos, neg, pos_ratio, neg_ratio = get_class_balance(train_loader, district_masks)
+    '''
+
     if int(channel_drop) > 0:
         for i in range(channel_drop_iter):
             train_loader = drop_channels(train_loader, channel_drop, batch_size=32, split='train',

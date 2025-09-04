@@ -55,7 +55,8 @@ def get_args():
                         required=True, action=argparse.BooleanOptionalAction)
     parser.add_argument('--cutmix_alpha', type=float, help='Specify cutmix alpha value during training',
                         required=True)
-    parser.add_argument('--stride', help='Specify stride',)
+    parser.add_argument('--stride', help='Specify stride for dropping similar samples', required=True),
+    parser.add_argument('--channels', help='Specify number of channels, 32 or 10 for aggregated', required=True),
     parser.add_argument('--overfit', dest='overfit', action='store_true')
 
     return parser.parse_args()
@@ -118,6 +119,7 @@ if __name__ == '__main__':
     cutmix_aug = args.cutmix
     cutmix_alpha = args.cutmix_alpha
     stride = int(args.stride)
+    n_channels = int(args.channels)
 
     # Initializing logging in wandb for experiment
     experiment = wandb.init(project='landslide-prediction', resume='allow', anonymous='must',
@@ -130,7 +132,10 @@ if __name__ == '__main__':
     )
 
     # --- Setting Directories
-    sample_dir = '{}/UNet_Samples_14Day_GPMv07/{}/ensemble_{}'.format(root_dir, ens, ens_num)
+    if n_channels == 10:
+        sample_dir = '{}/UNet_Samples_14Day_GPMv07/{}/ensemble_{}_agg'.format(root_dir, ens, ens_num)
+    else:
+        sample_dir = '{}/UNet_Samples_14Day_GPMv07/{}/ensemble_{}'.format(root_dir, ens, ens_num)
     label_dir = '{}/Binary_Landslide_Labels_14day'.format(root_dir)
 
     # --- Making save directory
@@ -146,22 +151,21 @@ if __name__ == '__main__':
     district_masks = generate_district_masks('{}/District_Labels.tif'.format(root_dir))
 
     if args.exp_type == 'embedding':
-        unet = models.UNetDistrict(n_channels=32, n_classes=1, dropout=float(dropout), embedding_dim=32, hidden_dim=64,
-                                   district_masks=district_masks)
+        unet = models.UNetDistrict(n_channels=n_channels, n_classes=1, dropout=float(dropout), embedding_dim=n_channels,
+                                   hidden_dim=64, district_masks=district_masks)
 
         print('Grabbing training data and normalizing...')
         landslide_train = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
-                                           save_dir)
+                                           save_dir, n_channels=n_channels)
 
-        n_channels = 32
         channel_sum = torch.zeros(n_channels)
         channel_sq_sum = torch.zeros(n_channels)
         num_pixels = 0
 
         train_loader = DataLoader(landslide_train, batch_size=1, shuffle=False)
         for images, _ in train_loader:
-            images = images.float().contiguous()  # (32, 60, 100)
-            images_flat = images.view(n_channels, -1)  # (32, 6000)
+            images = images.float().contiguous()  # (n_channels, 60, 100)
+            images_flat = images.view(n_channels, -1)  # (n_channels, 6000)
 
             channel_sum += images_flat.sum(dim=1)
             channel_sq_sum += (images_flat ** 2).sum(dim=1)
@@ -170,7 +174,7 @@ if __name__ == '__main__':
         mean = channel_sum / num_pixels
         std = torch.sqrt(channel_sq_sum / num_pixels - mean ** 2)
 
-        static_channels = [0, 1, 2] # static channels and slope, elevation, aspect
+        static_channels = [0, 1, 2, 3] # static channels dem, aspect, slope, modis
 
         # For static channels, compute mean/std across spatial pixels only from the first sample since its always the same
         static_sample, _ = next(iter(train_loader))
@@ -206,7 +210,7 @@ if __name__ == '__main__':
                 mean = None
                 std = None
 
-            static_channels = [0, 1, 2]
+            static_channels = [0, 1, 2, 3]
             dynamic_channels = [i for i in range(n_channels) if i not in static_channels]
 
             # For static channels: take from first sample
@@ -230,19 +234,19 @@ if __name__ == '__main__':
             landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
                                                        save_dir, mean=mean, std=std, max_val=global_max,
                                                        min_val=global_min,
-                                                       norm=norm, stride=stride)
+                                                       norm=norm, stride=stride, n_channels=n_channels)
         else:
             landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
                                                        save_dir, mean=mean, std=std, max_val=global_max,
                                                        min_val=global_min,
-                                                       norm=norm)
+                                                       norm=norm, n_channels=n_channels)
 
         # --- Grabbing Testing Data ----
         print('Grabbing testing data...')
 
         landslide_test_dataset = LandslideDataset(sample_dir, label_dir, 'test', args.exp_type, args.test_year,
                                                   save_dir, mean=mean, std=std, max_val=global_max, min_val=global_min,
-                                                  norm=norm)
+                                                  norm=norm, n_channels=n_channels)
 
 
         trained_model = train_binary_classification_model(
@@ -269,7 +273,7 @@ if __name__ == '__main__':
         print('Running Test set...')
         predict_binary_classification(trained_model, landslide_test_dataset, experiment, save_dir, device=device,
                 district_masks=district_masks, exp_type=args.exp_type, test_loss=args.loss,
-                channel_drop=channel_drop, channel_drop_iter=channel_drop_iter)
+                channel_drop=channel_drop, channel_drop_iter=channel_drop_iter, n_channels=n_channels)
 
     else:
         # -----------------------

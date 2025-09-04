@@ -54,13 +54,14 @@ class UNet(nn.Module):
 
 
 class UNetEmbedding(nn.Module):
-    def __init__(self, n_channels, n_classes, dropout):
+    def __init__(self, n_channels, n_classes, dropout, embedding_dim=10):
         super(UNetEmbedding, self).__init__()
         self.n_channels = n_channels
         self.n_classes = n_classes
         self.dropout = dropout
+        self.embedding_dim = embedding_dim
 
-        self.inc = (DoubleConv(n_channels, 32, dropout))     # input image size selecting 32 as smallest
+        self.inc = (DoubleConv(n_channels, 32, dropout))     # input image size
         self.down1 = (Down(32, 64, dropout))                 # doubling feature channels
         self.down2 = (Down(64, 128, dropout))                # doubling feature channels
         self.down3 = (Down(128, 256, dropout))               # doubling feature channels
@@ -69,6 +70,9 @@ class UNetEmbedding(nn.Module):
         self.up2 = (Up(256, 128 // 2, dropout))              # upsampling, halving number of features
         self.up3 = (Up(128, 64 // 2, dropout))               # upsampling, halving number of features
         self.up4 = (Up(64, 32, dropout))                     # supsampling, halving the number of features
+
+        # final layer to project into embedding_dim
+        self.out_proj = nn.Conv2d(32, self.embedding_dim, kernel_size=1)
 
 
     def forward(self, x):
@@ -81,7 +85,8 @@ class UNetEmbedding(nn.Module):
         x7 = self.up2(x6, x3)
         x8 = self.up3(x7, x2)
         x9 = self.up4(x8, x1)
-        return x9
+        out = self.out_proj(x9)
+        return out
 
 
     def use_checkpointing(self):
@@ -147,7 +152,7 @@ class UNetDistrict(nn.Module):
         self.dropout = dropout
         self.embedding_dim = embedding_dim
         self.hidden_dim = hidden_dim
-        self.unet = UNetEmbedding(n_channels, n_classes, dropout)
+        self.unet = UNetEmbedding(n_channels, n_classes, dropout, embedding_dim)
         self.district_classifier = DistrictClassifier(embedding_dim, hidden_dim)
         self.district_masks = district_masks
 
