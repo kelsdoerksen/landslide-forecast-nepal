@@ -47,16 +47,36 @@ def train_binary_classification_model(model,
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # --- Split dataset into training and validation
-    n_val = int(len(dataset) * val_percent)
-    n_train = len(dataset) - n_val
-    train_set, val_set = random_split(dataset, [n_train, n_val], generator=torch.Generator().
-                                      manual_seed(random.randint(0, 1000)))
+    # We want to avoid data leakage, so I am going to take validation samples
+    # from 2021 and 2022 to check the overfitting issue
+
+    val_years = [2021, 2022]
+    val_months = [5, 7, 9]
+
+    def parse_year_month_from_fn(fn):
+        date_str = fn.replace('sample_', '').replace('.npy', '')
+        y, m, _ = date_str.split('-')
+        return int(y), int(m)
+
+    all_fns = dataset.image_fns  # aligned with indexing
+    val_indices = []
+    train_indices = []
+
+    for idx, fn in enumerate(all_fns):
+        y, m = parse_year_month_from_fn(fn)
+        if y in val_years and m in val_months:
+            val_indices.append(idx)
+        else:
+            train_indices.append(idx)
+
+    train_set = Subset(dataset, train_indices)
+    val_set = Subset(dataset, val_indices)
 
     # --- DataLoaders
     # The DataLoader pulls instances of data from the Dataset, collects them in batches,
     # and returns them for consumption by your training loop.
     train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True)
-    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=True)
+    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False)
 
     if int(channel_drop) > 0:
         for i in range(channel_drop_iter):
