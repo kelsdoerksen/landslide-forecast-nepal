@@ -89,7 +89,7 @@ def train_binary_classification_model(model,
         val_loader = cutmix(val_loader, alpha=cutmix_alpha, batch_size=32)
         experiment.log({'CutMix alpha': cutmix_alpha})
 
-    threshold = 0.2
+    threshold = 0.5
 
     # --- Setting up optimizer
     if opt == 'rms':
@@ -123,6 +123,7 @@ def train_binary_classification_model(model,
 
     global_step = 0
     epoch_number = 0
+
     for epoch in range(epochs):
         print('Training EPOCH {}:'.format(epoch_number))
         epoch_number += 1
@@ -199,6 +200,8 @@ def train_binary_classification_model(model,
         running_precision = 0
         running_recall = 0
         running_f1 = 0
+        all_logits = []
+        all_labels = []
         with torch.no_grad():
             for k, vdata in enumerate(val_loader):
                 vinputs, vlabels = vdata
@@ -223,6 +226,14 @@ def train_binary_classification_model(model,
                 running_precision += np.sum(vprecision)/len(vprecision)
                 running_f1 += np.sum(vf1)/len(vf1)
 
+                all_logits.append(district_logits.squeeze(2).cpu())
+                all_labels.append(binary_labels.cpu())
+
+        all_logits = torch.cat(all_logits, dim=0)
+        all_labels = torch.cat(all_labels, dim=0)
+
+        best_thr, best_f1, curve = sweep_thresholds(all_logits, all_labels)
+
         avg_vloss = running_vloss / len(val_loader)
         avg_prec = running_precision / len(val_loader)
         avg_rec = running_recall / len(val_loader)
@@ -236,14 +247,23 @@ def train_binary_classification_model(model,
                 'validation Precision': avg_prec,
                 'validation Recall': avg_rec,
                 'validation F1': avg_f1,
-                'validation Precision pct cov': 'N/A',
-                'validation Recall pct cov': 'N/A',
                 'step': global_step,
                 'epoch': epoch,
+                "validation/best_threshold": best_thr,
+                "validation/best_F1": best_f1,
+                "validation/F1_vs_threshold": wandb.plot.line_series(
+                    xs=[curve["thresholds"]] * 3,
+                    ys=[curve["f1"], curve["precision"], curve["recall"]],
+                    keys=["F1", "Precision", "Recall"],
+                    title="Validation F1/Precision/Recall vs Threshold",
+                    xname="Threshold"
+                ),
                 **histograms
             })
         except:
             pass
+
+        threshold = best_thr
 
     # Saving model at end of epoch with experiment name
     out_model = '{}/{}_last_epoch.pth'.format(save_dir, experiment.name)
