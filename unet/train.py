@@ -268,8 +268,6 @@ def train_binary_classification_model(model,
         except:
             pass
 
-        threshold = best_thr
-
     # Saving model at end of epoch with experiment name
     out_model = '{}/{}_last_epoch.pth'.format(save_dir, experiment.name)
     Path(save_dir).mkdir(parents=True, exist_ok=True)
