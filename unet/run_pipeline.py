@@ -43,7 +43,7 @@ def get_args():
                         required=True)
     parser.add_argument('--tags', help='wandb tag',
                         required=True)
-    parser.add_argument('--exp_type', help='experiment type; in-monsoon and out-monsoon',
+    parser.add_argument('--exp_type', help='experiment type; in-monsoon, out-monsoon',
                         required=True)
     parser.add_argument('--norm_type', help='Data normalization technique, must be one of zscore or minmax',
                         required=True),
@@ -55,7 +55,9 @@ def get_args():
                         required=True, action=argparse.BooleanOptionalAction)
     parser.add_argument('--cutmix_alpha', type=float, help='Specify cutmix alpha value during training',
                         required=True)
+    parser.add_argument('--stride', help='Specify stride',)
     parser.add_argument('--overfit', dest='overfit', action='store_true')
+
     return parser.parse_args()
 
 
@@ -115,6 +117,7 @@ if __name__ == '__main__':
     channel_drop_iter = int(args.channel_drop_iter)
     cutmix_aug = args.cutmix
     cutmix_alpha = args.cutmix_alpha
+    stride = int(args.stride)
 
     # Initializing logging in wandb for experiment
     experiment = wandb.init(project='landslide-prediction', resume='allow', anonymous='must',
@@ -122,7 +125,8 @@ if __name__ == '__main__':
     experiment.config.update(
         dict(epochs=args.epochs, batch_size=args.batch_size, learning_rate=args.lr, dropout=dropout,
              val_percent=args.val_percent, save_checkpoint=True, exp_type=args.exp_type, forecast_model=args.ensemble,
-             ensemble_num=args.ensemble_member, test_year=args.test_year, data_norm=norm, loss=args.loss)
+             ensemble_num=args.ensemble_member, test_year=args.test_year, data_norm=norm, loss=args.loss,
+             stride=args.stride)
     )
 
     # --- Setting Directories
@@ -222,11 +226,11 @@ if __name__ == '__main__':
                     global_min[idx] = torch.minimum(global_min[idx], min_vals[idx])
                     global_max[idx] = torch.maximum(global_max[idx], max_vals[idx])
 
-        if 'stride' in args.exp_type:
+        if stride > 0:
             landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
                                                        save_dir, mean=mean, std=std, max_val=global_max,
                                                        min_val=global_min,
-                                                       norm=norm, stride=7)
+                                                       norm=norm, stride=stride)
         else:
             landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
                                                        save_dir, mean=mean, std=std, max_val=global_max,
