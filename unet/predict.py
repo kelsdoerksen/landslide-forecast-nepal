@@ -150,7 +150,8 @@ def predict_binary_classification(in_model,
             exp_type,
             test_loss,
             channel_drop=0,
-            channel_drop_iter=1):
+            channel_drop_iter=1,
+            n_channels=32):
     """
     Prediction pipeline
     """
@@ -168,11 +169,13 @@ def predict_binary_classification(in_model,
         criterion = BCE_FP(false_positive_weight=4.0, false_negative_weight=1.0, eps=1e-7)
     if test_loss == 'bce_fn_5':
         criterion = BCE_FP(false_positive_weight=1.0, false_negative_weight=5.0, eps=1e-7)
+    if test_loss == 'bce_fn_2':
+        criterion = BCE_FP(false_positive_weight=1.0, false_negative_weight=2.0, eps=1e-7)
 
     threshold = 0.2
     if exp_type == 'embedding':
-        unetmodel = models.UNetDistrict(n_channels=32, n_classes=1, dropout=0, embedding_dim=32, hidden_dim=64,
-                                   district_masks=district_masks)
+        unetmodel = models.UNetDistrict(n_channels=n_channels, n_classes=1, dropout=0, embedding_dim=n_channels,
+                                        hidden_dim=64, district_masks=district_masks)
         unetmodel.load_state_dict(torch.load(in_model)['state_dict'])
     elif 'unet_mini' in exp_type:
         unetmodel = models.UNetMini(n_channels=32, n_classes=1, dropout=0)
