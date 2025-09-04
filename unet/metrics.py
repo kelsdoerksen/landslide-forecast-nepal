@@ -10,6 +10,38 @@ import copy
 from sklearn.metrics import precision_score, recall_score, f1_score
 
 
+def sweep_thresholds(logits, labels, thresholds=None):
+    probs = torch.sigmoid(logits).cpu().numpy()
+    labels = labels.cpu().numpy()
+
+    if thresholds is None:
+        thresholds = np.linspace(0.0, 1.0, 51)
+
+    best_thr, best_f1 = 0.5, -1
+    curve = {"thresholds": [], "precision": [], "recall": [], "f1": []}
+
+    for t in thresholds:
+        preds = (probs >= t).astype(int)
+        tp = ((preds == 1) & (labels == 1)).sum()
+        fp = ((preds == 1) & (labels == 0)).sum()
+        fn = ((preds == 0) & (labels == 1)).sum()
+
+        precision = tp / (tp + fp + 1e-8)
+        recall = tp / (tp + fn + 1e-8)
+        f1 = 2 * precision * recall / (precision + recall + 1e-8)
+
+        curve["thresholds"].append(t)
+        curve["precision"].append(precision)
+        curve["recall"].append(recall)
+        curve["f1"].append(f1)
+
+        if f1 > best_f1:
+            best_f1 = f1
+            best_thr = t
+
+    return best_thr, best_f1, curve
+
+
 def get_binary_label(labels, district_masks):
     """
     Retreive the binary labels (0,1) for landslide from the labels to do linear classification
