@@ -116,6 +116,8 @@ def train_binary_classification_model(model,
         criterion = BCE_FP(false_positive_weight=4.0, false_negative_weight=1.0, eps=1e-7)
     if training_loss == 'bce_fn_5':
         criterion = BCE_FP(false_positive_weight=1.0, false_negative_weight=5.0, eps=1e-7)
+    if training_loss == 'bce_fn_2':
+        criterion = BCE_FP(false_positive_weight=1.0, false_negative_weight=2.0, eps=1e-7)
 
     grad_scaler = torch.cuda.amp.GradScaler()
     model = model.to(device)
@@ -232,7 +234,19 @@ def train_binary_classification_model(model,
         all_logits = torch.cat(all_logits, dim=0)
         all_labels = torch.cat(all_labels, dim=0)
 
-        best_thr, best_f1, curve = sweep_thresholds(all_logits, all_labels)
+        # Sweep thresholds
+        thresholds, precisions, recalls, f1s = sweep_thresholds(all_logits, all_labels)
+
+        # Log curves to W&B
+        experiment.log({
+            "val/PR_curve": wandb.plot.line_series(
+                xs=[thresholds, thresholds, thresholds],
+                ys=[precisions, recalls, f1s],
+                keys=["Precision", "Recall", "F1"],
+                title="Validation Precision/Recall/F1 vs Threshold",
+                xname="Threshold"
+            )
+        })
 
         avg_vloss = running_vloss / len(val_loader)
         avg_prec = running_precision / len(val_loader)
@@ -249,15 +263,6 @@ def train_binary_classification_model(model,
                 'validation F1': avg_f1,
                 'step': global_step,
                 'epoch': epoch,
-                "validation/best_threshold": best_thr,
-                "validation/best_F1": best_f1,
-                "validation/F1_vs_threshold": wandb.plot.line_series(
-                    xs=[curve["thresholds"]] * 3,
-                    ys=[curve["f1"], curve["precision"], curve["recall"]],
-                    keys=["F1", "Precision", "Recall"],
-                    title="Validation F1/Precision/Recall vs Threshold",
-                    xname="Threshold"
-                ),
                 **histograms
             })
         except:
