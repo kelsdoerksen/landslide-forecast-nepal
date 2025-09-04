@@ -5,7 +5,6 @@ split: monsoon_train refers to training the model with all the latest data (2016
 to run it on the 2024 test set
 monsoon_test refers to the 2024 monsoon season testing model performance
 """
-import ipdb
 from torch.utils.data import Dataset
 from torchvision import transforms
 from numpy import load, sort
@@ -109,8 +108,7 @@ class LandslideDataset(Dataset):
         multichannel_image = load('{}'.format(image_fp), allow_pickle=True).astype('float32')
         label_class = load('{}'.format(label_fp), allow_pickle=True)
         multichannel_image = self.transform(multichannel_image)
-        multichannel_image = torch.transpose(multichannel_image, 0, 1)
-        label_class = self.transform(label_class)
+        label_class = self.transform(label_class).unsqueeze(0)
 
         if multichannel_image.shape != torch.Size([32, 60, 100]):
             multichannel_image = torch.transpose(multichannel_image, 1, 2)
@@ -125,8 +123,6 @@ class LandslideDataset(Dataset):
                 mean = self.mean.view(-1, 1, 1)
                 std = self.std.view(-1, 1, 1)
                 multichannel_image = (multichannel_image - mean) / (std + 1e-8)
-                print("Normalization mean:", mean)
-                print("Normalization std:", std)
         if self.max_val is not None and self.min_val is not None:
             if self.norm == 'minmax':
                 min_val = self.min_val.view(-1, 1, 1)
@@ -137,5 +133,4 @@ class LandslideDataset(Dataset):
         return multichannel_image.float(), label_class.float()
 
     def transform(self, image):
-        transform_ops = transforms.ToTensor()
-        return transform_ops(image)
+        return torch.from_numpy(image)
