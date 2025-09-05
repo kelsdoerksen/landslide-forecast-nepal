@@ -171,6 +171,8 @@ def predict_binary_classification(in_model,
         criterion = BCE_FP(false_positive_weight=1.0, false_negative_weight=5.0, eps=1e-7)
     if test_loss == 'bce_fn_2':
         criterion = BCE_FP(false_positive_weight=1.0, false_negative_weight=2.0, eps=1e-7)
+    if test_loss == 'bce_fn_6':
+        criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([6]))
 
     threshold = 0.2
     if exp_type == 'embedding':

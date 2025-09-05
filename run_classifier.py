@@ -31,7 +31,7 @@ def get_args():
     parser = argparse.ArgumentParser(description='Running ML Pipeline for Landslide Prediction')
     parser.add_argument('--root_dir', help='Root directory of data')
     parser.add_argument('--results_dir', help='Results directory for runs')
-    parser.add_argument('--model', help='ML Model. Currently supports rf, gb, and xgb')
+    parser.add_argument('--model', help='ML Model. Currently supports rf, gb, xgb, tabnet')
     parser.add_argument('--test_year', help='Test year for study. Supports 2016-2024')
     parser.add_argument('--forecast_model', help='Precipitation Forecast Model Used')
     parser.add_argument('--ensemble_num', help='Ensemble member id used from precipitation forecast model')
@@ -1041,6 +1041,129 @@ def run_mlp(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wan
         'Model State': model_state
     })
 
+
+def run_tabnet(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wandb_exp, model_type, test_year, tuning):
+    """
+    Experiment for train and test set from all years, all regions
+    """
+
+    # Preserve date and location information for output
+    info_cols = ['date', 'district']
+    train_info = Xtrain[info_cols]
+    X_train = Xtrain.drop(columns=info_cols)
+
+    X_val = Xval.drop(columns=info_cols)
+
+    test_info = Xtest[info_cols]
+    Xtest = Xtest.drop(columns=info_cols)
+
+    if not tuning:
+        model_state = 'No tuning'
+        if not os.path.exists('{}/best_model.pkl'.format(data_dir)):
+            # Create an instance of XGB
+            clf = XGBClassifier(random_state=random.randint(1, 1000), eta=0.2, max_depth=6, min_child_weight=2)
+        else:
+            with open('{}/best_model.pkl'.format(data_dir), 'rb') as f:
+                clf = pickle.load(f)
+        print('No model hyperparameter tuning')
+        # Concat the train and validation sets together to train on the entire available dataset
+        X_train = pd.concat([X_train, X_val], axis=0)
+        ytrain = pd.concat([ytrain, y_val], axis=0)
+        # Fit the model
+        print('Fitting model...')
+        clf.fit(X_train, ytrain)
+    else:
+        # Tune the model
+        model_state = 'tuned_best_params'
+        print('Tuning the model')
+        param_grid = {
+            'eta': [0.01, 0.1, 0.2],
+            'max_depth': [3, 4, 5, 6],
+            'min_child_weight': [0, 1, 2],
+        }
+
+        tune_list = []
+        for i in range(3):
+            print('Tuning for iteration: {}'.format(i))
+            # Create an instance of  clf
+            clf = XGBClassifier(random_state=random.randint(1, 1000), eta=0.05, max_depth=3, min_child_weight=0,
+                                     max_delta_step=2, subsample=1, tree_method='approx')
+            # grid search cv
+            clf_cv = GridSearchCV(estimator=clf,
+                                 param_grid=param_grid,
+                                 scoring=['f1'],
+                                 refit='f1',
+                                 cv=3,
+                                 n_jobs=-1)
+
+            # Fit the grid search to the data
+            print('Running grid search cv on training set...')
+            start_time = time.time()
+            clf_cv.fit(X_train, y_train)
+            print("--- %s seconds to hyperparameter tune ---" % (time.time() - start_time))
+
+            # Set model to the best estimator from grid search
+            best_clf = clf_cv.best_estimator_
+
+            # Prediction on validation set with best XGB
+            tuned_probs = best_clf.predict_proba(X_val)
+            accuracy = best_clf.score(X_val, y_val)
+            f1 = f1_score(y_val, (tuned_probs[:, 1] >= 0.5) * 1)
+
+            clf_dict = clf_cv.best_params_
+            clf_dict['accuracy'] = accuracy
+            clf_dict['f1'] = f1
+            clf_dict['best_model'] = best_clf
+            tune_list.append(clf_dict)
+
+        # Get max F1 and use this as our best model
+        max_dict = max(tune_list, key=lambda x: x['f1'])
+        print('Max model stats after parameter tuning is: {}'.format(max_dict))
+        # Save the model to file
+        joblib.dump(max_dict['best_model'], '{}/xgb_model.joblib'.format(results))
+        # saving as pickle too
+        with open("{}/xgb_model.pkl".format(results), "wb") as file:
+            pickle.dump(max_dict['best_model'], file)
+        clf = max_dict['best_model']
+
+    # Measure model performance on test set
+    print('Evaluating model...')
+    probs = clf.predict_proba(Xtest)
+
+    acc_test = clf.score(Xtest, ytest)
+    f1_test = f1_score(ytest, (probs[:, 1] >= 0.5) * 1)
+
+    # Re-indexing so we can put it all in a df
+    test_info = test_info.reset_index().drop(columns=['index'])
+    ytest = ytest.reset_index().drop(columns=['index'])
+
+    accuracy = clf.score(Xtest, ytest)
+    print(f'The hard predictions were right {100 * accuracy:5.2f}% of the time')
+
+    df_probs = pd.DataFrame()
+    df_probs['model soft predictions'] = probs[:, 1]
+    df_probs['groundtruth'] = ytest
+    df_probs['date'] = test_info['date']
+    df_probs['district'] = test_info['district']
+    df_probs.to_csv('{}/predictions_and_groundtruth.csv'.format(results))
+
+    # Plot roc_auc curve
+    roc_auc(ytest, probs, results)
+
+    # Calculate Model Performance
+    calc_model_performance(clf, ytest, probs, Xtest, results, wandb_exp, model_type)
+
+    # Logging results to wandb
+    # --- Logging metrics
+    wandb_exp.log({
+        'accuracy': acc_test,
+        'F1 at 0.5': f1_test,
+        'roc': wandb.plot.roc_curve(ytest, probs, classes_to_plot=[1]),
+        'pr': wandb.plot.pr_curve(ytest, probs, classes_to_plot=[1]),
+        'Model State': model_state
+    })
+
+
 def run_trained_ukmo(root_directory, results_dir, wandb_exp, model_type, forecast_model_testing):
     """
     Run the ukmo model on the data from another forecast model from 2023 to test
@@ -1218,3 +1341,6 @@ if __name__ == '__main__':
 
         if model == 'mlp':
             run_mlp(data_dir, X_train, y_train, X_test, y_test, X_val, y_val, results, experiment, model, test_y, tuning)
+
+        if model == 'tabnet':
+            run_tabnet(data_dir, X_train, y_train, X_test, y_test, X_val, y_val, results, experiment, model, test_y, tuning)

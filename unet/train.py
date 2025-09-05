@@ -141,6 +141,8 @@ def train_binary_classification_model(model,
         criterion = BCE_FP(false_positive_weight=1.0, false_negative_weight=5.0, eps=1e-7)
     if training_loss == 'bce_fn_2':
         criterion = BCE_FP(false_positive_weight=1.0, false_negative_weight=2.0, eps=1e-7)
+    if training_loss == 'bce_fn_6':
+        criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([6]))
 
     grad_scaler = torch.cuda.amp.GradScaler()
     torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
