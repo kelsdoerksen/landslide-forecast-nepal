@@ -25,6 +25,7 @@ from joblib import dump, load
 import pickle
 import random
 import time
+from pytorch_tabnet.tab_model import TabNetClassifier
 
 
 def get_args():
