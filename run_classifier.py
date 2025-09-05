@@ -1056,23 +1056,20 @@ def run_tabnet(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, 
     X_val = Xval.drop(columns=info_cols)
 
     test_info = Xtest[info_cols]
-    Xtest = Xtest.drop(columns=info_cols)
+    Xtest = Xtest.drop(columns=info_cols, errors='ignore')
 
     if not tuning:
         model_state = 'No tuning'
         if not os.path.exists('{}/best_model.pkl'.format(data_dir)):
             # Create an instance of XGB
-            clf = XGBClassifier(random_state=random.randint(1, 1000), eta=0.2, max_depth=6, min_child_weight=2)
+            clf = TabNetClassifier()
         else:
             with open('{}/best_model.pkl'.format(data_dir), 'rb') as f:
                 clf = pickle.load(f)
         print('No model hyperparameter tuning')
-        # Concat the train and validation sets together to train on the entire available dataset
-        X_train = pd.concat([X_train, X_val], axis=0)
-        ytrain = pd.concat([ytrain, y_val], axis=0)
         # Fit the model
         print('Fitting model...')
-        clf.fit(X_train, ytrain)
+        clf.fit(X_train.values, ytrain.values, eval_set=[(X_val.values, y_val.values)], max_epochs=80)
     else:
         # Tune the model
         model_state = 'tuned_best_params'
@@ -1131,15 +1128,11 @@ def run_tabnet(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, 
     print('Evaluating model...')
     probs = clf.predict_proba(Xtest)
 
-    acc_test = clf.score(Xtest, ytest)
     f1_test = f1_score(ytest, (probs[:, 1] >= 0.5) * 1)
 
     # Re-indexing so we can put it all in a df
     test_info = test_info.reset_index().drop(columns=['index'])
     ytest = ytest.reset_index().drop(columns=['index'])
-
-    accuracy = clf.score(Xtest, ytest)
-    print(f'The hard predictions were right {100 * accuracy:5.2f}% of the time')
 
     df_probs = pd.DataFrame()
     df_probs['model soft predictions'] = probs[:, 1]

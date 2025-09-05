@@ -150,9 +150,14 @@ if __name__ == '__main__':
     # Generating district masks to use for the precision, recall
     district_masks = generate_district_masks('{}/District_Labels.tif'.format(root_dir))
 
-    if args.exp_type == 'embedding':
-        unet = models.UNetDistrict(n_channels=n_channels, n_classes=1, dropout=float(dropout), embedding_dim=n_channels,
-                                   hidden_dim=64, district_masks=district_masks)
+    if args.exp_type in ['embedding', 'embedding_mini']:
+        if args.exp_type == 'embedding_mini':
+            unet = models.UNetDistrictMini(n_channels=n_channels, n_classes=1, dropout=float(dropout),
+                                       embedding_dim=n_channels,
+                                       hidden_dim=64, district_masks=district_masks)
+        else:
+            unet = models.UNetDistrict(n_channels=n_channels, n_classes=1, dropout=float(dropout), embedding_dim=n_channels,
+                                       hidden_dim=64, district_masks=district_masks)
 
         print('Grabbing training data and normalizing...')
         landslide_train = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
