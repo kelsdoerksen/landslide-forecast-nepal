@@ -33,7 +33,7 @@ def train_binary_classification_model(model,
                 training_loss,
                 opt,
                 val_percent,
-                weight_decay: float = 0.00001,
+                weight_decay: float = 1e-3,
                 save_checkpoint: bool=True,
                 district_masks = None,
                 channel_drop=0,
@@ -48,10 +48,10 @@ def train_binary_classification_model(model,
 
     # --- Split dataset into training and validation
     # We want to avoid data leakage, so I am going to take validation samples
-    # from 2021 and 2022 to check the overfitting issue
+    # from 2022 to check the overfitting issue
 
-    val_years = [2021, 2022]
-    val_months = [5, 8, 10]
+    val_years = [2022]
+    val_months = [6, 8, 10]
 
     def parse_year_month_from_fn(fn):
         date_str = fn.replace('sample_', '').replace('.npy', '')
@@ -143,6 +143,7 @@ def train_binary_classification_model(model,
         criterion = BCE_FP(false_positive_weight=1.0, false_negative_weight=2.0, eps=1e-7)
 
     grad_scaler = torch.cuda.amp.GradScaler()
+    torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
     model = model.to(device)
     model.train()
 
