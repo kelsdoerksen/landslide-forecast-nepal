@@ -26,6 +26,12 @@ import pickle
 import random
 import time
 from pytorch_tabnet.tab_model import TabNetClassifier
+from sklearn.preprocessing import LabelEncoder
+from pytorch_tabnet.metrics import Metric
+from sklearn.metrics import f1_score
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
 
 
 def get_args():
@@ -1048,6 +1054,76 @@ def run_tabnet(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, 
     Experiment for train and test set from all years, all regions
     """
 
+    # --- Setting some things up
+    # F1 Metrics
+    # Sloppy but identifying different F1 thresholds
+    class F1ScoreThreshold2(Metric):
+        def __init__(self, threshold=0.2):
+            self._name = f"f1_t{threshold}"
+            self._maximize = True
+            self.threshold = threshold
+
+        def __call__(self, y_true, y_score):
+            # y_score[:, 1] are the predicted probabilities for the positive class
+            probs = y_score[:, 1]
+            preds = (probs >= self.threshold).astype(int)
+            return f1_score(y_true, preds, average="binary")
+
+    class F1ScoreThreshold15(Metric):
+        def __init__(self, threshold=0.15):
+            self._name = f"f1_t{threshold}"
+            self._maximize = True
+            self.threshold = threshold
+
+        def __call__(self, y_true, y_score):
+            # y_score[:, 1] are the predicted probabilities for the positive class
+            probs = y_score[:, 1]
+            preds = (probs >= self.threshold).astype(int)
+            return f1_score(y_true, preds, average="binary")
+
+    class F1ScoreThreshold1(Metric):
+        def __init__(self, threshold=0.1):
+            self._name = f"f1_t{threshold}"
+            self._maximize = True
+            self.threshold = threshold
+
+        def __call__(self, y_true, y_score):
+            # y_score[:, 1] are the predicted probabilities for the positive class
+            probs = y_score[:, 1]
+            preds = (probs >= self.threshold).astype(int)
+            return f1_score(y_true, preds, average="binary")
+
+    # Focal Loss for imbalanced data
+    class FocalLoss(nn.Module):
+        def __init__(self, alpha=0.75, gamma=2.0, reduction="mean"):
+            """
+            alpha: balance factor for class imbalance (float or tensor)
+            gamma: focusing parameter
+            reduction: "mean" or "sum"
+            Setting alpha to 0.75 for imbalanced data for class 1 being closer to 10% of distribution
+            """
+            super(FocalLoss, self).__init__()
+            self.alpha = alpha
+            self.gamma = gamma
+            self.reduction = reduction
+
+        def forward(self, inputs, targets):
+            """
+            inputs: raw logits from model (N, C)
+            targets: ground truth labels (N,)
+            """
+            logpt = F.cross_entropy(inputs, targets, reduction="none")
+            pt = torch.exp(-logpt)  # prob of true class
+
+            focal_loss = self.alpha * (1 - pt) ** self.gamma * logpt
+
+            if self.reduction == "mean":
+                return focal_loss.mean()
+            elif self.reduction == "sum":
+                return focal_loss.sum()
+            return focal_loss
+
+
     # Preserve date and location information for output
     info_cols = ['date', 'district']
     train_info = Xtrain[info_cols]
@@ -1057,6 +1133,16 @@ def run_tabnet(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, 
 
     test_info = Xtest[info_cols]
     Xtest = Xtest.drop(columns=info_cols, errors='ignore')
+
+    # Encode labels
+    le = LabelEncoder()
+    y_train_enc = le.fit_transform(y_train)
+    y_val_enc = le.transform(y_val)
+
+    # Define basic classifier with focal loss
+    clf = TabNetClassifier(seed=42,
+                           verbose=1)
+    clf.loss_fn = FocalLoss(alpha=0.75, gamma=2)
 
     if not tuning:
         model_state = 'No tuning'
@@ -1069,16 +1155,21 @@ def run_tabnet(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, 
         print('No model hyperparameter tuning')
         # Fit the model
         print('Fitting model...')
-        clf.fit(X_train.values, ytrain.values, eval_set=[(X_val.values, y_val.values)], max_epochs=80)
+        clf.fit(
+            X_train.values.astype(np.float32), y_train_enc,
+            eval_set=[(X_val.values.astype(np.float32), y_val_enc)],
+            eval_name=["val"],
+            eval_metric=[F1ScoreThreshold2, F1ScoreThreshold15, F1ScoreThreshold1],
+            max_epochs=200,
+            patience=20,
+            batch_size=1024,
+            virtual_batch_size=128
+        )
     else:
         # Tune the model
         model_state = 'tuned_best_params'
         print('Tuning the model')
-        param_grid = {
-            'eta': [0.01, 0.1, 0.2],
-            'max_depth': [3, 4, 5, 6],
-            'min_child_weight': [0, 1, 2],
-        }
+        param_grid = {}
 
         tune_list = []
         for i in range(3):
@@ -1126,7 +1217,7 @@ def run_tabnet(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, 
 
     # Measure model performance on test set
     print('Evaluating model...')
-    probs = clf.predict_proba(Xtest)
+    probs = clf.predict_proba(Xtest.values)
 
     f1_test = f1_score(ytest, (probs[:, 1] >= 0.5) * 1)
 
@@ -1150,7 +1241,6 @@ def run_tabnet(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, 
     # Logging results to wandb
     # --- Logging metrics
     wandb_exp.log({
-        'accuracy': acc_test,
         'F1 at 0.5': f1_test,
         'roc': wandb.plot.roc_curve(ytest, probs, classes_to_plot=[1]),
         'pr': wandb.plot.pr_curve(ytest, probs, classes_to_plot=[1]),

@@ -47,11 +47,10 @@ def train_binary_classification_model(model,
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # --- Split dataset into training and validation
-    # We want to avoid data leakage, so I am going to take validation samples
-    # from 2022 to check the overfitting issue
+    # Hardcoding val year to be 2023 for 2024 test set to try it out
 
-    val_years = [2022]
-    val_months = [6, 8, 10]
+    val_years = [2023]
+    val_months = [8, 9, 10]
 
     def parse_year_month_from_fn(fn):
         date_str = fn.replace('sample_', '').replace('.npy', '')
@@ -112,7 +111,7 @@ def train_binary_classification_model(model,
         val_loader = cutmix(val_loader, alpha=cutmix_alpha, batch_size=32)
         experiment.log({'CutMix alpha': cutmix_alpha})
 
-    threshold = 0.2
+    threshold = 0.15
 
     # --- Setting up optimizer
     if opt == 'rms':
@@ -232,8 +231,6 @@ def train_binary_classification_model(model,
         running_precision = 0
         running_recall = 0
         running_f1 = 0
-        all_logits = []
-        all_labels = []
         with torch.no_grad():
             for k, vdata in enumerate(val_loader):
                 vinputs, vlabels = vdata
@@ -249,7 +246,7 @@ def train_binary_classification_model(model,
 
                 vloss = criterion(district_logits.squeeze(2), binary_labels.float())  # Calculate loss
 
-                # Probability conversion so I can do the other metric calculations
+                # precision, recall, f1
                 vprecision, vrecall, vf1 = binary_classification_precision_recall(threshold, district_logits,
                                                                                   binary_labels)
 
@@ -257,26 +254,6 @@ def train_binary_classification_model(model,
                 running_recall += np.sum(vrecall)/len(vrecall)
                 running_precision += np.sum(vprecision)/len(vprecision)
                 running_f1 += np.sum(vf1)/len(vf1)
-
-                all_logits.append(district_logits.squeeze(2).cpu())
-                all_labels.append(binary_labels.cpu())
-
-        all_logits = torch.cat(all_logits, dim=0)
-        all_labels = torch.cat(all_labels, dim=0)
-
-        # Sweep thresholds
-        thresholds, precisions, recalls, f1s = sweep_thresholds(all_logits, all_labels)
-
-        # Log curves to W&B
-        experiment.log({
-            "val/PR_curve": wandb.plot.line_series(
-                xs=[thresholds, thresholds, thresholds],
-                ys=[precisions, recalls, f1s],
-                keys=["Precision", "Recall", "F1"],
-                title="Validation Precision/Recall/F1 vs Threshold",
-                xname="Threshold"
-            )
-        })
 
         avg_vloss = running_vloss / len(val_loader)
         avg_prec = running_precision / len(val_loader)
