@@ -73,6 +73,7 @@ class UNetEmbedding(nn.Module):
 
         # final layer to project into embedding_dim
         self.out_proj = nn.Conv2d(32, self.embedding_dim, kernel_size=1)
+        self.emb_dropout = nn.Dropout2d(p=0.2)      # Dropout to improve regularization
 
 
     def forward(self, x):
@@ -86,6 +87,7 @@ class UNetEmbedding(nn.Module):
         x8 = self.up3(x7, x2)
         x9 = self.up4(x8, x1)
         out = self.out_proj(x9)
+        out = self.emb_dropout(out)
         return out
 
 
@@ -108,6 +110,7 @@ class DistrictClassifier(nn.Module):
         self.mlp = nn.Sequential(
             nn.Linear(embedding_dim, hidden_dim),
             nn.ReLU(),
+            nn.Dropout(p=0.5),
             nn.Linear(hidden_dim, 1)
         )
 
