@@ -181,6 +181,10 @@ def predict_binary_classification(in_model,
         unetmodel = models.UNetDistrict(n_channels=n_channels, n_classes=1, dropout=0, embedding_dim=n_channels,
                                         hidden_dim=64, district_masks=district_masks)
         unetmodel.load_state_dict(torch.load(in_model)['state_dict'])
+    elif exp_type == 'embedding_mini':
+        unetmodel = models.UNetDistrictMini(n_channels=n_channels, n_classes=1, dropout=0, embedding_dim=n_channels,
+                                        hidden_dim=64, district_masks=district_masks)
+        unetmodel.load_state_dict(torch.load(in_model)['state_dict'])
     elif 'unet_mini' in exp_type:
         unetmodel = models.UNetMini(n_channels=32, n_classes=1, dropout=0)
         unetmodel.load_state_dict(torch.load(in_model)['state_dict'])

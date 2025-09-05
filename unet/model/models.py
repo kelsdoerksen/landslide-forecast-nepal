@@ -165,6 +165,68 @@ class UNetDistrict(nn.Module):
         return embeddings, district_logits
 
 
+class UNetEmbeddingMini(nn.Module):
+    def __init__(self, n_channels, n_classes, dropout, embedding_dim=10):
+        super(UNetEmbeddingMini, self).__init__()
+        self.n_channels = n_channels
+        self.n_classes = n_classes
+        self.dropout = dropout
+        self.embedding_dim = embedding_dim
+
+        self.inc = (DoubleConv(n_channels, 32, dropout))  # input image size selecting 32 as smallest
+        self.down1 = (Down(32, 64, dropout))  # doubling feature channels
+        self.down2 = (Down(64, 128, dropout))  # doubling feature channels
+        self.down3 = (Down(128, 256 // 2, dropout))
+        self.up1 = (Up(256, 128 // 2, dropout))  # upsampling, halving number of features
+        self.up2 = (Up(128, 64 // 2, dropout))  # upsampling, halving number of features
+        self.up3 = (Up(64, 32, dropout))  # upsampling, halving the number of features
+
+        # final layer to project into embedding_dim
+        self.out_proj = nn.Conv2d(32, self.embedding_dim, kernel_size=1)
+        self.emb_dropout = nn.Dropout2d(p=0.2)      # Dropout to improve regularization
+
+
+    def forward(self, x):
+        x1 = self.inc(x)
+        x2 = self.down1(x1)
+        x3 = self.down2(x2)
+        x4 = self.down3(x3)
+        x5 = self.up1(x4, x3)
+        x6 = self.up2(x5, x2)
+        x7 = self.up3(x6, x1)
+        out = self.out_proj(x7)
+        out = self.emb_dropout(out)
+        return out
+
+
+    def use_checkpointing(self):
+        self.inc = torch.utils.checkpoint(self.inc)
+        self.down1 = torch.utils.checkpoint(self.down1)
+        self.down2 = torch.utils.checkpoint(self.down2)
+        self.down3 = torch.utils.checkpoint(self.down3)
+        self.up1 = torch.utils.checkpoint(self.up1)
+        self.up2 = torch.utils.checkpoint(self.up2)
+        self.up3 = torch.utils.checkpoint(self.up3)
+
+
+class UNetDistrictMini(nn.Module):
+    def __init__(self, n_channels, n_classes, dropout, embedding_dim, hidden_dim, district_masks):
+        super().__init__()
+        self.n_channels = n_channels
+        self.n_classes = n_classes
+        self.dropout = dropout
+        self.embedding_dim = embedding_dim
+        self.hidden_dim = hidden_dim
+        self.unet = UNetEmbeddingMini(n_channels, n_classes, dropout, embedding_dim)
+        self.district_classifier = DistrictClassifier(embedding_dim, hidden_dim)
+        self.district_masks = district_masks
+
+    def forward(self, x):
+        embeddings = self.unet(x)  # (B, C, H, W)
+        district_logits = self.district_classifier(embeddings, self.district_masks)
+        return embeddings, district_logits
+
+
 class UNetMini(nn.Module):
     def __init__(self, n_channels, n_classes, dropout):
         super(UNetMini, self).__init__()
