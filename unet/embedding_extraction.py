@@ -27,7 +27,6 @@ from pathlib import Path
 from predict import *
 from augmentation import *
 from torchvision.transforms import v2, Lambda
-from tqdm import tqdm
 
 
 def run_embedding_extraction(model,
