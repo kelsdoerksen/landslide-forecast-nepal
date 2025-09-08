@@ -18,6 +18,7 @@ import logging
 from osgeo import gdal
 import random
 from torch.utils.data import ConcatDataset, DataLoader
+from embedding_extraction import *
 
 
 def get_args():
@@ -150,13 +151,9 @@ if __name__ == '__main__':
     # Generating district masks to use for the precision, recall
     district_masks = generate_district_masks('{}/District_Labels.tif'.format(root_dir))
 
-    if args.exp_type in ['embedding', 'embedding_mini']:
-        if args.exp_type == 'embedding_mini':
-            unet = models.UNetDistrictMini(n_channels=n_channels, n_classes=1, dropout=float(dropout),
+    if args.exp_type == 'embedding_extractor':
+        unet = models.UNetDistrictMini(n_channels=n_channels, n_classes=1, dropout=float(dropout),
                                        embedding_dim=n_channels,
-                                       hidden_dim=64, district_masks=district_masks)
-        else:
-            unet = models.UNetDistrict(n_channels=n_channels, n_classes=1, dropout=float(dropout), embedding_dim=n_channels,
                                        hidden_dim=64, district_masks=district_masks)
 
         print('Grabbing training data and normalizing...')
@@ -167,7 +164,7 @@ if __name__ == '__main__':
         channel_sq_sum = torch.zeros(n_channels)
         num_pixels = 0
 
-        train_loader = DataLoader(landslide_train, batch_size=1, shuffle=False)
+        train_loader = DataLoader(landslide_train, batch_size=1, shuffle=True)
         for images, _ in train_loader:
             images = images.float().contiguous()  # (n_channels, 60, 100)
             images_flat = images.view(n_channels, -1)  # (n_channels, 6000)
@@ -179,7 +176,7 @@ if __name__ == '__main__':
         mean = channel_sum / num_pixels
         std = torch.sqrt(channel_sq_sum / num_pixels - mean ** 2)
 
-        static_channels = [0, 1, 2, 3] # static channels dem, aspect, slope, modis
+        static_channels = [0, 1, 2, 3]  # static channels dem, aspect, slope, modis
 
         # For static channels, compute mean/std across spatial pixels only from the first sample since its always the same
         static_sample, _ = next(iter(train_loader))
@@ -193,14 +190,13 @@ if __name__ == '__main__':
         global_min = None
         global_max = None
 
-
         if norm == 'minmax':
             print("Computing per-channel min and max...")
             # Start with extremes
             global_min = torch.full((n_channels,), float('inf'))
             global_max = torch.full((n_channels,), float('-inf'))
 
-            train_loader = DataLoader(landslide_train, batch_size=1, shuffle=False)
+            train_loader = DataLoader(landslide_train, batch_size=1, shuffle=True)
             for images, _ in train_loader:
                 images = images.float().contiguous()  # (32, 60, 100)
                 images_flat = images.view(n_channels, -1)  # (32, 6000)
@@ -252,226 +248,132 @@ if __name__ == '__main__':
         landslide_test_dataset = LandslideDataset(sample_dir, label_dir, 'test', args.exp_type, args.test_year,
                                                   save_dir, mean=mean, std=std, max_val=global_max, min_val=global_min,
                                                   norm=norm, n_channels=n_channels)
+        # --- Running extraction
+        test_set_embeddings = run_embedding_extraction(unet,
+                                 landslide_train_dataset,
+                                 landslide_test_dataset,
+                                 district_masks,
+                                 batch_size=args.batch_size,
+                                 learning_rate=args.lr,
+                                 weight_decay=1e-3,
+                                 opt=args.optimizer,
+                                 training_loss=args.loss,
+                                 save_dir=save_dir,
+                                 experiment=experiment,
+                                 epochs=args.epochs
+                                 )
 
 
-        trained_model = train_binary_classification_model(
-            model=unet,
-            device=device,
-            dataset=landslide_train_dataset,
-            save_dir=save_dir,
-            experiment=experiment,
-            val_percent=float(args.val_percent),
-            epochs=args.epochs,
-            batch_size=args.batch_size,
-            learning_rate=args.lr,
-            training_loss=args.loss,
-            opt=args.optimizer,
-            save_checkpoint=True,
-            district_masks=district_masks,
-            channel_drop=channel_drop,
-            channel_drop_iter=channel_drop_iter,
-            cutmix_aug=cutmix_aug,
-            cutmix_alpha=cutmix_alpha,
-            overfit=args.overfit
-        )
-
-        print('Running Test set...')
-        predict_binary_classification(trained_model, landslide_test_dataset, experiment, save_dir, device=device,
-                district_masks=district_masks, exp_type=args.exp_type, test_loss=args.loss,
-                channel_drop=channel_drop, channel_drop_iter=channel_drop_iter, n_channels=n_channels)
-
+        # Save embeddings to file
+        test_set_embeddings.to_csv('{}/{}_epoch{}_{}channels_embeddings.csv'.format(save_dir, args.test_year,
+                                                                                    n_channels, args.epochs))
     else:
-        # -----------------------
 
-        # We can locate now here where all the ones in the district are
-        for district in district_masks:
-            district_masks[district] = np.where(district_masks[district] == 1)
+        if args.exp_type in ['embedding', 'embedding_mini']:
+            if args.exp_type == 'embedding_mini':
+                unet = models.UNetDistrictMini(n_channels=n_channels, n_classes=1, dropout=float(dropout),
+                                           embedding_dim=n_channels,
+                                           hidden_dim=64, district_masks=district_masks)
+            else:
+                unet = models.UNetDistrict(n_channels=n_channels, n_classes=1, dropout=float(dropout), embedding_dim=n_channels,
+                                           hidden_dim=64, district_masks=district_masks)
 
-
-        # Want to change the list to be of pair type so we can compare more easily
-        for district in district_masks:
-            points = []
-            for i in range(len(district_masks[district][0])):
-                points.append([district_masks[district][0][i], district_masks[district][1][i]])
-            district_masks[district] = points
-
-        # Check experiment type and run the things
-        #Below is old, I will remove this once I have written the new format
-        if args.exp_type == 'monsoon-tool':
-            print('Training model on all the latest data and saving for monsoon tool')
-            unet = models.UNet(n_channels=32, n_classes=1, dropout=float(dropout))
-
-            if torch.cuda.is_available():
-                unet.cuda()
-            # unet.to(device=device)
-
-            set_seed(random.randint(0, 1000))
-
-            # ---- Grabbing Training Data ----
-            print('Grabbing training data...')
-            landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
-                                                       save_dir)
-
-            print('Training model...')
-            trained_model = train_model(
-                model=unet,
-                device=device,
-                dataset=landslide_train_dataset,
-                save_dir=save_dir,
-                experiment=experiment,
-                val_percent=float(args.val_percent),
-                epochs=args.epochs,
-                batch_size=args.batch_size,
-                learning_rate=args.lr,
-                training_loss=args.loss,
-                opt=args.optimizer,
-                save_checkpoint=True,
-                district_masks=district_masks,
-                channel_drop=channel_drop,
-                channel_drop_iter=channel_drop_iter,
-                cutmix_aug=cutmix_aug,
-                cutmix_alpha=cutmix_alpha,
-                overfit=args.overfit
-            )
-
-        if args.exp_type == 'monsoon_test':
-            unet = models.UNet(n_channels=32, n_classes=1, dropout=float(dropout))
-            set_seed(random.randint(0, 1000))
-
-            print('Testing pre-trained model on latest Monsoon season...')
-            model_path = '{}/Results/GPMv07/UKMO_ensemble_0_3s5mrfx1/cosmic-shadow-424_last_epoch.pth'.format(root_dir)         # Hardcoding for now until I do some investigating
-            unet = torch.load(model_path, weights_only=False)
-
-            sample_dir = '{}/2024_Season_Retro/UNet_Samples_14Day_GPMv07/ecmwf/ensemble_0'.format(root_dir)          # We used ecmwf during the monsoon season of 2024
-            label_dir = '{}/2024_Season_Retro/Binary_Landslide_Labels_14day'.format(root_dir)
-
-            print('Grabbing testing data...')
-            landslide_test_dataset = LandslideDataset(sample_dir, label_dir, 'monsoon_test', save_dir)
-
-            print('Predicting on 2024 Monsoon season...')
-            predict(unet, landslide_test_dataset, experiment, save_dir, device=device,
-                    district_masks=district_masks, exp_type = args.exp_type, channel_drop=channel_drop,
-                    channel_drop_iter=channel_drop_iter)
-
-        if args.exp_type == 'monsoon-tool':
-            print('Training model on UKMO-0 and ECMWF for the monsoon tool...')
-            unet = models.UNet(n_channels=32, n_classes=1, dropout=float(dropout))
-
-            if torch.cuda.is_available():
-                unet.cuda()
-            # unet.to(device=device)
-
-            set_seed(random.randint(0, 1000))
-
-            sample_dir_1 = '{}/UNet_Samples_14Day_GPMv07/UKMO/ensemble_0'.format(root_dir)
-            label_dir_1 = '{}/Binary_Landslide_Labels_14day'.format(root_dir)
-
-            sample_dir_2 = '{}/UNet_Samples_14Day_GPMv07/ecmwf/ensemble_0'.format(root_dir)
-            label_dir_2 = '{}/Binary_Landslide_Labels_14day'.format(root_dir)
-
-            # ---- Grabbing Training Data ----
-            print('Grabbing training data...')
-            landslide_train_dataset_1 = LandslideDataset(sample_dir_1, label_dir_1, 'train', args.exp_type, 2023,
-                                                       save_dir)
-            landslide_train_dataset_2 = LandslideDataset(sample_dir_2, label_dir_2, 'train', args.exp_type, 2025,
-                                                         save_dir)
-
-            combined_landslide_train_dataset = ConcatDataset([landslide_train_dataset_1, landslide_train_dataset_2])
-            trained_model = train_model(
-                model=unet,
-                device=device,
-                dataset=combined_landslide_train_dataset,
-                save_dir=save_dir,
-                experiment=experiment,
-                val_percent=float(args.val_percent),
-                epochs=args.epochs,
-                batch_size=args.batch_size,
-                learning_rate=args.lr,
-                training_loss=args.loss,
-                opt=args.optimizer,
-                save_checkpoint=True,
-                district_masks=district_masks,
-                channel_drop=channel_drop,
-                channel_drop_iter=channel_drop_iter,
-                cutmix_aug=cutmix_aug,
-                cutmix_alpha=cutmix_alpha,
-                overfit=args.overfit
-            )
-
-        if 'unet_mini' in args.exp_type:
-            # Let's try this out with the mini unet
-            print('Running on smaller unet')
-            unet = models.UNetMini(n_channels=32, n_classes=1, dropout=float(dropout))
-            device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-            unet.to(device=device)
-
-            set_seed(random.randint(0, 1000))
-
-            # ---- Grabbing Training Data ---
             print('Grabbing training data and normalizing...')
             landslide_train = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
-                                               save_dir)
-            n_channels = 32
-            mean = torch.zeros(n_channels)
-            std = torch.zeros(n_channels)
-            global_min = torch.full((n_channels,), float('inf'))
-            global_max = torch.full((n_channels,), float('-inf'))
-            n_samples = 0
+                                               save_dir, n_channels=n_channels)
 
-            if norm == 'zscore':
-                print("Computing per-channel mean and std...")
-                for images, _ in landslide_train:
-                    images = images.float().contiguous()
-                    # Reshape to (32, 6000)
-                    images_flat = images.view(n_channels, -1)
+            channel_sum = torch.zeros(n_channels)
+            channel_sq_sum = torch.zeros(n_channels)
+            num_pixels = 0
 
-                    # Calculate mean and std
-                    mean += images_flat.mean(dim=1)
-                    std += images_flat.std(dim=1)
-                    n_samples += 1
+            train_loader = DataLoader(landslide_train, batch_size=1, shuffle=False)
+            for images, _ in train_loader:
+                images = images.float().contiguous()  # (n_channels, 60, 100)
+                images_flat = images.view(n_channels, -1)  # (n_channels, 6000)
 
-                mean /= n_samples
-                std /= n_samples
-                max_val = None
-                min_val = None
+                channel_sum += images_flat.sum(dim=1)
+                channel_sq_sum += (images_flat ** 2).sum(dim=1)
+                num_pixels += images_flat.shape[1]
+
+            mean = channel_sum / num_pixels
+            std = torch.sqrt(channel_sq_sum / num_pixels - mean ** 2)
+
+            static_channels = [0, 1, 2, 3] # static channels dem, aspect, slope, modis
+
+            # For static channels, compute mean/std across spatial pixels only from the first sample since its always the same
+            static_sample, _ = next(iter(train_loader))
+            static_sample = static_sample.float().contiguous()
+            static_sample_flat = static_sample.view(n_channels, -1)
+
+            for idx in static_channels:
+                mean[idx] = static_sample_flat[idx].mean()
+                std[idx] = static_sample_flat[idx].std()
+
+            global_min = None
+            global_max = None
+
 
             if norm == 'minmax':
                 print("Computing per-channel min and max...")
-                for images, _ in landslide_train:
-                    images = images.float().contiguous()
-                    # Reshape to (32, 6000)
-                    images_flat = images.view(n_channels, -1)
+                # Start with extremes
+                global_min = torch.full((n_channels,), float('inf'))
+                global_max = torch.full((n_channels,), float('-inf'))
 
-                    # Calculating min and max
+                train_loader = DataLoader(landslide_train, batch_size=1, shuffle=False)
+                for images, _ in train_loader:
+                    images = images.float().contiguous()  # (32, 60, 100)
+                    images_flat = images.view(n_channels, -1)  # (32, 6000)
+
+                    # Get per-channel min and max for this sample
                     min_vals = images_flat.min(dim=1).values
                     max_vals = images_flat.max(dim=1).values
 
-                    global_min = torch.min(global_min, min_vals)
-                    global_max = torch.max(global_max, max_vals)
+                    # Update global min/max
+                    global_min = torch.minimum(global_min, min_vals)
+                    global_max = torch.maximum(global_max, max_vals)
                     mean = None
                     std = None
 
-            if 'stride' in args.exp_type:
+                static_channels = [0, 1, 2, 3]
+                dynamic_channels = [i for i in range(n_channels) if i not in static_channels]
+
+                # For static channels: take from first sample
+                static_sample, _ = next(iter(DataLoader(landslide_train, batch_size=1, shuffle=False)))
+                static_sample = static_sample.float().contiguous().view(n_channels, -1)
+                for idx in static_channels:
+                    global_min[idx] = static_sample[idx].min()
+                    global_max[idx] = static_sample[idx].max()
+
+                # For dynamic channels: loop over dataset
+                for images, _ in train_loader:
+                    images = images.float().contiguous().view(n_channels, -1)
+                    min_vals = images.min(dim=1).values
+                    max_vals = images.max(dim=1).values
+
+                    for idx in dynamic_channels:
+                        global_min[idx] = torch.minimum(global_min[idx], min_vals[idx])
+                        global_max[idx] = torch.maximum(global_max[idx], max_vals[idx])
+
+            if stride > 0:
                 landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
-                                                           save_dir, mean=mean, std=std, max_val=global_max, min_val=global_min,
-                                                           norm=norm, stride=2)
+                                                           save_dir, mean=mean, std=std, max_val=global_max,
+                                                           min_val=global_min,
+                                                           norm=norm, stride=stride, n_channels=n_channels)
             else:
                 landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
                                                            save_dir, mean=mean, std=std, max_val=global_max,
                                                            min_val=global_min,
-                                                           norm=norm)
+                                                           norm=norm, n_channels=n_channels)
+
             # --- Grabbing Testing Data ----
             print('Grabbing testing data...')
-            if args.exp_type == 'ukmo-train-ecmwf-test':
-                # If experiment type is train on ukmo, test on ecmwf, test set comes from ecmwf
-                sample_dir = '{}/UNet_Samples_14Day_GPMv07/ECMWF/ensemble_0'.format(root_dir)
 
             landslide_test_dataset = LandslideDataset(sample_dir, label_dir, 'test', args.exp_type, args.test_year,
                                                       save_dir, mean=mean, std=std, max_val=global_max, min_val=global_min,
-                                                      norm=norm)
+                                                      norm=norm, n_channels=n_channels)
 
-            print('Training model...')
-            trained_model = train_model(
+
+            trained_model = train_binary_classification_model(
                 model=unet,
                 device=device,
                 dataset=landslide_train_dataset,
@@ -493,105 +395,322 @@ if __name__ == '__main__':
             )
 
             print('Running Test set...')
-            predict(trained_model, landslide_test_dataset, experiment, save_dir, device=device,
-                    district_masks=district_masks, exp_type=args.exp_type, test_loss=args.loss, channel_drop=channel_drop,
-                    channel_drop_iter=channel_drop_iter)
+            predict_binary_classification(trained_model, landslide_test_dataset, experiment, save_dir, device=device,
+                    district_masks=district_masks, exp_type=args.exp_type, test_loss=args.loss,
+                    channel_drop=channel_drop, channel_drop_iter=channel_drop_iter, n_channels=n_channels)
 
         else:
-            unet = models.UNet(n_channels=32, n_classes=1, dropout=float(dropout))
+            # -----------------------
 
-            device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-            unet.to(device=device)
+            # We can locate now here where all the ones in the district are
+            for district in district_masks:
+                district_masks[district] = np.where(district_masks[district] == 1)
 
-            set_seed(random.randint(0,1000))
 
-            # ---- Grabbing Training Data ---
-            print('Grabbing training data and normalizing...')
-            landslide_train = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
-                                                       save_dir)
-            n_channels = 32
-            mean = torch.zeros(n_channels)
-            std = torch.zeros(n_channels)
-            global_min = torch.full((n_channels,), float('inf'))
-            global_max = torch.full((n_channels,), float('-inf'))
-            n_samples = 0
+            # Want to change the list to be of pair type so we can compare more easily
+            for district in district_masks:
+                points = []
+                for i in range(len(district_masks[district][0])):
+                    points.append([district_masks[district][0][i], district_masks[district][1][i]])
+                district_masks[district] = points
 
-            if norm == 'zscore':
-                print("Computing per-channel mean and std...")
-                for images, _ in landslide_train:
-                    images = images.float().contiguous()
-                    # Reshape to (32, 6000)
-                    images_flat = images.view(n_channels, -1)
+            # Check experiment type and run the things
+            #Below is old, I will remove this once I have written the new format
+            if args.exp_type == 'monsoon-tool':
+                print('Training model on all the latest data and saving for monsoon tool')
+                unet = models.UNet(n_channels=32, n_classes=1, dropout=float(dropout))
 
-                    # Calculate mean and std
-                    mean += images_flat.mean(dim=1)
-                    std += images_flat.std(dim=1)
-                    n_samples += 1
+                if torch.cuda.is_available():
+                    unet.cuda()
+                # unet.to(device=device)
 
-                mean /= n_samples
-                std /= n_samples
-                max_val = None
-                min_val = None
+                set_seed(random.randint(0, 1000))
 
-            if norm == 'minmax':
-                print("Computing per-channel min and max...")
-                for images, _ in landslide_train:
-                    images = images.float().contiguous()
-                    # Reshape to (32, 6000)
-                    images_flat = images.view(n_channels, -1)
-
-                    # Calculating min and max
-                    min_vals = images_flat.min(dim=1).values
-                    max_vals = images_flat.max(dim=1).values
-
-                    global_min = torch.min(global_min, min_vals)
-                    global_max = torch.max(global_max, max_vals)
-                    mean = None
-                    std = None
-
-            if args.exp_type == 'stride':
+                # ---- Grabbing Training Data ----
+                print('Grabbing training data...')
                 landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
-                                                           save_dir, mean=mean, std=std, max_val=global_max, min_val=global_min,
-                                                           norm=norm, stride=2)
+                                                           save_dir)
+
+                print('Training model...')
+                trained_model = train_model(
+                    model=unet,
+                    device=device,
+                    dataset=landslide_train_dataset,
+                    save_dir=save_dir,
+                    experiment=experiment,
+                    val_percent=float(args.val_percent),
+                    epochs=args.epochs,
+                    batch_size=args.batch_size,
+                    learning_rate=args.lr,
+                    training_loss=args.loss,
+                    opt=args.optimizer,
+                    save_checkpoint=True,
+                    district_masks=district_masks,
+                    channel_drop=channel_drop,
+                    channel_drop_iter=channel_drop_iter,
+                    cutmix_aug=cutmix_aug,
+                    cutmix_alpha=cutmix_alpha,
+                    overfit=args.overfit
+                )
+
+            if args.exp_type == 'monsoon_test':
+                unet = models.UNet(n_channels=32, n_classes=1, dropout=float(dropout))
+                set_seed(random.randint(0, 1000))
+
+                print('Testing pre-trained model on latest Monsoon season...')
+                model_path = '{}/Results/GPMv07/UKMO_ensemble_0_3s5mrfx1/cosmic-shadow-424_last_epoch.pth'.format(root_dir)         # Hardcoding for now until I do some investigating
+                unet = torch.load(model_path, weights_only=False)
+
+                sample_dir = '{}/2024_Season_Retro/UNet_Samples_14Day_GPMv07/ecmwf/ensemble_0'.format(root_dir)          # We used ecmwf during the monsoon season of 2024
+                label_dir = '{}/2024_Season_Retro/Binary_Landslide_Labels_14day'.format(root_dir)
+
+                print('Grabbing testing data...')
+                landslide_test_dataset = LandslideDataset(sample_dir, label_dir, 'monsoon_test', save_dir)
+
+                print('Predicting on 2024 Monsoon season...')
+                predict(unet, landslide_test_dataset, experiment, save_dir, device=device,
+                        district_masks=district_masks, exp_type = args.exp_type, channel_drop=channel_drop,
+                        channel_drop_iter=channel_drop_iter)
+
+            if args.exp_type == 'monsoon-tool':
+                print('Training model on UKMO-0 and ECMWF for the monsoon tool...')
+                unet = models.UNet(n_channels=32, n_classes=1, dropout=float(dropout))
+
+                if torch.cuda.is_available():
+                    unet.cuda()
+                # unet.to(device=device)
+
+                set_seed(random.randint(0, 1000))
+
+                sample_dir_1 = '{}/UNet_Samples_14Day_GPMv07/UKMO/ensemble_0'.format(root_dir)
+                label_dir_1 = '{}/Binary_Landslide_Labels_14day'.format(root_dir)
+
+                sample_dir_2 = '{}/UNet_Samples_14Day_GPMv07/ecmwf/ensemble_0'.format(root_dir)
+                label_dir_2 = '{}/Binary_Landslide_Labels_14day'.format(root_dir)
+
+                # ---- Grabbing Training Data ----
+                print('Grabbing training data...')
+                landslide_train_dataset_1 = LandslideDataset(sample_dir_1, label_dir_1, 'train', args.exp_type, 2023,
+                                                           save_dir)
+                landslide_train_dataset_2 = LandslideDataset(sample_dir_2, label_dir_2, 'train', args.exp_type, 2025,
+                                                             save_dir)
+
+                combined_landslide_train_dataset = ConcatDataset([landslide_train_dataset_1, landslide_train_dataset_2])
+                trained_model = train_model(
+                    model=unet,
+                    device=device,
+                    dataset=combined_landslide_train_dataset,
+                    save_dir=save_dir,
+                    experiment=experiment,
+                    val_percent=float(args.val_percent),
+                    epochs=args.epochs,
+                    batch_size=args.batch_size,
+                    learning_rate=args.lr,
+                    training_loss=args.loss,
+                    opt=args.optimizer,
+                    save_checkpoint=True,
+                    district_masks=district_masks,
+                    channel_drop=channel_drop,
+                    channel_drop_iter=channel_drop_iter,
+                    cutmix_aug=cutmix_aug,
+                    cutmix_alpha=cutmix_alpha,
+                    overfit=args.overfit
+                )
+
+            if 'unet_mini' in args.exp_type:
+                # Let's try this out with the mini unet
+                print('Running on smaller unet')
+                unet = models.UNetMini(n_channels=32, n_classes=1, dropout=float(dropout))
+                device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+                unet.to(device=device)
+
+                set_seed(random.randint(0, 1000))
+
+                # ---- Grabbing Training Data ---
+                print('Grabbing training data and normalizing...')
+                landslide_train = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
+                                                   save_dir)
+                n_channels = 32
+                mean = torch.zeros(n_channels)
+                std = torch.zeros(n_channels)
+                global_min = torch.full((n_channels,), float('inf'))
+                global_max = torch.full((n_channels,), float('-inf'))
+                n_samples = 0
+
+                if norm == 'zscore':
+                    print("Computing per-channel mean and std...")
+                    for images, _ in landslide_train:
+                        images = images.float().contiguous()
+                        # Reshape to (32, 6000)
+                        images_flat = images.view(n_channels, -1)
+
+                        # Calculate mean and std
+                        mean += images_flat.mean(dim=1)
+                        std += images_flat.std(dim=1)
+                        n_samples += 1
+
+                    mean /= n_samples
+                    std /= n_samples
+                    max_val = None
+                    min_val = None
+
+                if norm == 'minmax':
+                    print("Computing per-channel min and max...")
+                    for images, _ in landslide_train:
+                        images = images.float().contiguous()
+                        # Reshape to (32, 6000)
+                        images_flat = images.view(n_channels, -1)
+
+                        # Calculating min and max
+                        min_vals = images_flat.min(dim=1).values
+                        max_vals = images_flat.max(dim=1).values
+
+                        global_min = torch.min(global_min, min_vals)
+                        global_max = torch.max(global_max, max_vals)
+                        mean = None
+                        std = None
+
+                if 'stride' in args.exp_type:
+                    landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
+                                                               save_dir, mean=mean, std=std, max_val=global_max, min_val=global_min,
+                                                               norm=norm, stride=2)
+                else:
+                    landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
+                                                               save_dir, mean=mean, std=std, max_val=global_max,
+                                                               min_val=global_min,
+                                                               norm=norm)
+                # --- Grabbing Testing Data ----
+                print('Grabbing testing data...')
+                if args.exp_type == 'ukmo-train-ecmwf-test':
+                    # If experiment type is train on ukmo, test on ecmwf, test set comes from ecmwf
+                    sample_dir = '{}/UNet_Samples_14Day_GPMv07/ECMWF/ensemble_0'.format(root_dir)
+
+                landslide_test_dataset = LandslideDataset(sample_dir, label_dir, 'test', args.exp_type, args.test_year,
+                                                          save_dir, mean=mean, std=std, max_val=global_max, min_val=global_min,
+                                                          norm=norm)
+
+                print('Training model...')
+                trained_model = train_model(
+                    model=unet,
+                    device=device,
+                    dataset=landslide_train_dataset,
+                    save_dir=save_dir,
+                    experiment=experiment,
+                    val_percent=float(args.val_percent),
+                    epochs=args.epochs,
+                    batch_size=args.batch_size,
+                    learning_rate=args.lr,
+                    training_loss=args.loss,
+                    opt=args.optimizer,
+                    save_checkpoint=True,
+                    district_masks=district_masks,
+                    channel_drop=channel_drop,
+                    channel_drop_iter=channel_drop_iter,
+                    cutmix_aug=cutmix_aug,
+                    cutmix_alpha=cutmix_alpha,
+                    overfit=args.overfit
+                )
+
+                print('Running Test set...')
+                predict(trained_model, landslide_test_dataset, experiment, save_dir, device=device,
+                        district_masks=district_masks, exp_type=args.exp_type, test_loss=args.loss, channel_drop=channel_drop,
+                        channel_drop_iter=channel_drop_iter)
+
             else:
-                landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
-                                                           save_dir, mean=mean, std=std, max_val=global_max,
-                                                           min_val=global_min,
+                unet = models.UNet(n_channels=32, n_classes=1, dropout=float(dropout))
+
+                device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+                unet.to(device=device)
+
+                set_seed(random.randint(0,1000))
+
+                # ---- Grabbing Training Data ---
+                print('Grabbing training data and normalizing...')
+                landslide_train = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
+                                                           save_dir)
+                n_channels = 32
+                mean = torch.zeros(n_channels)
+                std = torch.zeros(n_channels)
+                global_min = torch.full((n_channels,), float('inf'))
+                global_max = torch.full((n_channels,), float('-inf'))
+                n_samples = 0
+
+                if norm == 'zscore':
+                    print("Computing per-channel mean and std...")
+                    for images, _ in landslide_train:
+                        images = images.float().contiguous()
+                        # Reshape to (32, 6000)
+                        images_flat = images.view(n_channels, -1)
+
+                        # Calculate mean and std
+                        mean += images_flat.mean(dim=1)
+                        std += images_flat.std(dim=1)
+                        n_samples += 1
+
+                    mean /= n_samples
+                    std /= n_samples
+                    max_val = None
+                    min_val = None
+
+                if norm == 'minmax':
+                    print("Computing per-channel min and max...")
+                    for images, _ in landslide_train:
+                        images = images.float().contiguous()
+                        # Reshape to (32, 6000)
+                        images_flat = images.view(n_channels, -1)
+
+                        # Calculating min and max
+                        min_vals = images_flat.min(dim=1).values
+                        max_vals = images_flat.max(dim=1).values
+
+                        global_min = torch.min(global_min, min_vals)
+                        global_max = torch.max(global_max, max_vals)
+                        mean = None
+                        std = None
+
+                if args.exp_type == 'stride':
+                    landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
+                                                               save_dir, mean=mean, std=std, max_val=global_max, min_val=global_min,
+                                                               norm=norm, stride=2)
+                else:
+                    landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
+                                                               save_dir, mean=mean, std=std, max_val=global_max,
+                                                               min_val=global_min,
+                                                               norm=norm)
+
+                # --- Grabbing Testing Data ----
+                print('Grabbing testing data...')
+                if args.exp_type == 'ukmo-train-ecmwf-test':
+                    # If experiment type is train on ukmo, test on ecmwf, test set comes from ecmwf
+                    sample_dir = '{}/UNet_Samples_14Day_GPMv07/ECMWF/ensemble_0'.format(root_dir)
+
+                landslide_test_dataset = LandslideDataset(sample_dir, label_dir, 'test', args.exp_type, args.test_year,
+                                                          save_dir, mean=mean, std=std, max_val=global_max, min_val=global_min,
                                                            norm=norm)
 
-            # --- Grabbing Testing Data ----
-            print('Grabbing testing data...')
-            if args.exp_type == 'ukmo-train-ecmwf-test':
-                # If experiment type is train on ukmo, test on ecmwf, test set comes from ecmwf
-                sample_dir = '{}/UNet_Samples_14Day_GPMv07/ECMWF/ensemble_0'.format(root_dir)
+                print('Training model...')
+                trained_model = train_model(
+                    model=unet,
+                    device=device,
+                    dataset=landslide_train_dataset,
+                    save_dir=save_dir,
+                    experiment=experiment,
+                    val_percent=float(args.val_percent),
+                    epochs=args.epochs,
+                    batch_size=args.batch_size,
+                    learning_rate=args.lr,
+                    training_loss=args.loss,
+                    opt = args.optimizer,
+                    save_checkpoint=True,
+                    district_masks = district_masks,
+                    channel_drop=channel_drop,
+                    channel_drop_iter=channel_drop_iter,
+                    cutmix_aug=cutmix_aug,
+                    cutmix_alpha=cutmix_alpha,
+                    overfit=args.overfit
+                )
 
-            landslide_test_dataset = LandslideDataset(sample_dir, label_dir, 'test', args.exp_type, args.test_year,
-                                                      save_dir, mean=mean, std=std, max_val=global_max, min_val=global_min,
-                                                       norm=norm)
-
-            print('Training model...')
-            trained_model = train_model(
-                model=unet,
-                device=device,
-                dataset=landslide_train_dataset,
-                save_dir=save_dir,
-                experiment=experiment,
-                val_percent=float(args.val_percent),
-                epochs=args.epochs,
-                batch_size=args.batch_size,
-                learning_rate=args.lr,
-                training_loss=args.loss,
-                opt = args.optimizer,
-                save_checkpoint=True,
-                district_masks = district_masks,
-                channel_drop=channel_drop,
-                channel_drop_iter=channel_drop_iter,
-                cutmix_aug=cutmix_aug,
-                cutmix_alpha=cutmix_alpha,
-                overfit=args.overfit
-            )
-
-            print('Running Test set...')
-            predict(trained_model, landslide_test_dataset, experiment, save_dir, device=device,
-                    district_masks = district_masks, exp_type = args.exp_type, test_loss=args.loss,
-                    channel_drop=channel_drop, channel_drop_iter=channel_drop_iter)
+                print('Running Test set...')
+                predict(trained_model, landslide_test_dataset, experiment, save_dir, device=device,
+                        district_masks = district_masks, exp_type = args.exp_type, test_loss=args.loss,
+                        channel_drop=channel_drop, channel_drop_iter=channel_drop_iter)
