@@ -248,10 +248,19 @@ if __name__ == '__main__':
         landslide_test_dataset = LandslideDataset(sample_dir, label_dir, 'test', args.exp_type, args.test_year,
                                                   save_dir, mean=mean, std=std, max_val=global_max, min_val=global_min,
                                                   norm=norm, n_channels=n_channels)
+
+        landslide_train_dataset_no_stride = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
+                                                       save_dir, mean=mean, std=std, max_val=global_max,
+                                                       min_val=global_min,
+                                                       norm=norm, stride=0, n_channels=n_channels)
+
+        # Combine train and test since I am extracting now for all
+        full_dataset = ConcatDataset([landslide_train_dataset_no_stride, landslide_test_dataset])
+
         # --- Running extraction
-        test_set_embeddings = run_embedding_extraction(unet,
+        all_years_embeddings = run_embedding_extraction(unet,
                                  landslide_train_dataset,
-                                 landslide_test_dataset,
+                                 full_dataset,
                                  district_masks,
                                  batch_size=args.batch_size,
                                  learning_rate=args.lr,
@@ -263,10 +272,6 @@ if __name__ == '__main__':
                                  epochs=args.epochs
                                  )
 
-
-        # Save embeddings to file
-        test_set_embeddings.to_csv('{}/{}_epoch{}_{}channels_embeddings.csv'.format(save_dir, args.test_year,
-                                                                                    n_channels, args.epochs))
     else:
 
         if args.exp_type in ['embedding', 'embedding_mini']:
