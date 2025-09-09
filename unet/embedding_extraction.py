@@ -165,34 +165,45 @@ def run_embedding_extraction(model,
     for p in model.parameters():
         p.requires_grad = False
 
-    # Loading test set
+    # Loading full set to extract
     test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=False)
     rows = []
+    rows_by_year = {}
 
     with torch.no_grad():
         for idx, (inputs, labels) in enumerate(test_loader):
-            fns = [test_set.image_fns[i] for i in range(idx * test_loader.batch_size, idx * test_loader.batch_size + len(inputs))]
+            fns = [test_set.image_fns[i] for i in range(idx * test_loader.batch_size,
+                                                       idx * test_loader.batch_size + len(inputs))]
+
             inputs = inputs.to(device)
-            embeddings, district_logits = model(inputs)
+            embeddings = model.unet(inputs)  # embeddings only
 
-            embeddings = embeddings.to(device)
-
-            # embeddings: (B, C, H, W)
             for b, fn in enumerate(fns):
                 date_str = fn.replace("sample_", "").replace(".npy", "")
+                year, month, day = date_str.split("-")
+                year = int(year)
+
+                if year not in rows_by_year:
+                    rows_by_year[year] = []
+
                 for district in sorted(district_masks.keys()):
                     pooled = model.district_classifier.masked_avg_pool(
                         embeddings[b], district_masks[district]
-                    )
-                    pooled = pooled.detach().cpu().numpy()
+                    )  # (C,)
+                    pooled = pooled.cpu().numpy()
 
                     row = {"date": date_str, "district": district}
                     for i, val in enumerate(pooled):
                         row[f"embed_{i}"] = val
-                    rows.append(row)
+                    rows_by_year[year].append(row)
 
-    return pd.DataFrame(rows)
-
+    # Save each year
+    Path(save_dir).mkdir(parents=True, exist_ok=True)
+    for year, rows in rows_by_year.items():
+        df = pd.DataFrame(rows)
+        out_file = Path(save_dir) / f"{year}_embeddings.csv"
+        df.to_csv(out_file, index=False)
+        print(f"Saved {year} embeddings to {out_file}")
 
 
 
