@@ -161,6 +161,10 @@ def run_embedding_extraction(model,
     # Now extract embeddings on the test set
     model.eval()
 
+    all_fns = []
+    for d in test_set.datasets:
+        all_fns.extend(d.image_fns)
+
     # Freeze weights
     for p in model.parameters():
         p.requires_grad = False
@@ -172,8 +176,9 @@ def run_embedding_extraction(model,
 
     with torch.no_grad():
         for idx, (inputs, labels) in enumerate(test_loader):
-            fns = [test_set.image_fns[i] for i in range(idx * test_loader.batch_size,
-                                                       idx * test_loader.batch_size + len(inputs))]
+            batch_start = idx * test_loader.batch_size
+            batch_end = batch_start + len(inputs)
+            fns = all_fns[batch_start:batch_end]
 
             inputs = inputs.to(device)
             embeddings = model.unet(inputs)  # embeddings only
