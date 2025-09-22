@@ -25,7 +25,7 @@ from joblib import dump, load
 import pickle
 import random
 import time
-from pytorch_tabnet.tab_model import TabNetClassifier
+#from pytorch_tabnet.tab_model import TabNetClassifier
 from sklearn.preprocessing import LabelEncoder
 from pytorch_tabnet.metrics import Metric
 from sklearn.metrics import f1_score
