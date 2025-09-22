@@ -8,7 +8,6 @@ import argparse
 import os
 from train import train_model, train_binary_classification_model
 from predict import predict, predict_binary_classification
-import wandb
 from utils import *
 from model import models, unet_modules
 from dataset import *
@@ -22,18 +21,18 @@ from model import *
 from losses import *
 import torch.nn as nn
 from torch.utils.data import DataLoader, random_split, Subset
-import wandb
 from torch import optim
 from pathlib import Path
 from predict import *
 from augmentation import *
-from torchvision.transforms import v2, Lambda
 from collections import defaultdict
+import torch.nn as nn
 
 
 def get_args():
     parser = argparse.ArgumentParser(description='Running pre-trained embedding extraction on test dataset')
     parser.add_argument('--channels', help='Specify number of channels, 32 or 10 for aggregated', required=True),
+    parser.add_argument('--transform', help='Dataset transformation to get ecmwf to match ukmo', required=True)
     return parser.parse_args()
 
 
@@ -76,6 +75,7 @@ def generate_district_masks(file_name):
 if __name__ == '__main__':
     args = get_args()
     n_channels = int(args.channels)
+    transform = args.transform
 
     print('Setting up directories...')
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -142,13 +142,6 @@ if __name__ == '__main__':
     global_max = None
     # -----------------
 
-    # ----------------- Applying Affine correction to data to get ECMWF to look like UKMO -----------------
-    print('Getting monthly ECMWF stats (RAW) and building month→global UKMO affine...')
-
-    from collections import defaultdict
-    import torch.nn as nn
-
-
     # ---- helper: monthly RAW stats (ECMWF 2023) ----
     def monthly_stats_raw(ds, n_channels):
         sum_by_m = defaultdict(lambda: torch.zeros(n_channels))
@@ -171,6 +164,8 @@ if __name__ == '__main__':
             sd[m] = torch.sqrt(var)
         return mu, sd
 
+    `# ----------------- Applying Affine correction to data to get ECMWF to look like UKMO -----------------
+    print('Getting monthly ECMWF stats (RAW) and building month→global UKMO affine...')
 
     # ---- RAW ECMWF 2023 dataset for stats (norm=None) ----
     ecmwf_2023_raw = LandslideDataset(
@@ -201,7 +196,6 @@ if __name__ == '__main__':
 
     print('Getting ECMWF and aligning to UKMO GLOBAL (affine) → UKMO GLOBAL z-score...')
 
-
     # ---- dataset wrapper: (monthly affine) → (GLOBAL UKMO z-score) ----
     class ECMWFMonthlyToUKMOGlobal(LandslideDataset):
         def __init__(self, *args, A=None, B=None, mu_glob=None, sd_glob=None, **kwargs):
@@ -222,7 +216,6 @@ if __name__ == '__main__':
             x = (x - self.mu.view(-1, 1, 1)) / (self.sd.view(-1, 1, 1) + 1e-8)
             return x.float(), y.float()
 
-
     # ---- BN refresh on aligned 2023 ----
     ecmwf_bn_ds = ECMWFMonthlyToUKMOGlobal(
         ecmwf_sample_dir, label_dir, 'test', 'embedding_extractor', 2023,
@@ -233,13 +226,11 @@ if __name__ == '__main__':
 
     print('Running BN refresh on aligned 2023...')
 
-
     def set_only_bn_train(module):
         module.eval()
         for m in module.modules():
             if isinstance(m, (nn.BatchNorm1d, nn.BatchNorm2d, nn.BatchNorm3d)):
                 m.train()
-
 
     model = model.to(device)
     set_only_bn_train(model)
@@ -252,7 +243,6 @@ if __name__ == '__main__':
                 _ = model.unet(xb.to(device))
 
     model.eval()
-
     # ---- 2024 inference on aligned dataset ----
     landslide_test_dataset = ECMWFMonthlyToUKMOGlobal(
         ecmwf_sample_dir, label_dir, 'test', 'embedding_extractor', 2024,
@@ -311,7 +301,7 @@ if __name__ == '__main__':
     Path(save_dir).mkdir(parents=True, exist_ok=True)
     for year, rows in rows_by_year.items():
         df = pd.DataFrame(rows)
-        out_file = Path(save_dir) / '{}_{}channels_embeddings.csv'.format(year, n_channels)
+        out_file = Path(save_dir) / '{}_{}channels_embeddings_{}.csv'.format(year, n_channels, transform)
         df.to_csv(out_file, index=False)
         print(f"Saved {year} embeddings to {out_file}")
 
