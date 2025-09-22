@@ -177,28 +177,15 @@ def plot_best_f1(f1_df, landslide_counts, year, save_dir):
     combined_df = combined_df.sort_values(by=['doy'], ascending=True)
     sorted_dates = combined_df['doy'].tolist()
 
-    if year == '2024':
-        # 2024 has missing data, we care about only 2024-04-01 - 2024-06-04 and 2024-07-04 - 2024-07-23 and 2024-08-20 to 2024-10-31
-        # need to update what I am plotting so that it is nan and no lines there confusing anything
-        apr = sorted_dates.index("{}-04-01".format(year))
-        may = sorted_dates.index("{}-05-01".format(year))
-        june = sorted_dates.index("{}-06-01".format(year))
-        july = sorted_dates.index("{}-07-15".format(year))
-        aug = sorted_dates.index("{}-08-01".format(year))
-        sept = sorted_dates.index("{}-09-01".format(year))
-        oct = sorted_dates.index("{}-10-01".format(year))
-        x_ticks = [sorted_dates[apr], sorted_dates[may], sorted_dates[june], sorted_dates[july],
-                   sorted_dates[sept], sorted_dates[oct]]
-    else:
-        apr = sorted_dates.index("{}-04-01".format(year))
-        may = sorted_dates.index("{}-05-01".format(year))
-        june = sorted_dates.index("{}-06-01".format(year))
-        july = sorted_dates.index("{}-07-01".format(year))
-        aug = sorted_dates.index("{}-08-01".format(year))
-        sept = sorted_dates.index("{}-09-01".format(year))
-        oct = sorted_dates.index("{}-10-01".format(year))
-        x_ticks = [sorted_dates[apr], sorted_dates[may], sorted_dates[june], sorted_dates[july], sorted_dates[aug],
-                   sorted_dates[sept], sorted_dates[oct]]
+    apr = sorted_dates.index("{}-04-01".format(year))
+    may = sorted_dates.index("{}-05-01".format(year))
+    june = sorted_dates.index("{}-06-01".format(year))
+    july = sorted_dates.index("{}-07-01".format(year))
+    aug = sorted_dates.index("{}-08-01".format(year))
+    sept = sorted_dates.index("{}-09-01".format(year))
+    oct = sorted_dates.index("{}-10-01".format(year))
+    x_ticks = [sorted_dates[apr], sorted_dates[may], sorted_dates[june], sorted_dates[july], sorted_dates[aug],
+               sorted_dates[sept], sorted_dates[oct]]
 
 
     fig, ax1 = plt.subplots(figsize=(12, 6))

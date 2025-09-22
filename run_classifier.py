@@ -379,8 +379,21 @@ def load_data(test_year, data_dir, experiment_type, results_dir, tag, root_dir):
         df_embeddings_train = pd.concat(df_train_embedding)
         monsoon_train = pd.merge(monsoon_train, df_embeddings_train, how='inner', on=['date', 'district'])
 
-        df_test_emb = pd.read_csv('{}/embeddings/{}/{}_embeddings.csv'.format(root_dir, experiment_type, test_year))
-        df_test = pd.merge(df_test, df_test_emb, how='inner', on=['date', 'district'])
+        if test_year == '2024':
+            # Load the embeddings from ecmwf since we are missing data from ukmo for 2024 test set
+            df_test = pd.read_csv('{}/LabelledData_GPMv07/ecmwf/ensemble_0/{}_windowsize14_district.csv'.
+                                  format(root_dir, test_year))
+            monsoon_test = df_test[df_test['date'].isin(monsoon_test_list)]
+            df_test = shuffle(monsoon_test)
+            df_test = df_test.dropna()
+
+            df_test_emb = pd.read_csv('{}/embeddings/{}_ecmwf/{}_embeddings_affine.csv'.format(root_dir, experiment_type, test_year))
+            df_test = pd.merge(df_test, df_test_emb, how='inner', on=['date', 'district'])
+            # Rename columns to match UKMO, just note this for future when I am plotting stuff to go back to rename
+            df_test = df_test.rename(columns=lambda c: c.replace("ECMWF_ens_0", "UKMO_ens_0"))
+        else:
+            df_test_emb = pd.read_csv('{}/embeddings/{}/{}_embeddings.csv'.format(root_dir, experiment_type, test_year))
+            df_test = pd.merge(df_test, df_test_emb, how='inner', on=['date', 'district'])
 
     y_test = df_test['label']
 
