@@ -381,7 +381,7 @@ def load_data(test_year, data_dir, experiment_type, results_dir, tag, root_dir):
 
         if test_year == '2024':
             # Load the embeddings from ecmwf since we are missing data from ukmo for 2024 test set
-            df_test = pd.read_csv('{}/LabelledData_GPMv07/ecmwf/ensemble_0/{}_windowsize14_district.csv'.
+            df_test = pd.read_csv('{}/embeddings/ecmwf_data_{}_windowsize14_district.csv'.
                                   format(root_dir, test_year))
             monsoon_test = df_test[df_test['date'].isin(monsoon_test_list)]
             df_test = shuffle(monsoon_test)
