@@ -103,6 +103,26 @@ def calc_perm_importance(model, X, y, save_dir):
     df = pd.DataFrame(permimp.values(), columns=feature_names, index=['importance', 'stddev'])
     df = df.sort_values(by='importance', axis=1, ascending=False)
     df.to_csv('{}/PermI.csv'.format(save_dir))
+
+    # Plot this to look at it later
+    features = feature_names.tolist()
+    importances = df.iloc[0].astype(float).tolist()
+    stds = df.iloc[1].astype(float).tolist()
+
+    # --- Sort features by importance ---
+    sorted_idx = sorted(range(len(features)), key=lambda i: importances[i], reverse=True)
+    features = [features[i] for i in sorted_idx]
+    importances = [importances[i] for i in sorted_idx]
+    stds = [stds[i] for i in sorted_idx]
+
+    # --- Plot ---
+    plt.figure(figsize=(14, 6))
+    plt.bar(range(len(features)), importances, yerr=stds, capsize=4, alpha=0.7)
+    plt.xticks(range(len(features)), features, rotation=90)
+    plt.ylabel("Feature Importance")
+    plt.title("Permutation Importance")
+    plt.savefig('{}/PermI.png'.format(save_dir))
+
     return df
 
 
@@ -295,7 +315,7 @@ def get_monsoon_season(year):
     return monsoon_dates
 
 
-def load_data(test_year, data_dir, experiment_type, results_dir, tag):
+def load_data(test_year, data_dir, experiment_type, results_dir, tag, root_dir):
     """
     Function to load in train, test, validation (for param tuning) datasets
     Specify test year, all other years used for training
@@ -350,6 +370,18 @@ def load_data(test_year, data_dir, experiment_type, results_dir, tag):
 
     df_test = shuffle(monsoon_test)
     df_test = df_test.dropna()
+
+    if 'embedding' in experiment_type:
+        df_train_embedding = []
+        for y in train_years:
+            df = pd.read_csv('{}/embeddings/{}/{}_embeddings.csv'.format(root_dir, experiment_type, y))
+            df_train_embedding.append(df)
+        df_embeddings_train = pd.concat(df_train_embedding)
+        monsoon_train = pd.merge(monsoon_train, df_embeddings_train, how='inner', on=['date', 'district'])
+
+        df_test_emb = pd.read_csv('{}/embeddings/{}/{}_embeddings.csv'.format(root_dir, experiment_type, test_year))
+        df_test = pd.merge(df_test, df_test_emb, how='inner', on=['date', 'district'])
+
     y_test = df_test['label']
 
     unwanted_cols = ['label', 'Unnamed: 0', 'Unnamed: 0.1']
@@ -429,7 +461,8 @@ def load_data(test_year, data_dir, experiment_type, results_dir, tag):
     return X_train, y_train, X_test, y_test, X_val, y_val
 
 
-def run_rf(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wandb_exp, model_type, test_year, tuning):
+def run_rf(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wandb_exp, model_type, test_year,
+           tuning):
     """
     Experiment for train and test set from all years, all regions
     """
@@ -490,14 +523,62 @@ def run_rf(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wand
     else:
         # Tune the model
         model_state = 'tuned_best_params'
-        print('Tuning the model')
+        print('Tuning the model...')
         param_grid = {
             'bootstrap': [True],
             'max_depth': [3, 5, 7],
             'min_samples_split': [4, 6, 8],
             'n_estimators': [100, 200, 300]
         }
+        '''
+        # Commenting out pruning for now
+        print('Finding best feature set...')
+        # First let's find the subset of features we want to use
+        forest = RandomForestClassifier(criterion='gini',
+                                        random_state=random.randint(1, 1000),
+                                        n_estimators=200,
+                                        min_samples_split=6,
+                                        max_depth=7,
+                                        n_jobs=-1)
+        forest.fit(X_train, ytrain)
+        y_pred = forest.predict(X_val)
+        baseline_f1 = f1_score(y_val, y_pred)
 
+        # Get perm importance
+        perm = permutation_importance(forest, X_val, y_val, n_repeats=10, random_state=42)
+        importances = perm.importances_mean
+        stds = perm.importances_std
+        # Collect into DataFrame
+        imp_df = (pd.DataFrame({"feature": X_val.columns,"importance": importances,"std": stds})
+                  .sort_values("importance", ascending=False))
+
+        # ---- Prune features with importance less than 0
+        threshold = 0.0
+        good_features = imp_df[imp_df["importance"] > threshold]["feature"]
+        X_train_pruned = X_train[good_features]
+        X_val_pruned = X_val[good_features]
+
+        # Retrain
+        prune_forest = RandomForestClassifier(criterion='gini',
+                                        random_state=random.randint(1, 1000),
+                                        n_estimators=200,
+                                        min_samples_split=6,
+                                        max_depth=7,
+                                        n_jobs=-1)
+        prune_forest.fit(X_train_pruned, y_train)
+
+        # New F1
+        y_pred_pruned = prune_forest.predict(X_val_pruned)
+        new_f1 = f1_score(y_val, y_pred_pruned)
+
+        if new_f1 > baseline_f1:
+            print('Model improved with pruning, old f1: {}, new f1: {}'.format(baseline_f1, new_f1))
+            X_train = X_train_pruned
+            X_val = X_val_pruned
+        else:
+            print('Model did not improve with pruning.')
+        '''
+        print('Tuning hyperparameters...')
         tune_list = []
         for i in range(3):
             print('Tuning for iteration: {}'.format(i))
@@ -507,6 +588,7 @@ def run_rf(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wand
                                             n_estimators=200,
                                             n_jobs=-1,
                                             class_weight='balanced')
+
             # grid search cv
             rf_cv = GridSearchCV(estimator=forest,
                                  param_grid=param_grid,
@@ -546,7 +628,9 @@ def run_rf(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wand
         forest = max_dict['best_model']
 
         # Fit the model
-        print('Fitting best model...')
+        print('Fitting best model with full dataset...')
+        X_train = pd.concat([X_train, X_val], axis=0)
+        ytrain = pd.concat([ytrain, y_val], axis=0)
         forest.fit(X_train, ytrain)
     '''
     scoring = ['accuracy', 'f1']
@@ -560,6 +644,9 @@ def run_rf(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wand
 
     # Measure model performance on test set
     print('Evaluating model...')
+    if tuning:
+        #Xtest = Xtest[good_features]
+        Xtest=Xtest
     probs = forest.predict_proba(Xtest)
 
     acc_test = forest.score(Xtest, ytest)
@@ -1412,10 +1499,11 @@ if __name__ == '__main__':
         # Load data
         print('Loading data...')
         data_dir = '{}/LabelledData_{}/{}/ensemble_{}'.format(root_dir, hindcast_model, forecast_model, ensemble_num)
-        X_train, y_train, X_test, y_test, X_val, y_val = load_data(test_y, data_dir, exp, results_dir, tag)
+        X_train, y_train, X_test, y_test, X_val, y_val = load_data(test_y, data_dir, exp, results_dir, tag, root_dir)
 
         if model == 'rf':
-            run_rf(data_dir, X_train, y_train, X_test, y_test, X_val, y_val, results, experiment, model, test_y, tuning)
+            run_rf(data_dir, X_train, y_train, X_test, y_test, X_val, y_val, results, experiment, model, test_y,
+                   tuning)
 
         if model == 'gb':
             run_gb(data_dir, X_train, y_train, X_test, y_test, X_val, y_val, results, experiment, model, test_y, tuning)
