@@ -148,6 +148,26 @@ def generate_f1_fig(df, year, save_dir):
     df_f1_best['doy'] = sorted_dates
     df_f1_best.to_csv('{}/f1_timeseries_{}_best_threshold.csv'.format(save_dir, year, t))
 
+    # Get the score between the actual monsoon season
+    df_f1_best['date_dt'] = pd.to_datetime(df_f1_best['doy'], format='%Y-%m-%d', errors='coerce')
+
+    start = pd.Timestamp(year=int(year), month=6, day=1)
+    end = pd.Timestamp(year=int(year), month=9, day=30)
+    mask = (df_f1_best['date_dt'] >= start) & (df_f1_best['date_dt'] <= end)
+    window = df_f1_best.loc[mask]
+    # NaN-safe means
+    avg_f1_binary = float(np.nanmean(window['f1_binary'].values)) if not window.empty else float('nan')
+    avg_f1_macro = float(np.nanmean(window['f1_macro'].values)) if not window.empty else float('nan')
+
+    # Write a compact txt summary per threshold
+    txt_path = f'{save_dir}/avg_f1_best-thr_{year}_Jun01-Sep30_thr{best_threshold}.txt'
+    with open(txt_path, 'w') as f:
+        f.write(f'Year: {year}\n')
+        f.write(f'Threshold: {best_threshold}\n')
+        f.write('Window: June 1 – September 30\n')
+        f.write(f'Average F1 (binary): {avg_f1_binary:.6f}\n')
+        f.write(f'Average F1 (macro) : {avg_f1_macro:.6f}\n')
+
 
     '''
 
