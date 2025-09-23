@@ -27,7 +27,7 @@ import random
 import time
 #from pytorch_tabnet.tab_model import TabNetClassifier
 from sklearn.preprocessing import LabelEncoder
-from pytorch_tabnet.metrics import Metric
+#from pytorch_tabnet.metrics import Metric
 from sklearn.metrics import f1_score
 import torch
 import torch.nn as nn
