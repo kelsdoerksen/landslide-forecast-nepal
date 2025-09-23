@@ -108,8 +108,17 @@ if __name__ == '__main__':
 
     # ----------------- Mean and Std from 2016-2023 UKMO dataset -----------------
     # Load the original training dataset so I can get the mean and std for normalizing
-    landslide_train = LandslideDataset(train_sample_dir, label_dir, 'train', 'embedding_extractor', 2024,
-                                       save_dir, n_channels=n_channels)
+    # CORRECT_CH: channels to correct
+    if n_channels == 10:
+        CORRECT_CH = [7, 8, 9]
+    if n_channels == 32:
+        CORRECT_CH = [17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+    STATIC_CH = [0, 1, 2, 3]  # geospatial features
+
+    # ----------------- Mean and Std from 2016-2023 UKMO dataset -----------------
+    landslide_train = LandslideDataset(
+        train_sample_dir, label_dir, 'train', 'embedding_extractor', 2024,
+        save_dir, n_channels=n_channels)
 
     channel_sum = torch.zeros(n_channels)
     channel_sq_sum = torch.zeros(n_channels)
@@ -117,40 +126,34 @@ if __name__ == '__main__':
 
     train_loader = DataLoader(landslide_train, batch_size=1, shuffle=True)
     for images, _ in train_loader:
-        images = images.float().contiguous()  # (n_channels, 60, 100)
-        images_flat = images.view(n_channels, -1)  # (n_channels, 6000)
-
+        images = images.float().contiguous()  # (C, H, W)
+        images_flat = images.view(n_channels, -1)  # (C, H*W)
         channel_sum += images_flat.sum(dim=1)
         channel_sq_sum += (images_flat ** 2).sum(dim=1)
         num_pixels += images_flat.shape[1]
 
     mean = channel_sum / num_pixels
-    std = torch.sqrt(channel_sq_sum / num_pixels - mean ** 2)
+    std = torch.sqrt(torch.clamp(channel_sq_sum / num_pixels - mean ** 2, min=1e-12))
 
-    static_channels = [0, 1, 2, 3]  # static channels dem, aspect, slope, modis
-
-    # For static channels, compute mean/std across spatial pixels only from the first sample since its always the same
+    # Static channels: compute from first sample only (unchanged)
     static_sample, _ = next(iter(train_loader))
-    static_sample = static_sample.float().contiguous()
-    static_sample_flat = static_sample.view(n_channels, -1)
-
-    for idx in static_channels:
+    static_sample_flat = static_sample.float().contiguous().view(n_channels, -1)
+    for idx in STATIC_CH:
         mean[idx] = static_sample_flat[idx].mean()
         std[idx] = static_sample_flat[idx].std()
 
-    global_min = None
-    global_max = None
-    # -----------------
+    ukmo_mu_glob = mean
+    ukmo_sd_glob = std
 
-    # ---- helper: monthly RAW stats (ECMWF 2023) ----
+    # ---- monthly RAW stats from ECMWF 2023 to compare ----
     def monthly_stats_raw(ds, n_channels):
         sum_by_m = defaultdict(lambda: torch.zeros(n_channels))
         sq_by_m = defaultdict(lambda: torch.zeros(n_channels))
         npix_by_m = defaultdict(int)
         dl = DataLoader(ds, batch_size=1, shuffle=False)
         for i, (x, _) in enumerate(dl):
-            x = x.float().contiguous().view(n_channels, -1)  # RAW (norm=None in ds)
-            fn = ds.image_fns[i]  # "sample_YYYY-MM-DD.npy"
+            x = x.float().contiguous().view(n_channels, -1)
+            fn = ds.image_fns[i]  # format is "sample_YYYY-MM-DD.npy"
             m = int(fn.split('_')[-1].split('-')[1])  # month
             sum_by_m[m] += x.sum(1)
             sq_by_m[m] += (x ** 2).sum(1)
@@ -164,68 +167,71 @@ if __name__ == '__main__':
             sd[m] = torch.sqrt(var)
         return mu, sd
 
-    `# ----------------- Applying Affine correction to data to get ECMWF to look like UKMO -----------------
-    print('Getting monthly ECMWF stats (RAW) and building month→global UKMO affine...')
 
-    # ---- RAW ECMWF 2023 dataset for stats (norm=None) ----
+    # ----------------- Applying Affine correction only on channels we want to correct (CORRECT_CH) -----------------
+    # x′=a⋅x+b affine transformation
+    print('Getting monthly ECMWF stats and building month→global UKMO affine on ecmwf channels...')
+
     ecmwf_2023_raw = LandslideDataset(
-        ecmwf_sample_dir, label_dir,
-        split='test', exp_type='embedding_extractor', test_year=2023,
-        out_dir=save_dir, n_channels=n_channels, norm=None  # RAW
+        ecmwf_sample_dir, label_dir, 'test', 'embedding_extractor', 2023,
+        save_dir, n_channels=n_channels, norm=None  # RAW
     )
     print("ECMWF 2023 samples (RAW):", len(ecmwf_2023_raw))
     assert len(ecmwf_2023_raw) > 0, "ECMWF 2023 dataset is empty; check paths."
 
-    # ---- compute ECMWF monthly RAW stats ----
     muE_m, sdE_m = monthly_stats_raw(ecmwf_2023_raw, n_channels)
 
-    # ---- UKMO GLOBAL train stats (what the model expects) ----
-    ukmo_mu_glob = mean  # from your 2016–2023 RAW pass
-    ukmo_sd_glob = std
-
-    # ---- build per-month affine to target UKMO GLOBAL ----
+    # Build per-month affine to target UKMO GLOBAL, but ONLY for CORRECT_CH
     A, B = {}, {}
-    static_ch = [0, 1, 2, 3]
+    correct_idx = torch.tensor(CORRECT_CH, dtype=torch.long)
     for m in range(1, 13):
-        a = ukmo_sd_glob / torch.clamp(sdE_m[m], min=1e-12)
-        b = ukmo_mu_glob - a * muE_m[m]
-        # keep static channels unchanged
-        a[static_ch] = 1.0
-        b[static_ch] = 0.0
+        # start as identity
+        a = torch.ones(n_channels)
+        b = torch.zeros(n_channels)
+        # set affine only on the channels that need correction
+        a[correct_idx] = ukmo_sd_glob[correct_idx] / torch.clamp(sdE_m[m][correct_idx], min=1e-12)
+        b[correct_idx] = ukmo_mu_glob[correct_idx] - a[correct_idx] * muE_m[m][correct_idx]
         A[m], B[m] = a, b
 
-    print('Getting ECMWF and aligning to UKMO GLOBAL (affine) → UKMO GLOBAL z-score...')
-
-    # ---- dataset wrapper: (monthly affine) → (GLOBAL UKMO z-score) ----
+    print('Getting ECMWF and aligning (affine on selected channels) → UKMO GLOBAL z-score...')
+    # ---- dataset wrapper: (monthly affine on CORRECT_CH) → (GLOBAL UKMO z-score) ----
     class ECMWFMonthlyToUKMOGlobal(LandslideDataset):
-        def __init__(self, *args, A=None, B=None, mu_glob=None, sd_glob=None, **kwargs):
+        def __init__(self, *args, A=None, B=None, mu_glob=None, sd_glob=None,
+                     correct_ch=None, **kwargs):
             kwargs['norm'] = None  # request RAW from base
             super().__init__(*args, **kwargs)
             self.A = A;
             self.B = B
             self.mu = mu_glob;
             self.sd = sd_glob
+            self.correct_ch = torch.tensor(correct_ch or [], dtype=torch.long)
 
         def __getitem__(self, index):
             x, y = super().__getitem__(index)  # RAW [C,H,W]
             fn = self.image_fns[index]
             m = int(fn.split('_')[-1].split('-')[1])
-            # month-wise affine to UKMO-like (global target)
-            x = x * self.A[m].view(-1, 1, 1) + self.B[m].view(-1, 1, 1)
-            # GLOBAL UKMO z-score (the training contract)
+
+            if len(self.correct_ch) > 0:
+                # vectorized apply only on the chosen channels
+                a = self.A[m][self.correct_ch].view(-1, 1, 1)
+                b = self.B[m][self.correct_ch].view(-1, 1, 1)
+                x[self.correct_ch] = x[self.correct_ch] * a + b
+
+            # GLOBAL UKMO z-score (the training contract) on all channels
             x = (x - self.mu.view(-1, 1, 1)) / (self.sd.view(-1, 1, 1) + 1e-8)
             return x.float(), y.float()
 
-    # ---- BN refresh on aligned 2023 ----
+
+    # ---- BN refresh on aligned 2023 (selected channels corrected) ----
     ecmwf_bn_ds = ECMWFMonthlyToUKMOGlobal(
         ecmwf_sample_dir, label_dir, 'test', 'embedding_extractor', 2023,
         save_dir, n_channels=n_channels,
-        A=A, B=B, mu_glob=ukmo_mu_glob, sd_glob=ukmo_sd_glob
+        A=A, B=B, mu_glob=ukmo_mu_glob, sd_glob=ukmo_sd_glob,
+        correct_ch=CORRECT_CH
     )
     ecmwf_calib_loader = DataLoader(ecmwf_bn_ds, batch_size=32, shuffle=False)
 
     print('Running BN refresh on aligned 2023...')
-
     def set_only_bn_train(module):
         module.eval()
         for m in module.modules():
@@ -238,22 +244,24 @@ if __name__ == '__main__':
         p.requires_grad = False
 
     with torch.no_grad():
-        for _ in range(2):  # a couple of sweeps helps stabilize running stats
+        for _ in range(2):
             for xb, _ in ecmwf_calib_loader:
                 _ = model.unet(xb.to(device))
 
     model.eval()
-    # ---- 2024 inference on aligned dataset ----
+
+    # ---- 2024 inference on aligned dataset (selected channels corrected) ----
     landslide_test_dataset = ECMWFMonthlyToUKMOGlobal(
         ecmwf_sample_dir, label_dir, 'test', 'embedding_extractor', 2024,
         save_dir, n_channels=n_channels,
-        A=A, B=B, mu_glob=ukmo_mu_glob, sd_glob=ukmo_sd_glob
+        A=A, B=B, mu_glob=ukmo_mu_glob, sd_glob=ukmo_sd_glob,
+        correct_ch=CORRECT_CH
     )
 
-    # ---- quick sanity: post-correction, post-UKMO-zscore channel stats ----
+    # ---- sanity check: post-correction, post-UKMO-zscore channel stats ----
     z = next(iter(DataLoader(landslide_test_dataset, 32)))[0]
-    print('per-channel mean (should ~0):', z.mean(dim=(0, 2, 3))[:10])
-    print('per-channel std  (should ~1):', z.std(dim=(0, 2, 3))[:10])
+    print('means (first 16):', z.mean(dim=(0, 2, 3))[:16])
+    print('stds  (first 16):', z.std(dim=(0, 2, 3))[:16])
 
     # Now let's run embedding extraction
     all_fns = []
