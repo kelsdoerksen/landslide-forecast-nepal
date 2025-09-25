@@ -364,7 +364,14 @@ def load_data(test_year, data_dir, experiment_type, results_dir, tag, root_dir):
     '''
 
     # Split into monsoon season test set
-    df_test = pd.read_csv('{}/{}_windowsize14_district.csv'.format(data_dir, test_year))
+    if test_year == '2024':
+        # Loading only the ecmwf data for 2024 because it has no gaps as opposed to the UKMO, NCEP, KMA
+        df_test = pd.read_csv('{}/embeddings/ecmwf_data_{}_windowsize14_district.csv'.
+                              format(root_dir, test_year))
+        # Rename columns to match UKMO, just note this for future when I am plotting stuff to go back to rename
+        df_test = df_test.rename(columns=lambda c: c.replace("ECMWF_ens_0", "UKMO_ens_0"))
+    else:
+        df_test = pd.read_csv('{}/{}_windowsize14_district.csv'.format(data_dir, test_year))
     monsoon_test_list = daterange(date(int(test_year), 4, 1), date(int(test_year), 10, 31))
     monsoon_test = df_test[df_test['date'].isin(monsoon_test_list)]
 
