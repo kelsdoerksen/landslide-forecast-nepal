@@ -800,6 +800,12 @@ def run_gb(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wand
             pickle.dump(max_dict['best_model'], file)
         clf = max_dict['best_model']
 
+        # Fit the model
+        print('Fitting best model with full dataset...')
+        X_train = pd.concat([X_train, X_val], axis=0)
+        ytrain = pd.concat([ytrain, y_val], axis=0)
+        clf.fit(X_train, ytrain)
+
     '''
     scoring = ['accuracy', 'f1']
     cv_scoring = cross_validate(forest, Xtrain, ytrain, scoring=scoring, cv=5)
@@ -953,6 +959,12 @@ def run_xgb(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wan
         with open("{}/xgb_model.pkl".format(results), "wb") as file:
             pickle.dump(max_dict['best_model'], file)
         clf = max_dict['best_model']
+
+        # Fit the model
+        print('Fitting best model with full dataset...')
+        X_train = pd.concat([X_train, X_val], axis=0)
+        ytrain = pd.concat([ytrain, y_val], axis=0)
+        clf.fit(X_train, ytrain)
 
     '''
     scoring = ['accuracy', 'f1']
