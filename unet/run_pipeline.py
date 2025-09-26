@@ -236,6 +236,14 @@ if __name__ == '__main__':
                                                        save_dir, mean=mean, std=std, max_val=global_max,
                                                        min_val=global_min,
                                                        norm=norm, stride=stride, n_channels=n_channels)
+            if args.test_year == 2024:
+                # Load in the ecmwf affine transformed data to add into embedding training loop
+                print('Adding ecmwf 2023 samples to the training data to help with training for 2024 season...')
+                ecmwf_sample_dir = '{}/embeddings/ecmwf_transformed_{}'.format(root_dir, n_channels)
+                ecmwf_2023_dataset = LandslideDataset(ecmwf_sample_dir, label_dir, 'train', args.exp_type, args.test_year,
+                                                       save_dir, mean=mean, std=std, max_val=global_max,
+                                                       min_val=global_min,
+                                                       norm=norm, stride=stride, n_channels=n_channels)
         else:
             landslide_train_dataset = LandslideDataset(sample_dir, label_dir, 'train', args.exp_type, args.test_year,
                                                        save_dir, mean=mean, std=std, max_val=global_max,
