@@ -32,7 +32,7 @@ import torch.nn as nn
 def get_args():
     parser = argparse.ArgumentParser(description='Running pre-trained embedding extraction on test dataset')
     parser.add_argument('--channels', help='Specify number of channels, 32 or 10 for aggregated', required=True),
-    parser.add_argument('--transform', help='Dataset transformation to get ecmwf to match ukmo', required=True)
+    parser.add_argument('--exp', help='Experiment type, specify if ecmwf included in training. Call ecmwf', required=True)
     return parser.parse_args()
 
 
@@ -75,7 +75,7 @@ def generate_district_masks(file_name):
 if __name__ == '__main__':
     args = get_args()
     n_channels = int(args.channels)
-    transform = args.transform
+    exp = args.exp
 
     print('Setting up directories...')
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -93,15 +93,24 @@ if __name__ == '__main__':
     district_masks = generate_district_masks('{}/District_Labels.tif'.format(root_dir))
 
     # Set the savedir
-    save_dir = '{}/embeddings/embedding_unetmini_40e_{}channel_2024_ecmwf'.format(root_dir, n_channels)
+    if exp == 'ecmwf':
+        save_dir = '{}/embeddings/embedding_unetmini_40e_{}channel_2024_ecmwf_trained'.format(root_dir, n_channels)
+    else:
+        save_dir = '{}/embeddings/embedding_unetmini_40e_{}channel_2024_ecmwf'.format(root_dir, n_channels)
 
     # Going to hard-code paths to 2024 embedding models since I have already trained them
-    if n_channels == 10:
-        # Load 10 channel model trained 2016-2023
-        in_model = '{}/embeddings/embedding_extractor_model_10channel_2016-2023_odrk65ya.pth'.format(root_dir)
+    if exp == 'ecmwf':
+        if n_channels == 10:
+            in_model = '{}/embeddings/embedding_extractor_model_10channel_2016-2023_ecmwf-added_hxi04ic7.pth'.format(root_dir)
+        else:
+            in_model = '{}/embeddings/embedding_extractor_model_32channel_2016-2023_ecmwf-added_6mpi2te1.pth'.format(root_dir)
     else:
-        # Load 32 channel model trained 2016-2023
-        in_model = '{}/embeddings/embedding_extractor_model_32channel_2016-2023_49ooo678.pth'.format(root_dir)
+        if n_channels == 10:
+            # Load 10 channel model trained 2016-2023
+            in_model = '{}/embeddings/embedding_extractor_model_10channel_2016-2023_odrk65ya.pth'.format(root_dir)
+        else:
+            # Load 32 channel model trained 2016-2023
+            in_model = '{}/embeddings/embedding_extractor_model_32channel_2016-2023_49ooo678.pth'.format(root_dir)
 
     # Load the pre-trained model
     model = torch.load(in_model, map_location=device, weights_only=False)
@@ -222,31 +231,32 @@ if __name__ == '__main__':
             return x.float(), y.float()
 
 
-    # ---- BN refresh on aligned 2023 (selected channels corrected) ----
-    ecmwf_bn_ds = ECMWFMonthlyToUKMOGlobal(
-        ecmwf_sample_dir, label_dir, 'test', 'embedding_extractor', 2023,
-        save_dir, n_channels=n_channels,
-        A=A, B=B, mu_glob=ukmo_mu_glob, sd_glob=ukmo_sd_glob,
-        correct_ch=CORRECT_CH
-    )
-    ecmwf_calib_loader = DataLoader(ecmwf_bn_ds, batch_size=32, shuffle=False)
+    if exp != 'ecmwf':
+        # ---- BN refresh on aligned 2023 if I haven't added this to the training already (selected channels corrected) ----
+        ecmwf_bn_ds = ECMWFMonthlyToUKMOGlobal(
+            ecmwf_sample_dir, label_dir, 'test', 'embedding_extractor', 2023,
+            save_dir, n_channels=n_channels,
+            A=A, B=B, mu_glob=ukmo_mu_glob, sd_glob=ukmo_sd_glob,
+            correct_ch=CORRECT_CH
+        )
+        ecmwf_calib_loader = DataLoader(ecmwf_bn_ds, batch_size=32, shuffle=False)
 
-    print('Running BN refresh on aligned 2023...')
-    def set_only_bn_train(module):
-        module.eval()
-        for m in module.modules():
-            if isinstance(m, (nn.BatchNorm1d, nn.BatchNorm2d, nn.BatchNorm3d)):
-                m.train()
+        print('Running BN refresh on aligned 2023...')
+        def set_only_bn_train(module):
+            module.eval()
+            for m in module.modules():
+                if isinstance(m, (nn.BatchNorm1d, nn.BatchNorm2d, nn.BatchNorm3d)):
+                    m.train()
 
-    model = model.to(device)
-    set_only_bn_train(model)
-    for p in model.parameters():
-        p.requires_grad = False
+        model = model.to(device)
+        set_only_bn_train(model)
+        for p in model.parameters():
+            p.requires_grad = False
 
-    with torch.no_grad():
-        for _ in range(2):
-            for xb, _ in ecmwf_calib_loader:
-                _ = model.unet(xb.to(device))
+        with torch.no_grad():
+            for _ in range(2):
+                for xb, _ in ecmwf_calib_loader:
+                    _ = model.unet(xb.to(device))
 
     model.eval()
 
@@ -309,7 +319,7 @@ if __name__ == '__main__':
     Path(save_dir).mkdir(parents=True, exist_ok=True)
     for year, rows in rows_by_year.items():
         df = pd.DataFrame(rows)
-        out_file = Path(save_dir) / '{}_{}channels_embeddings_{}.csv'.format(year, n_channels, transform)
+        out_file = Path(save_dir) / '{}_{}channels_embeddings_affine.csv'.format(year, n_channels)
         df.to_csv(out_file, index=False)
         print(f"Saved {year} embeddings to {out_file}")
 
