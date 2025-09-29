@@ -380,8 +380,10 @@ def load_data(test_year, data_dir, experiment_type, results_dir, tag, root_dir):
 
     if 'embedding' in experiment_type:
         df_train_embedding = []
+        if test_year == '2024':
+            train_dir = experiment_type - '_ecmwf_trained' if experiment_type.contains('trained') else experiment_type - '_ecmwf'
         for y in train_years:
-            df = pd.read_csv('{}/embeddings/{}/{}_embeddings.csv'.format(root_dir, experiment_type, y))
+            df = pd.read_csv('{}/embeddings/{}/{}_embeddings.csv'.format(root_dir, train_dir, y))
             df_train_embedding.append(df)
         df_embeddings_train = pd.concat(df_train_embedding)
         monsoon_train = pd.merge(monsoon_train, df_embeddings_train, how='inner', on=['date', 'district'])
@@ -394,7 +396,11 @@ def load_data(test_year, data_dir, experiment_type, results_dir, tag, root_dir):
             df_test = shuffle(monsoon_test)
             df_test = df_test.dropna()
             # Specify embedding_unetmini_40e_#channel_2024_ecmwf or embedding_unetmini_40e_#channel_2024_ecmwf_trained
-            df_test_emb = pd.read_csv('{}/embeddings/{}/{}_embeddings_affine.csv'.format(root_dir, experiment_type, test_year))
+            if experiment_type.contains('trained'):
+                dir = experiment_type + '_trained'
+            else:
+                dir = experiment_type
+            df_test_emb = pd.read_csv('{}/embeddings/{}/{}_embeddings_affine.csv'.format(root_dir, dir, test_year))
             df_test = pd.merge(df_test, df_test_emb, how='inner', on=['date', 'district'])
             # Rename columns to match UKMO, just note this for future when I am plotting stuff to go back to rename
             df_test = df_test.rename(columns=lambda c: c.replace("ECMWF_ens_0", "UKMO_ens_0"))
