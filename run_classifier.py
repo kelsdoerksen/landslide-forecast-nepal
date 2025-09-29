@@ -381,7 +381,7 @@ def load_data(test_year, data_dir, experiment_type, results_dir, tag, root_dir):
     if 'embedding' in experiment_type:
         df_train_embedding = []
         if test_year == '2024':
-            train_dir = experiment_type - '_ecmwf_trained' if experiment_type.contains('trained') else experiment_type - '_ecmwf'
+            train_dir = experiment_type - '_ecmwf_trained' if 'trained' in experiment_type else experiment_type - '_ecmwf'
         for y in train_years:
             df = pd.read_csv('{}/embeddings/{}/{}_embeddings.csv'.format(root_dir, train_dir, y))
             df_train_embedding.append(df)
@@ -396,7 +396,7 @@ def load_data(test_year, data_dir, experiment_type, results_dir, tag, root_dir):
             df_test = shuffle(monsoon_test)
             df_test = df_test.dropna()
             # Specify embedding_unetmini_40e_#channel_2024_ecmwf or embedding_unetmini_40e_#channel_2024_ecmwf_trained
-            if experiment_type.contains('trained'):
+            if 'trained' in experiment_type:
                 dir = experiment_type + '_trained'
             else:
                 dir = experiment_type
