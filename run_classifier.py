@@ -398,11 +398,7 @@ def load_data(test_year, data_dir, experiment_type, results_dir, tag, root_dir):
             df_test = shuffle(monsoon_test)
             df_test = df_test.dropna()
             # Specify embedding_unetmini_40e_#channel_2024_ecmwf or embedding_unetmini_40e_#channel_2024_ecmwf_trained
-            if 'trained' in experiment_type:
-                dir = experiment_type + '_trained'
-            else:
-                dir = experiment_type
-            df_test_emb = pd.read_csv('{}/embeddings/{}/{}_embeddings_affine.csv'.format(root_dir, dir, test_year))
+            df_test_emb = pd.read_csv('{}/embeddings/{}/{}_embeddings_affine.csv'.format(root_dir, experiment_type, test_year))
             df_test = pd.merge(df_test, df_test_emb, how='inner', on=['date', 'district'])
             # Rename columns to match UKMO, just note this for future when I am plotting stuff to go back to rename
             df_test = df_test.rename(columns=lambda c: c.replace("ECMWF_ens_0", "UKMO_ens_0"))
