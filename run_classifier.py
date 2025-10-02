@@ -390,7 +390,7 @@ def load_data(test_year, data_dir, experiment_type, results_dir, tag, root_dir):
             train_dir = experiment_type
         for y in train_years:
             if y == '2024':
-                df = pd.read_csv('{}/embeddings/{}/{}_embeddings_affine.csv'.format(root_dir, experiment_type, y))
+                df = pd.read_csv('{}/embeddings/{}_ecmwf/{}_embeddings_affine.csv'.format(root_dir, experiment_type, y))
             else:
                 df = pd.read_csv('{}/embeddings/{}/{}_embeddings.csv'.format(root_dir, train_dir, y))
             df_train_embedding.append(df)
