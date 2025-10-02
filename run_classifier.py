@@ -342,7 +342,11 @@ def load_data(test_year, data_dir, experiment_type, results_dir, tag, root_dir):
     df_train_list = []
     monsoon_train_list = []
     for y in train_years:
-        df = pd.read_csv('{}/{}_windowsize14_district.csv'.format(data_dir, y))
+        if y == '2024':
+            df = pd.read_csv('{}/embeddings/ecmwf_data_{}_windowsize14_district.csv'.
+                                  format(root_dir, y))
+        else:
+            df = pd.read_csv('{}/{}_windowsize14_district.csv'.format(data_dir, y))
         df_train_list.append(df)
         monsoon_train = daterange(date(int(y), 4, 1), date(int(y), 10, 31))
         monsoon_train_list.append(monsoon_train[:])
@@ -385,7 +389,10 @@ def load_data(test_year, data_dir, experiment_type, results_dir, tag, root_dir):
         else:
             train_dir = experiment_type
         for y in train_years:
-            df = pd.read_csv('{}/embeddings/{}/{}_embeddings.csv'.format(root_dir, train_dir, y))
+            if y == '2024':
+                df = pd.read_csv('{}/embeddings/{}/{}_embeddings_affine.csv'.format(root_dir, experiment_type, y))
+            else:
+                df = pd.read_csv('{}/embeddings/{}/{}_embeddings.csv'.format(root_dir, train_dir, y))
             df_train_embedding.append(df)
         df_embeddings_train = pd.concat(df_train_embedding)
         monsoon_train = pd.merge(monsoon_train, df_embeddings_train, how='inner', on=['date', 'district'])
