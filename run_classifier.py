@@ -345,6 +345,7 @@ def load_data(test_year, data_dir, experiment_type, results_dir, tag, root_dir):
         if y == '2024':
             df = pd.read_csv('{}/embeddings/ecmwf_data_{}_windowsize14_district.csv'.
                                   format(root_dir, y))
+            df = df.rename(columns=lambda c: c.replace("ECMWF_ens_0", "UKMO_ens_0"))
         else:
             df = pd.read_csv('{}/{}_windowsize14_district.csv'.format(data_dir, y))
         df_train_list.append(df)
