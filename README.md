@@ -15,20 +15,21 @@
 </div>
 
 ## 📄 Description
-This work presents the dataset curation, processing, model training, testing and analysis for the purposes of predicting landslide impacts on a 14-day temporal scale in Nepal that cause impact to infrastructure and/or loss of life. We present our methodology to utilize statistical summary information over a district's boundary in-combination with satellite embeddings extracted from our LandslideNet model as inputs into a final ML classifier.
+This repository contains the code required for dataset curation, processing, model training, testing and analysis for the purposes of predicting landslide impacts on a 14-day temporal scale in Nepal that cause impact to infrastructure and/or loss of life. We present our methodology to utilize statistical summary information over a district's boundary in-combination with satellite embeddings extracted from our LandslideNet model as inputs into a final ML classifier.
 
 ## 💧 Dataset
-Both the tabular-ML dataset and array dataset are composed of precipitation hindcast features, precipitation forecast featueres, and topographical feature extracted from the ALOS 30 meter resolution Digital Elevation model of Nepal. 
+Both the tabular-ML dataset and array dataset are composed of precipitation hindcast features, precipitation forecast featueres, and topographical feature extracted from the ALOS 30 meter resolution Digital Elevation model of Nepal. A subset of pre-processed sample data to run experiments is included in the `Sample` folder.
 
 ## 👩‍🔬 Data Processing
 `/Preprocessing` folder contains the code to pre-process data for the tabular dataset.
 `unet/data_processing` folder contains the code to pre-process data for the array dataset.
+`unet/embedding_extraction.py` file contains the code to generate the satellite embeddings. 
 
 ## 📚 Code Organization
-Code is split into two main sections, that to run the ML classifiers and that to run the Deep Learning model. All code for the Deep Learning unet is can be found in the `unet` folder.
+Code is split into two main sections, that to run the ML classifiers and that to run the Deep Learning model(s) and feature extraction. All code for Deep Learning feature extraction and experimentation can be found in the `unet` folder.
 
-The ML pipeline (train, val, test) can be run via the command:
-```python run_pipeline.py ```
+The ML pipeline (train, val, test) can be run via the command in the main repo folder:
+```python run_classifier.py ```
 With the arguments:
 - --model: ML Model. Currently supports rf, gb, and xgb
 - --forecast_model: Precipitation Forecast Model Used
@@ -36,10 +37,11 @@ With the arguments:
 - --hindcast_model: Hindcast precipitation model used
 - --experiment_type: Type of experiment. no_hindcast, no_forecast refers to removing those features respectively, full is standard
 - --wandb_setting: Wandb experiment setting, offline or online
-- --test_forecast: [OLD - set to None]
+- --test_forecast: Set to none.
 - --parameter_tuning: Specify if tuning model hyperparameters', default=None
+- --tag: Wandb project tag
 
-The DL pipeline can be run via the command in the `unet` folder:
+The DL pipeline to run embedding extraction can be run via the command in the `unet` folder:
 ```python run_pipeline.py```
 With the arguments:
 - --epochs: Number of epochs
