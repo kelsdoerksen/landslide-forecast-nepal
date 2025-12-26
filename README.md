@@ -1,6 +1,6 @@
 <div align="center">
 
-# Forecasting Landslide Probability in Nepal using AI and Earth Observation
+# Forecasting Landslide Impact Probability in Nepal using AI and Earth Observation
 
 <p>
 <b><a href="#-description">Description</a></b>
