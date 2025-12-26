@@ -6,6 +6,7 @@ Nature Comms paper
 import pandas as pd
 import matplotlib.pyplot as plt
 
+'''
 rf_2016 = ["jumping-sound-1778", "clear-totem-1777", "fragrant-brook-1776", "scarlet-pond-1775", "earnest-fire-1774"]
 rf_2017 = ["stilted-cosmos-1783", "likely-voice-1782", "fresh-frost-1781", "denim-snowflake-1780", "spring-totem-1779"]
 rf_2018 = ["lunar-eon-1788", "worthy-plant-1787", "astral-oath-1786", "comfy-wind-1785", "peach-pine-1784"]
@@ -15,9 +16,20 @@ rf_2021 = ["soft-gorge-1803", "silvery-flower-1802", "floral-flower-1801", "icy-
 rf_2022 = ["fanciful-frog-1808", "light-jazz-1807", "deep-energy-1806", "cosmic-galaxy-1805", "dutiful-music-1804"]
 rf_2023 = ["dark-durian-1813", "prime-oath-1812", "devout-surf-1811", "fanciful-salad-1810", "atomic-flower-1809",]
 rf_2024 = ["lemon-sunset-1818", "quiet-meadow-1817", "radiant-aardvark-1816", "wild-pine-1815", "wise-surf-1814"]
+'''
 
-root_dir = '/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/Monsoon2024_Prep/Results/GPMv07'
-save_dir = '/Users/kelseydoerksen/Desktop/Nature_Comms_Analysis_Plotting/ML_TemporalCV_PR'
+rf_2016 = ['cosmic-fire-2420', "charmed-wind-2410", "young-night-2411", "valiant-eon-2409", "copper-gorge-2408"]
+rf_2017 = ["quiet-firebrand-2424", "blooming-monkey-2412", "distinctive-music-2413", "smart-firebrand-2413", "desert-glade-2412"]
+rf_2018 = ["eternal-lake-2427", "sparkling-gorge-2416", "lively-rain-2418", "crisp-leaf-2419", "copper-monkey-2417"]
+rf_2019 = ["expert-wave-2433", "eager-sponge-2432", "deep-water-2423", "astral-wind-2422", "dandy-dawn-2421"]
+rf_2020 = ["lunar-universe-2435", "whole-wood-2434", "distinctive-brook-2428", "earnest-serenity-2426", "rural-butterfly-2425"]
+rf_2021 = ["frosty-music-2439", "deep-flower-2437", "denim-water-2431", "eternal-fog-2430", "royal-blaze-2429"]
+rf_2022 = ["royal-blaze-2442", "dazzling-forest-2441", "upbeat-brook-2440", "comic-pine-2438", "colorful-valley-2436"]
+rf_2023 = ["valiant-blaze-2243", "silver-cloud-2237", "fresh-aardvark-2235", "firm-sunset-2236", "deft-shadow-2234"]
+rf_2024 = ["rosy-yogurt-2223", "royal-aardvark-2222", "vivid-darkness-2223", "ethereal-grass-2222", "winter-paper-2221"]
+
+root_dir = ''
+save_dir = ''
 
 def pr_avg(run_list, year):
     """

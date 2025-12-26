@@ -14,6 +14,7 @@ import geopandas as gpd
 def get_args():
     parser = argparse.ArgumentParser(description='Generating Confusion Matrix')
     parser.add_argument('--run', default=None, help='Wandb run name')
+    parser.add_argument('--threshold', default=None, help='Decision threshold')
     parser.add_argument('--root_dir', help='Root directory of data')
     parser.add_argument('--test_year', help='Test directory')
     return parser.parse_args()
@@ -78,11 +79,11 @@ def generate_plot(CM, start_date, end_date, threshold, save_dir, save_date):
     plt.close()
 
 
-def generate_tp_rate_map(df, nepal_mask, save_dir, decision_threshold=0.2):
+def generate_tp_rate_map(df, nepal_mask, save_dir, decision_threshold):
     """
     Generate map of TP rate over monsoon season
     """
-
+    decision_threshold = float(decision_threshold)
     nepal_mask['DISTRICT'] = nepal_mask['DISTRICT'].replace('Rukum East', 'Rukum_E')
     nepal_mask['DISTRICT'] = nepal_mask['DISTRICT'].replace('Parasi', 'Nawalparasi_W')
     nepal_mask['DISTRICT'] = nepal_mask['DISTRICT'].replace('Rukum West', 'Rukum_W')
@@ -176,7 +177,90 @@ def generate_tp_rate_map(df, nepal_mask, save_dir, decision_threshold=0.2):
     combined['f1'] = 2 * combined['tp'] / (2 * combined['tp'] +
                                                             combined['fp'] +
                                                             combined['fn'])
+
     combined = combined.fillna(0)
+    # Save the combined df
+    combined.to_file('{}/confusion_matrix.geojson'.format(save_dir), driver='GeoJSON')
+    # Get max val
+    max_vals = {'fp': max(combined['fp']),
+                'fn': max(combined['fn']),
+                'tp': max(combined['tp']),
+                'tn': max(combined['tn'])}
+    fig, ax = plt.subplots(2, 2)
+    tp = combined.plot(ax=ax[0, 0], column='tp', edgecolor='black', cmap='Reds', vmin=0,
+                       vmax=max_vals['tp'])
+    ax[0, 0].set_title('True Positives')
+    fig.colorbar(tp.collections[0], ax=ax[0, 0], label='Count')
+
+    fp = combined.plot(ax=ax[0, 1], column='fp', edgecolor='black', cmap='Blues', vmin=0,
+                       vmax=max_vals['fp'])
+    ax[0, 1].set_title('False Positives')
+    fig.colorbar(fp.collections[0], ax=ax[0, 1], label='Count')
+
+    fn = combined.plot(ax=ax[1, 0], column='fn', edgecolor='black', cmap='Greens', vmin=0,
+                       vmax=max_vals['fn'])
+    ax[1, 0].set_title('False Negatives')
+    fig.colorbar(fn.collections[0], ax=ax[1, 0], label='Count')
+
+    tn = combined.plot(ax=ax[1, 1], column='tn', edgecolor='black', cmap='Oranges', vmin=0,
+                       vmax=max_vals['tn'])
+    ax[1, 1].set_title('True Negatives')
+    fig.colorbar(tn.collections[0], ax=ax[1, 1], label='Count')
+    plt.show()
+    plt.close()
+
+    # Plotting Rates
+    fig, ax = plt.subplots(2, 2)
+    tp = combined.plot(ax=ax[0, 0], column='tp_rate', edgecolor='black', linewidth=1, cmap='Reds', vmin=0, vmax=1)
+    ax[0, 0].set_title('True Positive Rate')
+    fig.colorbar(tp.collections[0], ax=ax[0, 0], label='%')
+
+    fp = combined.plot(ax=ax[0, 1], column='fp_rate', edgecolor='black', linewidth=1, cmap='Blues', vmin=0, vmax=1)
+    ax[0, 1].set_title('False Positive Rate')
+    fig.colorbar(fp.collections[0], ax=ax[0, 1], label='%')
+
+    fn = combined.plot(ax=ax[1, 0], column='fn_rate', edgecolor='black', linewidth=1, cmap='Greens', vmin=0, vmax=1)
+    ax[1, 0].set_title('False Negative Rate')
+    fig.colorbar(fn.collections[0], ax=ax[1, 0], label='%')
+
+    tn = combined.plot(ax=ax[1, 1], column='tn_rate', edgecolor='black', linewidth=1, cmap='Oranges', vmin=0, vmax=1)
+    ax[1, 1].set_title('True Negative Rate')
+    fig.colorbar(tn.collections[0], ax=ax[1, 1], label='%')
+
+    plt.show()
+    plt.close()
+
+    # Plotting F1
+    fig, ax = plt.subplots()
+    f1 = combined.plot(column='f1', edgecolor='black', linewidth=1, cmap='Reds', vmin=0, vmax=1)
+    ax.set_title('F1')
+    fig.colorbar(f1.collections[0], label='F1 Score')
+    plt.show()
+    plt.close()
+
+
+def generate_avg_cm_plots(root_dir, test_year):
+    """
+    aggregate the combined gdfs and then plot the confusion matrix for the avg
+    """
+    if test_year == '2023':
+        runs = ["valiant-blaze-2243", "silver-cloud-2237", "fresh-aardvark-2235", "firm-sunset-2236",
+                "deft-shadow-2234"]
+    else:
+        runs = ["stilted-pine-2490", "kind-terrain-2489", "quiet-music-2488", "chocolate-sky-2487", "crimson-wind-2486"]
+
+    gdf_list = []
+    for r in runs:
+        gdf = gpd.read_file('{}/Results/GPMv07/{}_ForecastModel_UKMO_EnsembleNum0/confusion_matrix.geojson'.format(root_dir, r))
+        gdf_list.append(gdf)
+
+    keep_cols = ['OBJECTID', 'PROVINCE', 'PR_NAME', 'DISTRICT', 'landslide', 'Landslide Count', 'geometry']
+    avg_cols = ['tp', 'fp', 'fn', 'tn', 'fp_rate', 'tp_rate', 'fn_rate', 'tn_rate', 'f1']
+    out = gdf_list[0][keep_cols].copy()
+
+    stack = np.stack([g[avg_cols].to_numpy(dtype=float) for g in gdf_list], axis=2)  # (n_rows, n_avg_cols, n_gdfs)
+    out[avg_cols] = np.mean(stack, axis=2)
+    combined = gpd.GeoDataFrame(out, geometry='geometry', crs=gdf_list[0].crs)
 
     # Get max val
     max_vals = {'fp': max(combined['fp']),
@@ -236,7 +320,6 @@ def generate_tp_rate_map(df, nepal_mask, save_dir, decision_threshold=0.2):
     plt.close()
 
 
-
 def generate_monsoon_plots(results_df, year):
     """
     Generate Monsoon Season CM plots
@@ -287,10 +370,9 @@ if __name__ == '__main__':
     run_dir = args.run
     root_dir = args.root_dir
     year = args.test_year
+    thr = args.threshold
 
-    nepal_gdf = gpd.read_file('/Volumes/PRO-G40/landslides/Nepal_Landslides_Forecasting_Project/'
-                              'Nature_Comms/Nepal_District_Boundaries.geojson')
-
+    nepal_gdf = gpd.read_file('{}/Nepal_District_Boundaries.geojson'.format(root_dir))
     if not run_dir:
         results_dir = '{}/FullSeason_Results'.format(root_dir)
         results_df = pd.read_csv('{}/predictions_and_groundtruth_trainsource_gpm.csv'.format(results_dir))
@@ -301,7 +383,7 @@ if __name__ == '__main__':
 
     if not os.path.exists('{}/CM'.format(results_dir)):
         os.mkdir('{}/CM'.format(results_dir))
-
     # Get overall TP rate per Dist
-    generate_tp_rate_map(results_df, nepal_gdf, results_dir)
+    #generate_tp_rate_map(results_df, nepal_gdf, results_dir, thr)
     #generate_monsoon_plots(results_df, year)
+    generate_avg_cm_plots(root_dir, year)
