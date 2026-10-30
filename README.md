@@ -155,11 +155,7 @@ Run `python run_pipeline.py --help` for the remaining options (augmentation, cha
 If you use this code or data, please cite:
 <!-- TODO: add BibTeX for the paper -->
 ```bibtex
-@article{doerksen_landslide_nepal,
-  title  = {Forecasting Landslide Impact Probability in Nepal using AI and Earth Observation},
-  author = {Doerksen, Kelsey and others},
-  note   = {BibTeX to be updated on publication}
-}
+Citation for corresponding paper coming soon :) 
 ```
 
 ## ⚖️ License
