@@ -73,6 +73,10 @@ def getResult(index, point):
     collection = ee.ImageCollection(point['gee_collection'])\
         .filterDate('{}'.format(point['start_date']), '{}'.format(point['end_date']))
 
+    # Days can hold fewer than the nominal image count; indexing past the end
+    # raises EEException, which the TypeError guard below does not catch.
+    num_imgs = min(num_imgs, collection.size().getInfo())
+
     img_list = collection.toList(num_imgs)
     arr_imgs_list = []
     for i in range(num_imgs):

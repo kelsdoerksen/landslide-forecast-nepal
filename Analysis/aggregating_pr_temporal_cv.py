@@ -1,94 +1,141 @@
 """
-Script to read in the PR data for the temporal CV runs and then plot for
-Nature Comms paper
+Publication-quality Precision-Recall curves for the Random Forest temporal
+cross-validation experiment (Nature Comms paper).
+
+For each held-out test year (2016-2024) the model is trained five times; this
+script averages the five PR curves for the year and plots all nine yearly mean
+curves on a single figure, with a qualitative 9-colour legend keyed to year.
+
+Note on averaging: the per-run PR exports are ordered by decision threshold but
+have slightly different lengths (the threshold grid differs run to run). To
+avoid fabricating any data via interpolation, the five real curves are averaged
+element-wise by threshold rank, truncating to the shortest run so every
+averaged point is the mean of five real (recall, precision) points.
 """
 
+import os
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.patheffects as pe
 
-'''
-rf_2016 = ["jumping-sound-1778", "clear-totem-1777", "fragrant-brook-1776", "scarlet-pond-1775", "earnest-fire-1774"]
-rf_2017 = ["stilted-cosmos-1783", "likely-voice-1782", "fresh-frost-1781", "denim-snowflake-1780", "spring-totem-1779"]
-rf_2018 = ["lunar-eon-1788", "worthy-plant-1787", "astral-oath-1786", "comfy-wind-1785", "peach-pine-1784"]
-rf_2019 = ["gentle-elevator-1793", "swept-armadillo-1792", "vague-capybara-1791", "glad-sponge-1790", "ethereal-sun-1789"]
-rf_2020 = ["peach-aardvark-1798", "hearty-moon-1797", "autumn-leaf-1796", "pleasant-donkey-1795", "vibrant-snowflake-1794"]
-rf_2021 = ["soft-gorge-1803", "silvery-flower-1802", "floral-flower-1801", "icy-rain-1800", "fresh-snow-1799"]
-rf_2022 = ["fanciful-frog-1808", "light-jazz-1807", "deep-energy-1806", "cosmic-galaxy-1805", "dutiful-music-1804"]
-rf_2023 = ["dark-durian-1813", "prime-oath-1812", "devout-surf-1811", "fanciful-salad-1810", "atomic-flower-1809",]
-rf_2024 = ["lemon-sunset-1818", "quiet-meadow-1817", "radiant-aardvark-1816", "wild-pine-1815", "wise-surf-1814"]
-'''
+PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
 
-rf_2016 = ['cosmic-fire-2420', "charmed-wind-2410", "young-night-2411", "valiant-eon-2409", "copper-gorge-2408"]
-rf_2017 = ["quiet-firebrand-2424", "blooming-monkey-2412", "distinctive-music-2413", "smart-firebrand-2413", "desert-glade-2412"]
-rf_2018 = ["eternal-lake-2427", "sparkling-gorge-2416", "lively-rain-2418", "crisp-leaf-2419", "copper-monkey-2417"]
-rf_2019 = ["expert-wave-2433", "eager-sponge-2432", "deep-water-2423", "astral-wind-2422", "dandy-dawn-2421"]
-rf_2020 = ["lunar-universe-2435", "whole-wood-2434", "distinctive-brook-2428", "earnest-serenity-2426", "rural-butterfly-2425"]
-rf_2021 = ["frosty-music-2439", "deep-flower-2437", "denim-water-2431", "eternal-fog-2430", "royal-blaze-2429"]
-rf_2022 = ["royal-blaze-2442", "dazzling-forest-2441", "upbeat-brook-2440", "comic-pine-2438", "colorful-valley-2436"]
-rf_2023 = ["valiant-blaze-2243", "silver-cloud-2237", "fresh-aardvark-2235", "firm-sunset-2236", "deft-shadow-2234"]
-rf_2024 = ["rosy-yogurt-2223", "royal-aardvark-2222", "vivid-darkness-2223", "ethereal-grass-2222", "winter-paper-2221"]
+# --------------------------------------------------------------------------- #
+# Configuration
+# --------------------------------------------------------------------------- #
+ROOT_DIR = PROJECT_DIR + "/Monsoon2024_Prep/Results/GPMv07"
+SAVE_DIR = PROJECT_DIR + "/Nature_Comms"
+OUT_BASENAME = os.path.join(SAVE_DIR, "rf_temporal_cv_pr")
+SAVE_YEARLY_CSV = True  # also write the averaged per-year curves to SAVE_DIR
 
-root_dir = ''
-save_dir = ''
+# Five RF runs per held-out test year.
+RF_RUNS = {
+    2016: ["jumping-sound-1778", "clear-totem-1777", "fragrant-brook-1776", "scarlet-pond-1775", "earnest-fire-1774"],
+    2017: ["stilted-cosmos-1783", "likely-voice-1782", "fresh-frost-1781", "denim-snowflake-1780", "spring-totem-1779"],
+    2018: ["lunar-eon-1788", "worthy-plant-1787", "astral-oath-1786", "comfy-wind-1785", "peach-pine-1784"],
+    2019: ["gentle-elevator-1793", "swept-armadillo-1792", "vague-capybara-1791", "glad-sponge-1790", "ethereal-sun-1789"],
+    2020: ["peach-aardvark-1798", "hearty-moon-1797", "autumn-leaf-1796", "pleasant-donkey-1795", "vibrant-snowflake-1794"],
+    2021: ["soft-gorge-1803", "silvery-flower-1802", "floral-flower-1801", "icy-rain-1800", "fresh-snow-1799"],
+    2022: ["fanciful-frog-1808", "light-jazz-1807", "deep-energy-1806", "cosmic-galaxy-1805", "dutiful-music-1804"],
+    2023: ["dark-durian-1813", "prime-oath-1812", "devout-surf-1811", "fanciful-salad-1810", "atomic-flower-1809"],
+    2024: ["lemon-sunset-1818", "quiet-meadow-1817", "radiant-aardvark-1816", "wild-pine-1815", "wise-surf-1814"],
+}
 
-def pr_avg(run_list, year):
+# --------------------------------------------------------------------------- #
+# Plot styling (matches the varying-forecast figure for a consistent paper)
+# --------------------------------------------------------------------------- #
+plt.rcParams.update({
+    "font.family": "sans-serif",
+    "font.size": 12,
+    "axes.titlesize": 14,
+    "axes.labelsize": 13,
+    "xtick.labelsize": 11,
+    "ytick.labelsize": 11,
+    "axes.linewidth": 0.8,
+    "savefig.dpi": 400,
+})
+
+
+def run_csv(run):
+    return f"{ROOT_DIR}/{run}_ForecastModel_UKMO_EnsembleNum0/precision_recall.csv"
+
+
+def pr_avg(run_list):
+    """Average several runs' PR curves element-wise by threshold rank.
+
+    The exports are ordered by decision threshold (ascending) but differ in
+    length, so we truncate to the shortest run and average the real recall and
+    precision values at each rank. No interpolation onto a synthetic grid is
+    performed: every returned point is the mean of five real measured points.
     """
-    PR avg over runs
-    """
-    df_list = []
-    for r in run_list:
-        df = pd.read_csv('{}/{}_ForecastModel_UKMO_EnsembleNum0/precision_recall.csv'.format(root_dir, r, year))
-        df_list.append(df)
-
-    df_avg = pd.DataFrame()
-    df_avg['precision'] = (df_list[0]['precision'] + df_list[1]['precision'] + df_list[2]['precision'] +
-                           df_list[3]['precision'] + df_list[4]['precision']) / 5
-    df_avg['recall'] = (df_list[0]['recall'] + df_list[1]['recall'] + df_list[2]['recall'] + df_list[3]['recall'] +
-                        df_list[4]['recall']) / 5
-
-    return df_avg
+    dfs = [pd.read_csv(run_csv(r)) for r in run_list]
+    n = min(len(d) for d in dfs)
+    recall = np.mean([d["recall"].values[:n] for d in dfs], axis=0)
+    precision = np.mean([d["precision"].values[:n] for d in dfs], axis=0)
+    return pd.DataFrame({"recall": recall, "precision": precision})
 
 
-rf_pr_2016 = pr_avg(rf_2016, '2016')
-rf_pr_2016.to_csv('{}/rf_2016.csv'.format(save_dir))
+# --------------------------------------------------------------------------- #
+# Compute per-year mean curves
+# --------------------------------------------------------------------------- #
+years = sorted(RF_RUNS)
+year_curves = {}
+for y in years:
+    avg = pr_avg(RF_RUNS[y])
+    year_curves[y] = avg
+    if SAVE_YEARLY_CSV:
+        avg.to_csv(f"{SAVE_DIR}/rf_{y}.csv", index=False)
 
-rf_pr_2017 = pr_avg(rf_2017, '2017')
-rf_pr_2017.to_csv('{}/rf_2017.csv'.format(save_dir))
+# --------------------------------------------------------------------------- #
+# Plot
+# --------------------------------------------------------------------------- #
+# Refined qualitative 9-colour palette (seaborn "deep"); distinguishable but
+# softer / more designed than the default matplotlib cycle.
+colors = [
+    "#4C72B0", "#DD8452", "#55A868", "#C44E52", "#8172B3",
+    "#937860", "#DA8BC3", "#8C8C8C", "#CCB974",
+]
 
-rf_pr_2018 = pr_avg(rf_2018, '2018')
-rf_pr_2018.to_csv('{}/rf_2018.csv'.format(save_dir))
+fig, ax = plt.subplots(figsize=(7.5, 5.5), constrained_layout=True)
 
-rf_pr_2019 = pr_avg(rf_2019, '2019')
-rf_pr_2019.to_csv('{}/rf_2019.csv'.format(save_dir))
+# A thin white stroke around each line keeps the upper curve readable where the
+# nine curves overlap.
+outline = [pe.Stroke(linewidth=3.4, foreground="white"), pe.Normal()]
 
-rf_pr_2020 = pr_avg(rf_2020, '2020')
-rf_pr_2020.to_csv('{}/rf_2020.csv'.format(save_dir))
+for y, color in zip(years, colors):
+    # Sort each curve's real points by recall so the noisy high-threshold tail
+    # reads as a clean line rather than a zig-zag (reorders real points only;
+    # no interpolation / fabricated data).
+    curve = year_curves[y].sort_values("recall")
+    ax.plot(
+        curve["recall"], curve["precision"],
+        color=color, linewidth=2.0, label=str(y),
+        solid_capstyle="round", path_effects=outline,
+    )
 
-rf_pr_2021 = pr_avg(rf_2021, '2021')
-rf_pr_2021.to_csv('{}/rf_2021.csv'.format(save_dir))
+ax.set_xlim(0, 1)
+ax.set_ylim(0, 1)
+ax.set_xlabel("Recall")
+ax.set_ylabel("Precision")
+ax.set_title("Random Forest Temporal Cross-validation")
+ax.grid(True, linestyle="-", linewidth=0.4, alpha=0.2)
+ax.set_axisbelow(True)
+ax.spines[["top", "right"]].set_visible(False)
 
-rf_pr_2022 = pr_avg(rf_2022, '2022')
-rf_pr_2022.to_csv('{}/rf_2022.csv'.format(save_dir))
+# Legend outside the axes (right) so it never overlaps the curves.
+ax.legend(
+    title="Test year",
+    loc="center left",
+    bbox_to_anchor=(1.02, 0.5),
+    frameon=True,
+    framealpha=0.9,
+    edgecolor="0.7",
+    fontsize=11,
+    title_fontsize=12,
+)
 
-rf_pr_2023 = pr_avg(rf_2023, '2023')
-rf_pr_2023.to_csv('{}/rf_2023.csv'.format(save_dir))
-
-rf_pr_2024 = pr_avg(rf_2024, '2024')
-rf_pr_2024.to_csv('{}/rf_2024.csv'.format(save_dir))
-
-plt.plot(rf_pr_2016.recall, rf_pr_2016.precision, label='2016')
-plt.plot(rf_pr_2017.recall, rf_pr_2017.precision, label='2017')
-plt.plot(rf_pr_2018.recall, rf_pr_2018.precision, label='2018')
-plt.plot(rf_pr_2019.recall, rf_pr_2019.precision, label='2019')
-plt.plot(rf_pr_2020.recall, rf_pr_2020.precision, label='2020')
-plt.plot(rf_pr_2021.recall, rf_pr_2021.precision, label='2021')
-plt.plot(rf_pr_2022.recall, rf_pr_2022.precision, label='2022')
-plt.plot(rf_pr_2023.recall, rf_pr_2023.precision, label='2023')
-plt.plot(rf_pr_2024.recall, rf_pr_2024.precision, label='2024')
-plt.ylim(0, 1)
-plt.xlim(0, 1)
-plt.ylabel('Precision')
-plt.xlabel('Recall')
-plt.legend()
-plt.tight_layout()
+fig.savefig(f"{OUT_BASENAME}.png", bbox_inches="tight")
+fig.savefig(f"{OUT_BASENAME}.pdf", bbox_inches="tight")
+print(f"Saved:\n  {OUT_BASENAME}.png\n  {OUT_BASENAME}.pdf")
 plt.show()

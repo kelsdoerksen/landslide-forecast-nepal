@@ -49,8 +49,8 @@ def plot_best_f1(f1_df, landslide_counts, year, save_dir):
     # Create a secondary y-axis for the counts of landslides
     ax2 = ax1.twinx()
     ax2.bar(combined_df["doy"], combined_df["landslide_count"],
-            color="gray", alpha=0.3, width=1, label="Landslide count")
-    ax2.set_ylabel("Landslide Count")
+            color="gray", alpha=0.3, width=1, label="Impactful Landslide count")
+    ax2.set_ylabel("Impactful Landslide Count")
 
     # Add legends (combine both axes)
     lines, labels = ax1.get_legend_handles_labels()
@@ -58,7 +58,7 @@ def plot_best_f1(f1_df, landslide_counts, year, save_dir):
     ax1.legend(lines + bars, labels + bar_labels, loc="upper left")
 
 
-    plt.title("Daily F1 Scores for 14-day forecast with Landslide Counts")
+    plt.title("Daily F1 Scores for 14-day forecast with Impactful Landslide Counts")
     plt.savefig('{}/f1_timeseries_{}_best_threshold.png'.format(save_dir, year))
 
 

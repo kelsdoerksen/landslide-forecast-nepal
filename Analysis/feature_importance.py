@@ -5,9 +5,6 @@ Aggregating RF runs and generating feature importance plots/csvs for Nature Comm
 import pandas as pd
 import matplotlib.pyplot as plt
 import argparse
-import os
-
-PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
 
 def get_args():
     parser = argparse.ArgumentParser(description='Feature Importance Plotting')
@@ -16,14 +13,22 @@ def get_args():
     return parser.parse_args()
 
 # This is hard-coded list for nature
-rf_list_2023 = ["restful-yogurt-1841", "fearless-frog-1840", "glorious-hill-1839", "hardy-mountain-1838",
-                "feasible-lion-1837"]
+# rf_list_2023 = ["restful-yogurt-1841", "fearless-frog-1840", "glorious-hill-1839", "hardy-mountain-1838",
+#                 "feasible-lion-1837"]
+# rf_list_2024 = ["hearty-resonance-1836", "effortless-disco-1835", "charmed-energy-1834", "kind-sponge-1833",
+#                 "usual-snowball-1832"]
 
-rf_list_2024 = ["hearty-resonance-1836", "effortless-disco-1835", "charmed-energy-1834", "kind-sponge-1833",
-                "usual-snowball-1832"]
+# 2025/2026 retrain 5-seed UKMO RF runs (GPMv07 hindcast)
+rf_list_2023 = ["s5vmtkwd", "ybrwrcuo", "g1c5gncb", "1pq76brf", "0ywrra8l"]
+rf_list_2024 = ["bk4ocih2", "j5o9v9zr", "7frh12gd", "sdwk3jax", "kfl3hvka"]
 
 root_dir = PROJECT_DIR + '/Monsoon2024_Prep/Results/GPMv07'
-save_dir = PROJECT_DIR + '/Nature_Comms_Analysis_Plotting/RF_FI'
+# save_dir = '$LANDSLIDE_PROJECT_DIR/Nature_Comms_Analysis_Plotting/RF_FI'
+save_dir = PROJECT_DIR + '/Monsoon2024_Prep/Results/GPMv07/aggregate_5seed_retrain'
+import os
+
+PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
+os.makedirs(save_dir, exist_ok=True)
 
 
 def agg_fi(year):
@@ -85,6 +90,8 @@ if __name__ == '__main__':
     plt.ylabel('Feature Importance Score')
     plt.ylim(0,0.08)
     #plt.show()
+    plt.tight_layout()
+    plt.savefig('{}/FI_bar_{}.png'.format(save_dir, year), dpi=200)
     plt.close()
 
     # Pie Chart Plotting
@@ -104,6 +111,7 @@ if __name__ == '__main__':
     fig, ax = plt.subplots()
     ax.pie(vals, labels=labels, colors=colors, autopct='%1.1f%%', textprops={'color':"w"})
     #plt.show()
+    plt.savefig('{}/FI_group_pie_{}.png'.format(save_dir, year), dpi=200, bbox_inches='tight')
     plt.close()
 
 
@@ -120,10 +128,12 @@ if __name__ == '__main__':
 
     # Bar Plotting
     fig, ax = plt.subplots(figsize=(18, 10))
-    ax.bar(pi_avg_df['Feature'], pi_avg_df['PI'], align='edge', width=0.5, color=colors, yerr=pi_avg_df['std_err'])
+    ax.bar(pi_avg_df['Feature'], pi_avg_df['PI'], align='edge', width=0.5, yerr=pi_avg_df['std_err'])
     plt.xticks(rotation=90)
     plt.ylabel('Permutation Importance Score')
     #plt.show()0-
+    plt.tight_layout()
+    plt.savefig('{}/PI_bar_{}.png'.format(save_dir, year), dpi=200)
     plt.close()
 
     # Join dfs

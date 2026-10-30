@@ -239,15 +239,22 @@ def generate_tp_rate_map(df, nepal_mask, save_dir, decision_threshold):
     plt.close()
 
 
-def generate_avg_cm_plots(root_dir, test_year):
+def generate_avg_cm_plots(root_dir, test_year, save_dir):
     """
     aggregate the combined gdfs and then plot the confusion matrix for the avg
     """
+    # Nature Comms hardcoded runs (kept for reference)
+    # if test_year == '2023':
+    #     runs = ["valiant-blaze-2243", "silver-cloud-2237", "fresh-aardvark-2235", "firm-sunset-2236",
+    #             "deft-shadow-2234"]
+    # else:
+    #     runs = ["stilted-pine-2490", "kind-terrain-2489", "quiet-music-2488", "chocolate-sky-2487", "crimson-wind-2486"]
+
+    # 2025/2026 retrain 5-seed UKMO RF runs (GPMv07 hindcast)
     if test_year == '2023':
-        runs = ["valiant-blaze-2243", "silver-cloud-2237", "fresh-aardvark-2235", "firm-sunset-2236",
-                "deft-shadow-2234"]
+        runs = ["s5vmtkwd", "ybrwrcuo", "g1c5gncb", "1pq76brf", "0ywrra8l"]
     else:
-        runs = ["stilted-pine-2490", "kind-terrain-2489", "quiet-music-2488", "chocolate-sky-2487", "crimson-wind-2486"]
+        runs = ["bk4ocih2", "j5o9v9zr", "7frh12gd", "sdwk3jax", "kfl3hvka"]
 
     gdf_list = []
     for r in runs:
@@ -261,62 +268,44 @@ def generate_avg_cm_plots(root_dir, test_year):
     stack = np.stack([g[avg_cols].to_numpy(dtype=float) for g in gdf_list], axis=2)  # (n_rows, n_avg_cols, n_gdfs)
     out[avg_cols] = np.mean(stack, axis=2)
     combined = gpd.GeoDataFrame(out, geometry='geometry', crs=gdf_list[0].crs)
+    combined.to_file('{}/avg_confusion_matrix_{}.geojson'.format(save_dir, test_year), driver='GeoJSON')
 
-    # Get max val
-    max_vals = {'fp': max(combined['fp']),
-                'fn': max(combined['fn']),
-                'tp': max(combined['tp']),
-                'tn': max(combined['tn'])}
-    fig, ax = plt.subplots(2, 2)
-    tp = combined.plot(ax=ax[0, 0], column='tp', edgecolor='black', cmap='Reds', vmin=0,
-                       vmax=max_vals['tp'])
-    ax[0, 0].set_title('True Positives')
-    fig.colorbar(tp.collections[0], ax=ax[0, 0], label='Count')
-
-    fp = combined.plot(ax=ax[0, 1], column='fp', edgecolor='black', cmap='Blues', vmin=0,
-                       vmax=max_vals['fp'])
-    ax[0, 1].set_title('False Positives')
-    fig.colorbar(fp.collections[0], ax=ax[0, 1], label='Count')
-
-    fn = combined.plot(ax=ax[1, 0], column='fn', edgecolor='black', cmap='Greens', vmin=0,
-                       vmax=max_vals['fn'])
-    ax[1, 0].set_title('False Negatives')
-    fig.colorbar(fn.collections[0], ax=ax[1, 0], label='Count')
-
-    tn = combined.plot(ax=ax[1, 1], column='tn', edgecolor='black', cmap='Oranges', vmin=0,
-                       vmax=max_vals['tn'])
-    ax[1, 1].set_title('True Negatives')
-    fig.colorbar(tn.collections[0], ax=ax[1, 1], label='Count')
-    plt.show()
+    # Counts (averaged over the 5 seeds)
+    max_vals = {c: max(combined[c].max(), 1) for c in ['fp', 'fn', 'tp', 'tn']}
+    fig, ax = plt.subplots(2, 2, figsize=(14, 10))
+    for col, cmap, title, a in [('tp', 'Reds', 'True Positives', ax[0, 0]),
+                                ('fp', 'Blues', 'False Positives', ax[0, 1]),
+                                ('fn', 'Greens', 'False Negatives', ax[1, 0]),
+                                ('tn', 'Oranges', 'True Negatives', ax[1, 1])]:
+        pl = combined.plot(ax=a, column=col, edgecolor='black', linewidth=0.4, cmap=cmap, vmin=0, vmax=max_vals[col])
+        a.set_title(title); a.axis('off')
+        fig.colorbar(pl.collections[0], ax=a, label='Count')
+    plt.suptitle('{} 5-seed average confusion matrix counts'.format(test_year))
+    plt.tight_layout()
+    plt.savefig('{}/avg_cm_counts_map_{}.png'.format(save_dir, test_year), dpi=200)
     plt.close()
 
-    # Plotting Rates
-    fig, ax = plt.subplots(2, 2)
-    tp = combined.plot(ax=ax[0, 0], column='tp_rate', edgecolor='black', linewidth=1, cmap='Reds', vmin=0, vmax=1)
-    ax[0, 0].set_title('True Positive Rate')
-    fig.colorbar(tp.collections[0], ax=ax[0, 0], label='%')
-
-    fp = combined.plot(ax=ax[0, 1], column='fp_rate', edgecolor='black', linewidth=1, cmap='Blues', vmin=0, vmax=1)
-    ax[0, 1].set_title('False Positive Rate')
-    fig.colorbar(fp.collections[0], ax=ax[0, 1], label='%')
-
-    fn = combined.plot(ax=ax[1, 0], column='fn_rate', edgecolor='black', linewidth=1, cmap='Greens', vmin=0, vmax=1)
-    ax[1, 0].set_title('False Negative Rate')
-    fig.colorbar(fn.collections[0], ax=ax[1, 0], label='%')
-
-    tn = combined.plot(ax=ax[1, 1], column='tn_rate', edgecolor='black', linewidth=1, cmap='Oranges', vmin=0, vmax=1)
-    ax[1, 1].set_title('True Negative Rate')
-    fig.colorbar(tn.collections[0], ax=ax[1, 1], label='%')
-
-    plt.show()
+    # Rates
+    fig, ax = plt.subplots(2, 2, figsize=(14, 10))
+    for col, cmap, title, a in [('tp_rate', 'Reds', 'True Positive Rate', ax[0, 0]),
+                                ('fp_rate', 'Blues', 'False Positive Rate', ax[0, 1]),
+                                ('fn_rate', 'Greens', 'False Negative Rate', ax[1, 0]),
+                                ('tn_rate', 'Oranges', 'True Negative Rate', ax[1, 1])]:
+        pl = combined.plot(ax=a, column=col, edgecolor='black', linewidth=0.4, cmap=cmap, vmin=0, vmax=1)
+        a.set_title(title); a.axis('off')
+        fig.colorbar(pl.collections[0], ax=a, label='Rate')
+    plt.suptitle('{} 5-seed average confusion matrix rates'.format(test_year))
+    plt.tight_layout()
+    plt.savefig('{}/avg_cm_rates_map_{}.png'.format(save_dir, test_year), dpi=200)
     plt.close()
 
-    # Plotting F1
-    fig, ax = plt.subplots()
-    f1 = combined.plot(column='f1', edgecolor='black', linewidth=1, cmap='Reds', vmin=0, vmax=1)
-    ax.set_title('F1')
-    fig.colorbar(f1.collections[0], label='F1 Score')
-    plt.show()
+    # F1
+    fig, ax = plt.subplots(figsize=(9, 7))
+    pl = combined.plot(ax=ax, column='f1', edgecolor='black', linewidth=0.4, cmap='Reds', vmin=0, vmax=1)
+    ax.set_title('{} per-district F1 (5-seed avg)'.format(test_year)); ax.axis('off')
+    fig.colorbar(pl.collections[0], ax=ax, label='F1 Score')
+    plt.tight_layout()
+    plt.savefig('{}/avg_cm_f1_map_{}.png'.format(save_dir, test_year), dpi=200)
     plt.close()
 
 
@@ -367,23 +356,26 @@ def generate_monsoon_plots(results_df, year):
 
 if __name__ == '__main__':
     args = get_args()
-    run_dir = args.run
     root_dir = args.root_dir
     year = args.test_year
-    thr = args.threshold
 
-    nepal_gdf = gpd.read_file('{}/Nepal_District_Boundaries.geojson'.format(root_dir))
-    if not run_dir:
-        results_dir = '{}/FullSeason_Results'.format(root_dir)
-        results_df = pd.read_csv('{}/predictions_and_groundtruth_trainsource_gpm.csv'.format(results_dir))
-    else:
-        results_dir = '{}/Results/GPMv07/{}'.format(root_dir, run_dir)
-        results_df = pd.read_csv('{}/predictions_and_groundtruth.csv'.format(results_dir))
+    # --- Nature Comms single-run / per-run map path (kept for reference) ---
+    # run_dir = args.run
+    # thr = args.threshold
+    # nepal_gdf = gpd.read_file('{}/Nepal_District_Boundaries.geojson'.format(root_dir))
+    # if not run_dir:
+    #     results_dir = '{}/FullSeason_Results'.format(root_dir)
+    #     results_df = pd.read_csv('{}/predictions_and_groundtruth_trainsource_gpm.csv'.format(results_dir))
+    # else:
+    #     results_dir = '{}/Results/GPMv07/{}'.format(root_dir, run_dir)
+    #     results_df = pd.read_csv('{}/predictions_and_groundtruth.csv'.format(results_dir))
+    # if not os.path.exists('{}/CM'.format(results_dir)):
+    #     os.mkdir('{}/CM'.format(results_dir))
+    # generate_tp_rate_map(results_df, nepal_gdf, results_dir, thr)
+    # generate_monsoon_plots(results_df, year)
 
-
-    if not os.path.exists('{}/CM'.format(results_dir)):
-        os.mkdir('{}/CM'.format(results_dir))
-    # Get overall TP rate per Dist
-    #generate_tp_rate_map(results_df, nepal_gdf, results_dir, thr)
-    #generate_monsoon_plots(results_df, year)
-    generate_avg_cm_plots(root_dir, year)
+    # 5-seed average confusion-matrix maps.
+    # Per-run confusion_matrix.geojson (threshold 0.24) is produced by Analysis/analyze_run.py.
+    save_dir = '{}/Results/GPMv07/aggregate_5seed_retrain'.format(root_dir)
+    os.makedirs(save_dir, exist_ok=True)
+    generate_avg_cm_plots(root_dir, year, save_dir)

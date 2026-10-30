@@ -51,6 +51,29 @@ def get_args():
     parser.add_argument('--test_forecast', help='Model to test forecast for 2023 based on ukmo training')
     parser.add_argument('--parameter_tuning', help='Specify if tuning model hyperparameters', default=None)
     parser.add_argument('--tag', help='Project tag')
+    parser.add_argument('--use_ecmwf_2024', default='true',
+                        help="If 'true' (default), 2024 uses the ECMWF (renamed) data as the old workaround for "
+                             "gappy UKMO 2024. Set 'false' to use the run's forecast_model data for 2024.")
+    parser.add_argument('--test_forecast_source', default=None,
+                        help="Forecast source for the TEST year only, when it differs from --forecast_model "
+                             "(e.g. testing a UKMO-trained model on 2026, where only ECMWF covers Apr-Jun). "
+                             "Its forecast columns are renamed to the --forecast_model prefix.")
+    parser.add_argument('--train_forecast_source', default=None,
+                        help="Forecast source for training years >= --train_forecast_from_year. Lets the model train "
+                             "on e.g. UKMO up to 2022 then ECMWF from 2023 on. Columns are renamed to the "
+                             "--forecast_model prefix. Requires --train_forecast_from_year.")
+    parser.add_argument('--train_forecast_from_year', default=None, type=int,
+                        help='First training year that should come from --train_forecast_source.')
+    parser.add_argument('--train_years', default=None,
+                        help='Comma-separated training years, overriding the default year_split_dict '
+                             '(e.g. "2023,2024,2025" to train on those years only).')
+    parser.add_argument('--train_sources', default=None,
+                        help='Per-year training sources as "source:startyear-endyear[,...]", e.g. '
+                             '"UKMOaffine:2016-2022,ecmwf:2023-2025". Each source\'s forecast columns are '
+                             'renamed to the --forecast_model prefix. Generalizes --train_forecast_source.')
+    parser.add_argument('--seed', default=None, type=int,
+                        help='Random seed. Without it the RF random_state and train/val split are drawn from an '
+                             'unseeded RNG, so runs are not reproducible and cannot be compared across seeds.')
 
     return parser.parse_args()
 
@@ -317,10 +340,19 @@ def get_monsoon_season(year):
     return monsoon_dates
 
 
-def load_data(test_year, data_dir, experiment_type, results_dir, tag, root_dir):
+def load_data(test_year, data_dir, experiment_type, results_dir, tag, root_dir, use_ecmwf_2024=True,
+              test_data_dir=None, test_rename=None, train_year_sources=None, train_years_override=None):
     """
     Function to load in train, test, validation (for param tuning) datasets
     Specify test year, all other years used for training
+
+    :param test_data_dir: directory to read the test year's samples from, when the test
+        year uses a different forecast source than the training years. Defaults to data_dir.
+    :param test_rename: (from_prefix, to_prefix) applied to the test year's forecast columns
+        so they match the training feature names.
+    :param train_year_sources: {year_str: {'data_dir': str, 'rename': (from, to)}}. Training years
+        listed here are read from that data_dir and renamed, so the model can train on a
+        different forecast source per year.
     """
     if tag != 'temporal-cv':
         year_split_dict = {
@@ -331,7 +363,9 @@ def load_data(test_year, data_dir, experiment_type, results_dir, tag, root_dir):
             '2021': ['2016', '2017', '2018', '2019', '2020'],
             '2022': ['2016', '2017', '2018', '2019', '2020', '2021'],
             '2023': ['2016', '2017', '2018', '2019', '2020', '2021', '2022'],
-            '2024': ['2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023']
+            '2024': ['2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023'],
+            '2025': ['2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'],
+            '2026': ['2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025']
         }
 
         train_years = year_split_dict[test_year]
@@ -340,16 +374,29 @@ def load_data(test_year, data_dir, experiment_type, results_dir, tag, root_dir):
         years.remove(test_year)
         train_years = years
 
+    if train_years_override:
+        train_years = train_years_override
+    print('Training years: {}'.format(', '.join(train_years)))
+
+    if test_data_dir is None:
+        test_data_dir = data_dir
+
 
     df_train_list = []
     monsoon_train_list = []
     for y in train_years:
-        if y == '2024':
+        if y == '2024' and use_ecmwf_2024:
             df = pd.read_csv('{}/embeddings/ecmwf_data_{}_windowsize14_district.csv'.
                                   format(root_dir, y))
             df = df.rename(columns=lambda c: c.replace("ECMWF_ens_0", "UKMO_ens_0"))
+        elif train_year_sources is not None and y in train_year_sources:
+            spec = train_year_sources[y]
+            df = pd.read_csv('{}/{}_windowsize14_district.csv'.format(spec['data_dir'], y))
+            df = df.rename(columns=lambda c: c.replace(spec['rename'][0], spec['rename'][1]))
+            print('  train year {} <- {}'.format(y, spec['data_dir']))
         else:
             df = pd.read_csv('{}/{}_windowsize14_district.csv'.format(data_dir, y))
+            print('  train year {} <- {}'.format(y, data_dir))
         df_train_list.append(df)
         monsoon_train = daterange(date(int(y), 4, 1), date(int(y), 10, 31))
         monsoon_train_list.append(monsoon_train[:])
@@ -371,14 +418,16 @@ def load_data(test_year, data_dir, experiment_type, results_dir, tag, root_dir):
     '''
 
     # Split into monsoon season test set
-    if test_year == '2024':
+    if test_year == '2024' and use_ecmwf_2024:
         # Loading only the ecmwf data for 2024 because it has no gaps as opposed to the UKMO, NCEP, KMA
         df_test = pd.read_csv('{}/embeddings/ecmwf_data_{}_windowsize14_district.csv'.
                               format(root_dir, test_year))
         # Rename columns to match UKMO, just note this for future when I am plotting stuff to go back to rename
         df_test = df_test.rename(columns=lambda c: c.replace("ECMWF_ens_0", "UKMO_ens_0"))
     else:
-        df_test = pd.read_csv('{}/{}_windowsize14_district.csv'.format(data_dir, test_year))
+        df_test = pd.read_csv('{}/{}_windowsize14_district.csv'.format(test_data_dir, test_year))
+        if test_rename is not None:
+            df_test = df_test.rename(columns=lambda c: c.replace(test_rename[0], test_rename[1]))
     monsoon_test_list = daterange(date(int(test_year), 4, 1), date(int(test_year), 10, 31))
     monsoon_test = df_test[df_test['date'].isin(monsoon_test_list)]
 
@@ -675,6 +724,14 @@ def run_rf(data_dir, Xtrain, ytrain, Xtest, ytest, Xval, yval, results_dir, wand
         f.write('F1 scores for each fold are: {}'.format(cv_scoring['test_f1']))
         f.write('Average F1 is: {}'.format(cv_scoring['test_f1'].mean()))
     '''
+
+    # Persist the fitted model alongside the run's metrics
+    joblib.dump(forest, '{}/rf_model.joblib'.format(results_dir))
+    with open('{}/rf_model.pkl'.format(results_dir), 'wb') as f:
+        pickle.dump(forest, f)
+    with open('{}/rf_model_features.json'.format(results_dir), 'w') as f:
+        json.dump(list(X_train.columns), f, indent=2)
+    print('Saved model -> {}/rf_model.pkl'.format(results_dir))
 
     # Measure model performance on test set
     print('Evaluating model...')
@@ -1513,6 +1570,14 @@ if __name__ == '__main__':
     test_forecast = args.test_forecast
     tuning = args.parameter_tuning
     tag = args.tag
+    use_ecmwf_2024 = (str(args.use_ecmwf_2024).lower() == 'true')
+
+    # Seeding the stdlib RNG is enough to pin the run: the RF random_state and the
+    # train/val split both draw from it via random.randint.
+    if args.seed is not None:
+        random.seed(args.seed)
+        np.random.seed(args.seed)
+        print('Seed: {}'.format(args.seed))
 
     # Set up wandb experiment for tracking
     experiment = wandb.init(project='landslide-prediction',
@@ -1545,7 +1610,45 @@ if __name__ == '__main__':
         # Load data
         print('Loading data...')
         data_dir = '{}/LabelledData_{}/{}/ensemble_{}'.format(root_dir, hindcast_model, forecast_model, ensemble_num)
-        X_train, y_train, X_test, y_test, X_val, y_val = load_data(test_y, data_dir, exp, results_dir, tag, root_dir)
+
+        def source_spec(source):
+            return {'data_dir': '{}/LabelledData_{}/{}/ensemble_{}'.format(root_dir, hindcast_model,
+                                                                           source, ensemble_num),
+                    'rename': ('{}_ens_{}'.format(source, ensemble_num),
+                               '{}_ens_{}'.format(forecast_model, ensemble_num))}
+
+        train_year_sources = None
+        if args.train_sources:
+            # "UKMOaffine:2016-2022,ecmwf:2023-2025" -> {year: spec}
+            train_year_sources = {}
+            for part in args.train_sources.split(','):
+                source, span = part.split(':')
+                start, end = (span.split('-') + [span])[:2]
+                for yr in range(int(start), int(end) + 1):
+                    train_year_sources[str(yr)] = source_spec(source)
+            print('Training sources: {}'.format(args.train_sources))
+        elif args.train_forecast_source:
+            if args.train_forecast_from_year is None:
+                raise SystemExit('--train_forecast_source requires --train_forecast_from_year')
+            train_year_sources = {str(yr): source_spec(args.train_forecast_source)
+                                  for yr in range(args.train_forecast_from_year, 2027)}
+            print('Training years >= {} use forecast source {}'.format(
+                args.train_forecast_from_year, args.train_forecast_source))
+
+        test_data_dir, test_rename = None, None
+        if args.test_forecast_source:
+            test_data_dir = '{}/LabelledData_{}/{}/ensemble_{}'.format(root_dir, hindcast_model,
+                                                                       args.test_forecast_source, ensemble_num)
+            test_rename = ('{}_ens_{}'.format(args.test_forecast_source, ensemble_num),
+                           '{}_ens_{}'.format(forecast_model, ensemble_num))
+            print('Test year {} uses forecast source {} (renaming {} -> {})'.format(
+                test_y, args.test_forecast_source, test_rename[0], test_rename[1]))
+
+        train_years_override = args.train_years.split(',') if args.train_years else None
+
+        X_train, y_train, X_test, y_test, X_val, y_val = load_data(test_y, data_dir, exp, results_dir, tag, root_dir,
+                                                                   use_ecmwf_2024, test_data_dir, test_rename,
+                                                                   train_year_sources, train_years_override)
 
         if model == 'rf':
             run_rf(data_dir, X_train, y_train, X_test, y_test, X_val, y_val, results, experiment, model, test_y,
