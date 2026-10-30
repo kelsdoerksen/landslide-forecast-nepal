@@ -21,7 +21,7 @@
 </div>
 
 ## 📄 Description
-This repository contains the code for dataset curation, processing, model training, testing and analysis for predicting landslide impacts in Nepal, i.e. landslides that damage infrastructure and/or cause loss of life, over a 14-day horizon at district level. Statistical summaries of precipitation and terrain over each district's boundary are combined with satellite embeddings extracted from our LandslideNet model as inputs to a final ML classifier.
+This repository contains the code for dataset curation, processing, model training, testing and analysis for predicting landslide impacts in Nepal: landslides that damage infrastructure and/or cause loss of life, over a 14-day horizon at district level. Statistical summaries of precipitation and terrain over each district's boundary are combined with satellite embeddings extracted from our LandslideNet model as inputs to a final ML classifier. All landslide impact records are taken from the Building Information Platform Against Disaster (BIPAD) portal, owned by the National Disaster Risk Reduction and Management Authority (NDRRMA).
 
 ## 🛠 Installation
 ```bash
@@ -36,7 +36,7 @@ The UNet / embedding pipeline in `unet/` needs a few extra packages, listed in `
 Experiments are logged with [Weights & Biases](https://wandb.ai). To run without an account, set `WANDB_MODE=disabled` (or `offline`).
 
 ## 🚀 Quickstart
-The `Sample` folder holds enough pre-processed data to train and test the classifier: 2016 and 2017, with UKMO ensemble member 0 forecasts and GPM IMERG v07 hindcasts. To train a Random Forest on 2016 and test on 2017:
+The `Sample` folder holds pre-processed data to train and test the classifier for 2016 and 2017, with UKMO ensemble member 0 forecasts and GPM IMERG v07 hindcasts. To train a Random Forest on 2016 and test on 2017:
 ```bash
 mkdir -p results
 WANDB_MODE=disabled python run_classifier.py \
@@ -45,7 +45,7 @@ WANDB_MODE=disabled python run_classifier.py \
     --hindcast_model GPMv07 --forecast_model UKMO --ensemble_num 0 \
     --experiment_type full --wandb_setting offline --tag quickstart
 ```
-This takes well under a minute on a laptop and writes metrics, predictions and feature importances to a run folder inside `results/`.
+This takes < 1min on a laptop and writes metrics, predictions and feature importances to a run folder inside `results/`.
 
 ## 💧 Data
 
@@ -53,8 +53,8 @@ This takes well under a minute on a laptop and writes metrics, predictions and f
 | Path | Contents |
 |---|---|
 | `Sample/LabelledData_GPMv07/UKMO/ensemble_0/{year}_windowsize14_district.csv` | Labelled samples (one row per district per day) for 2016-2017 |
-| `Sample/bipad_records_2016-2024_july172025download.csv` | Landslide incident records from the BIPAD portal used for labels |
-| `techdemo_files/District_Labels.tif` | Raster of Nepal's 77 districts. Pixel values are district IDs, **not** a 0/1 mask |
+| `Sample/bipad_records_2016-2024_july172025download.csv` | Landslide incident records from the BIPAD portal used for labels. Data downloaded from BIPAD on July 17th, 2025 |
+| `techdemo_files/District_Labels.tif` | Raster of Nepal's 77 districts. Pixel values are district IDs |
 | `techdemo_files/{dem,slope,aspect}_stats_all_district.csv` | District-level terrain statistics from the ALOS 30 m DEM |
 | `techdemo_files/MODIS_District_2015-2021/` | District-level MODIS land cover per year |
 
@@ -70,16 +70,6 @@ Each row is one `district` on one `date` (the forecast issue date). `label` is 1
 | `dem_*`, `slope_*`, `aspect_*` | District terrain statistics (mean, median, stdev, min, max, range, variance) |
 | `lc_mode`, `lc_var` | MODIS land cover mode and variance in the district |
 
-### Full dataset
-<!-- TODO: replace with Zenodo DOI once uploaded -->
-The full dataset (all years 2016-2024, all forecast models and ensemble members, LandslideNet embeddings and UNet array samples) is too large for GitHub and will be available on Zenodo: **[link coming soon]**.
-
-Once downloaded, `run_classifier.py` expects the same layout as `Sample/`:
-```
-<root_dir>/
-├── LabelledData_<hindcast_model>/<forecast_model>/ensemble_<n>/{year}_windowsize14_district.csv
-└── embeddings/                 # only for embedding / 2024 ECMWF experiments
-```
 
 ### Raw data sources
 To regenerate the dataset from scratch, you need:
@@ -92,7 +82,7 @@ To regenerate the dataset from scratch, you need:
 | Landslide incidents (labels) | Nepal [BIPAD portal](https://bipadportal.gov.np) |
 
 ## 👩‍🔬 Data Processing Pipeline
-The preprocessing scripts are research code. They read from and write to a project data folder, set with the `LANDSLIDE_PROJECT_DIR` environment variable (default `./data`, which is git-ignored). Most scripts work under `$LANDSLIDE_PROJECT_DIR/Monsoon2024_Prep/`. The Earth Engine scripts use your own GEE Cloud project:
+The preprocessing scripts read from and write to a project data folder, set with the `LANDSLIDE_PROJECT_DIR` environment variable (default `./data`, which is git-ignored). Most scripts work under `$LANDSLIDE_PROJECT_DIR/Monsoon2024_Prep/`. The Earth Engine scripts use your own GEE Cloud project:
 ```bash
 export LANDSLIDE_PROJECT_DIR=/path/to/your/data
 export EE_PROJECT=your-gee-cloud-project
