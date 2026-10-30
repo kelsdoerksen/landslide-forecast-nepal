@@ -20,6 +20,9 @@ from augmentation import *
 from utils import *
 import random
 from torchvision.transforms import v2, Lambda
+import os
+
+PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
 
 
 def train_binary_classification_model(model,
@@ -340,7 +343,7 @@ def train_model(model,
 
     if overfit:
         # Hardcoding for now just to check things
-        overfit_dir = '<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep/overfit_dir'
+        overfit_dir = PROJECT_DIR + '/Monsoon2024_Prep/overfit_dir'
         files = os.listdir(overfit_dir)
         files.sort()
         sample_list = []

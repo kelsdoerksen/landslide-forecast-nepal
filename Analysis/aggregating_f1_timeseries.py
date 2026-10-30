@@ -4,6 +4,9 @@ Script to read in and aggregate f1 csvs so I don't have to do things by hand
 
 import pandas as pd
 import matplotlib.pyplot as plt
+import os
+
+PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
 
 # This is hard-coded list for nature
 rf_list_2023 = ["laced-yogurt-1740", "worldly-monkey-1739", "easy-planet-1738", "glad-pyramid-1737",
@@ -24,8 +27,8 @@ gb_list_2024 = ["major-universe-1716", "hopeful-blaze-1714", "gentle-lake-1713",
 xgb_list_2024 = ["chocolate-frog-1710", "northern-feather-1709", "glowing-resonance-1708", "grateful-lion-1707",
 "fine-durian-1706"]
 
-root_dir = '<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep/Results/GPMv07'
-save_dir = '~/Desktop/Nature_Comms_Analysis_Plotting/ML_Timeseries_F1'
+root_dir = PROJECT_DIR + '/Monsoon2024_Prep/Results/GPMv07'
+save_dir = PROJECT_DIR + '/Nature_Comms_Analysis_Plotting/ML_Timeseries_F1'
 
 def f1_avg(run_list, year):
     """

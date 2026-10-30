@@ -8,6 +8,8 @@ import os
 import re
 import argparse
 
+PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
+
 
 def get_args():
     parser = argparse.ArgumentParser(description='Fixing samples with corrected MODIS',
@@ -25,8 +27,8 @@ if __name__ == "__main__":
 
 
     # Paths (update these as needed)
-    modis_dir = '<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep/MODIS_Pixelwise'
-    samples_dir = ('<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep/'
+    modis_dir = PROJECT_DIR + '/Monsoon2024_Prep/MODIS_Pixelwise'
+    samples_dir = (PROJECT_DIR + '/Monsoon2024_Prep/'
                    'UNet_Samples_14Day_GPMv07/{}/ensemble_{}'.format(forecast, num))
     output_dir = samples_dir           # Can be the same or a different folder
 

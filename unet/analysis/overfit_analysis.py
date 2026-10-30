@@ -16,6 +16,9 @@ from PIL import Image
 import torch
 from torch import tensor
 from torchmetrics.classification import BinaryJaccardIndex
+import os
+
+PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
 
 
 
@@ -280,11 +283,11 @@ def intersection_calc(groundtruth, prediction, district_masks):
 if __name__ == '__main__':
     # Hardcoding things for now
 
-    root_dir = '<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep'
+    root_dir = PROJECT_DIR + '/Monsoon2024_Prep'
     district_masks = generate_district_masks('{}/District_Labels.tif'.format(root_dir))
 
     # Load predictions from overfit dir; run is cerulean-sky-1973
-    overfit_dir = '<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep/overfit_dir'
+    overfit_dir = PROJECT_DIR + '/Monsoon2024_Prep/overfit_dir'
     # Load in last epoch prediction
     pred = np.load('{}/cerulean-sky-1973_pred_999.npy'.format(overfit_dir))[0,0,:,:]
     gt = np.load('{}/label_2017-06-29.npy'.format(overfit_dir))

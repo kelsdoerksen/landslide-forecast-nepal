@@ -8,8 +8,10 @@ from datetime import datetime, timedelta
 import os
 import numpy as np
 
+PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
+
 # Specify directory of nc file to process
-root_dir = '<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep/'
+root_dir = PROJECT_DIR + '/Monsoon2024_Prep/'
 
 def daterange(date1, date2):
   date_list = []
@@ -48,6 +50,6 @@ def ecmwf_to_daily(precip_data):
         np.save('{}/precipitation_forecast_id0_doy_{}.npy'.format(directory, doy), precip_val)
 
 # Specify precip data to process
-precip = xr.open_dataset('<LANDSLIDE_PROJECT_DIR>/'
+precip = xr.open_dataset(PROJECT_DIR + '/'
                          'Monsoon2024_Prep/PrecipitationModel_Forecast_Data/Nepal_ECMWF_Jan2015-May2024_GPMfinal.nc')
 ecmwf_to_daily(precip)

@@ -8,6 +8,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import argparse
 import numpy as np
+import os
+
+PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
 
 def get_args():
     parser = argparse.ArgumentParser(description='CM maps')
@@ -18,7 +21,7 @@ def get_args():
 
 runs = {'unet_mini_dice_2023': ['UKMO_ensemble_0_1m2yy0ry', 'UKMO_ensemble_0_4hs7ghh8', 'UKMO_ensemble_0_dw67nyyy',
                                 'UKMO_ensemble_0_ixn4w8lf']}
-root_dir = '<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep/Results/GPMv07/'
+root_dir = PROJECT_DIR + '/Monsoon2024_Prep/Results/GPMv07/'
 
 if __name__ == '__main__':
     args = get_args()
@@ -44,10 +47,10 @@ if __name__ == '__main__':
     mean_df['DISTRICT'] = df['DISTRICT']
     mean_df['PROVINCE'] = df['PROVINCE']
 
-    mean_df.to_csv('~/Desktop/Nature_Comms_Analysis_Plotting/{}_cm.csv'.format(run))
+    mean_df.to_csv(PROJECT_DIR + '/Nature_Comms_Analysis_Plotting/{}_cm.csv'.format(run))
 
     # Load in Nepal gdf
-    nepal_gdf = gpd.read_file('<LANDSLIDE_PROJECT_DIR>/'
+    nepal_gdf = gpd.read_file(PROJECT_DIR + '/'
                               'Nature_Comms/Nepal_District_Boundaries.geojson')
     nepal_gdf['DISTRICT'] = nepal_gdf['DISTRICT'].replace('Rukum East', 'Rukum_E')
     nepal_gdf['DISTRICT'] = nepal_gdf['DISTRICT'].replace('Parasi', 'Nawalparasi_W')

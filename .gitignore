@@ -1,4 +1,19 @@
+# Python
+__pycache__/
 *.pyc
-*/wandb/
-*/__pycache__/
 
+# Experiment tracking / outputs
+wandb/
+results/
+
+# Local data (see README > Data); Sample/ and techdemo_files/ are tracked
+data/
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
+
+# Notebook merge leftovers and checkpoints
+*.orig
+.ipynb_checkpoints/

@@ -9,6 +9,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import argparse
 import numpy as np
+import os
+
+PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
 
 
 def get_args():
@@ -22,7 +25,7 @@ if __name__ == '__main__':
     args = get_args()
     results_dir = args.results_dir
 
-    nepal_gdf = gpd.read_file('<LANDSLIDE_PROJECT_DIR>/'
+    nepal_gdf = gpd.read_file(PROJECT_DIR + '/'
                               'Nature_Comms/Nepal_District_Boundaries.geojson')
 
     nepal_gdf['DISTRICT'] = nepal_gdf['DISTRICT'].replace('Rukum East', 'Rukum_E')
@@ -36,10 +39,10 @@ if __name__ == '__main__':
 
     # Prediction and groundtruth dictionaries
     # Load in predictions and groundtruth locations from results -> hardcoding results dir for now
-    pred_file = ('<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep/Results/GPMv07/'
+    pred_file = (PROJECT_DIR + '/Monsoon2024_Prep/Results/GPMv07/'
                  '{}/{}_prediction_landsliding_districts.pkl'.format(results_dir, results_dir))
 
-    gt_file = ('<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep/Results/GPMv07/'
+    gt_file = (PROJECT_DIR + '/Monsoon2024_Prep/Results/GPMv07/'
                '{}/{}_groundtruth_landsliding_districts.pkl'.format(results_dir, results_dir))
 
     with open(pred_file, 'rb') as fp:
@@ -153,7 +156,7 @@ if __name__ == '__main__':
     plt.show()
     '''
 
-    combined.to_csv('<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep/Results/GPMv07/'
+    combined.to_csv(PROJECT_DIR + '/Monsoon2024_Prep/Results/GPMv07/'
                     '{}/confusion_matrix_{}.csv'.format(results_dir, results_dir))
 
     # Aggregating by location

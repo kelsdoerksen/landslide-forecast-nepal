@@ -6,8 +6,11 @@ import torch
 import numpy as np
 import random
 from PIL import Image
+import os
 
-root_dir = '<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep'
+PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
+
+root_dir = PROJECT_DIR + '/Monsoon2024_Prep'
 
 def make_deterministic(seed):
     # Making Pytorch deterministic

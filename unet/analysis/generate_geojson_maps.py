@@ -7,17 +7,20 @@ import pickle
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
+import os
+
+PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
 
 
 # Load in geojson
-nepal_gdf = gpd.read_file('<LANDSLIDE_PROJECT_DIR>/'
+nepal_gdf = gpd.read_file(PROJECT_DIR + '/'
                           'Nature_Comms/Nepal_District_Boundaries.geojson')
 
 # Load in predictions and groundtruth locations from results -> hardcoding results dir for now
-pred_file = ('<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep/'
+pred_file = (PROJECT_DIR + '/Monsoon2024_Prep/'
              'Results/GPMv07/UKMO_ensemble_0_z726vu1d/UKMO_ensemble_0_z726vu1d_prediction_landsliding_districts.pkl')
 
-gt_file = ('<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep/'
+gt_file = (PROJECT_DIR + '/Monsoon2024_Prep/'
              'Results/GPMv07/UKMO_ensemble_0_z726vu1d/UKMO_ensemble_0_z726vu1d_groundtruth_landsliding_districts.pkl')
 
 with open(pred_file, 'rb') as fp:
@@ -68,7 +71,7 @@ for k in pred_data.keys():
 
     plt.suptitle('{} + 13 days outlook'.format(k))
 
-    plt.savefig('<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep/'
+    plt.savefig(PROJECT_DIR + '/Monsoon2024_Prep/'
                 'Results/GPMv07/UKMO_ensemble_0_z726vu1d/{}_subplots.png'.format(k))
 
     plt.close()

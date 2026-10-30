@@ -5,6 +5,9 @@ If it rains more than 140mm in one day, label this as landslide
 
 import pandas as pd
 from datetime import datetime, timedelta, date
+import os
+
+PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
 
 districts = ['Achham', 'Arghakhanchi', 'Baglung', 'Baitadi', 'Bajhang', 'Bajura', 'Banke', 'Bardiya', 'Bhaktapur',
              'Bhojpur', 'Chitawan', 'Dadeldhura', 'Dailekh', 'Dang', 'Darchula', 'Dhading', 'Dhankuta', 'Dolakha',
@@ -17,7 +20,7 @@ districts = ['Achham', 'Arghakhanchi', 'Baglung', 'Baitadi', 'Bajhang', 'Bajura'
              'Taplejung', 'Terhathum', 'Udayapur']
 
 # Set data path
-full_path = '<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep'
+full_path = PROJECT_DIR + '/Monsoon2024_Prep'
 
 # GPM data
 GPM_folder = '{}/GPM_Mean_Pixelwise/Subseasonal/DistrictLevel/'.format(full_path)
@@ -97,7 +100,7 @@ def run_generate_labelled_threshold_data(year, start_date, end_date):
         df = label_data(gpm_24, daily_dates, district, incidents_df)
         all_data = all_data.append(df)
 
-    all_data.to_csv('<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep/'
+    all_data.to_csv(PROJECT_DIR + '/Monsoon2024_Prep/'
                     'Baseline_Threshold/{}_GPM_Threshold.csv'.format(year))
 
 

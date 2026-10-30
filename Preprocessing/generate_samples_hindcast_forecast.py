@@ -8,6 +8,8 @@ import numpy as np
 import argparse
 import warnings
 import os
+
+PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 def get_args():
@@ -19,8 +21,8 @@ def get_args():
     return parser.parse_args()
 
 # Set data path
-root_dir = '<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep'
-#root_dir = '<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep/2024_Season_Retro/'
+root_dir = PROJECT_DIR + '/Monsoon2024_Prep'
+#root_dir = '$LANDSLIDE_PROJECT_DIR/Monsoon2024_Prep/2024_Season_Retro/'
 
 # Read in incidents records
 #incidents_df = pd.read_csv('{}/Wards_with_Bipad_events_one_to_many_landslides_only.csv'.format(root_dir))

@@ -9,9 +9,11 @@ from datetime import datetime, date, timedelta
 import os
 from pathlib import Path
 
+PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
+
 # --- Specify dir of data
 # root dir
-root_dir = '<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep/PrecipitationModel_Forecast_Data'
+root_dir = PROJECT_DIR + '/Monsoon2024_Prep/PrecipitationModel_Forecast_Data'
 
 # Dictionary of forecast precipitation models
 models = {

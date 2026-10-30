@@ -8,6 +8,9 @@ import argparse
 import ipdb
 import pandas as pd
 from sklearn.utils import shuffle
+import os
+
+PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
 
 def get_args():
     parser = argparse.ArgumentParser(description='Running for 2024 Monsoon season')
@@ -19,7 +22,7 @@ if __name__ == "__main__":
     args = get_args()
     source = args.source
 
-    root_dir = '<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep/2024_Season_Retro'
+    root_dir = PROJECT_DIR + '/Monsoon2024_Prep/2024_Season_Retro'
     results_dir = '{}/Results'.format(root_dir)
 
     # Load pre-trained model

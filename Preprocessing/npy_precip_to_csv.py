@@ -8,8 +8,10 @@ import os
 import pandas as pd
 from PIL import Image
 
+PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
 
-root_dir = '<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep/PrecipitationModel_Forecast_Data'
+
+root_dir = PROJECT_DIR + '/Monsoon2024_Prep/PrecipitationModel_Forecast_Data'
 
 district_dict = {
     'Bhojpur': 1, 'Dhankuta': 2, 'Ilam': 3, 'Jhapa': 4, 'Khotang': 5, 'Morang': 6, 'Okhaldhunga': 7,
@@ -26,7 +28,7 @@ district_dict = {
     'Doti': 75, 'Kailali': 76, 'Kanchanpur': 77
 }
 
-nepal_im = Image.open('<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep/District_Labels.tif')
+nepal_im = Image.open(PROJECT_DIR + '/Monsoon2024_Prep/District_Labels.tif')
 nepal_arr = np.array(nepal_im)
 
 

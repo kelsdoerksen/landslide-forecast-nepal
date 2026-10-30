@@ -6,9 +6,12 @@ about the landslide records themselves for the journal paper
 import pandas as pd
 from datetime import timedelta
 from datetime import datetime
+import os
+
+PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
 
 # Loading in the landslide records from Bipad portal
-df = pd.read_csv('<LANDSLIDE_PROJECT_DIR>/Nature_Comms/'
+df = pd.read_csv(PROJECT_DIR + '/Nature_Comms/'
                  'BipadPortal_Downloaded_08-04-2025.csv')
 
 # Dictionary of monsoon start and end dates from https://www.dhm.gov.np/uploads/dhm/climateService/monsoon_onset_and_withdrawal_dates_english2.pdf
@@ -86,18 +89,18 @@ for y in monsoon_dates.keys():
     for k in counts.keys():
         year_dict['{}'.format(k)] = int(counts[k])
     year_df = pd.DataFrame(list(year_dict.items()), columns=["District", "Landslide_count"])
-    year_df.to_csv('<LANDSLIDE_PROJECT_DIR>/Nature_Comms/{}_LandslideCount_Per_District.csv'.format(y))
+    year_df.to_csv(PROJECT_DIR + '/Nature_Comms/{}_LandslideCount_Per_District.csv'.format(y))
 
     # Generate for the provinces
     year_province_dict = {}
     for k in province_counts.keys():
         year_province_dict['{}'.format(k)] = int(province_counts[k])
     year_province_df = pd.DataFrame(list(year_province_dict.items()), columns=["Province", "Landslide_count"])
-    year_province_df.to_csv('<LANDSLIDE_PROJECT_DIR>/Nature_Comms/{}_LandslideCount_Per_Province.csv'.format(y))
+    year_province_df.to_csv(PROJECT_DIR + '/Nature_Comms/{}_LandslideCount_Per_Province.csv'.format(y))
 
 landslides_timeseries_df = pd.DataFrame(landslide_timeseries_dict)
-#landslides_timeseries_df.to_csv('<LANDSLIDE_PROJECT_DIR>/Nature_Comms/landslide_timeseries_per_month.csv')
-#df.to_csv('<LANDSLIDE_PROJECT_DIR>/Nature_Comms/BipadPortal_Downloaded_08-04-2025_MonsoonLabel.csv')
+#landslides_timeseries_df.to_csv('$LANDSLIDE_PROJECT_DIR/Nature_Comms/landslide_timeseries_per_month.csv')
+#df.to_csv('$LANDSLIDE_PROJECT_DIR/Nature_Comms/BipadPortal_Downloaded_08-04-2025_MonsoonLabel.csv')
 
 results_dict['monsoon_landslides'] = df.monsoon.sum()
 results_dict['monsoon_landslides_percentage'] = df.monsoon.sum()/len(df)

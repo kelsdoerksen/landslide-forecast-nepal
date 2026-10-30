@@ -6,9 +6,12 @@ import numpy as np
 from PIL import Image
 from datetime import datetime, timedelta, date
 import pandas as pd
+import os
+
+PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
 
 # Setting data directories to query from
-root_dir = '<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep'
+root_dir = PROJECT_DIR + '/Monsoon2024_Prep'
 
 # Loading landslide records and Nepal District Array
 #landslide_records = pd.read_csv('{}/Wards_with_Bipad_events_one_to_many_landslides_only.csv'.format(root_dir))

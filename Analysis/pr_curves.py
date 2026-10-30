@@ -4,12 +4,15 @@ Plotting PR curves from Wandb outputs
 
 import pandas as pd
 import matplotlib.pyplot as plt
+import os
 
-df = pd.read_csv('~/Desktop/Nature_Comms_Analysis_Plotting/Varying_Forecast/XGB_Forecast_Varying_All.csv')
+PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
 
-# rf filepath from iclr: ~/Desktop/Nature_Comms_Analysis_Plotting/Varying_Forecast/VaryingForecast_RFrf_varying_forecast_iclr.csv
-# gb filepath: ~/Desktop/Nature_Comms_Analysis_Plotting/Varying_Forecast/VaryingForecast_GB/GB_Forecast_Varying_All.csv'
-# xgb file: '~/Desktop/Nature_Comms_Analysis_Plotting/Varying_Forecast/XGB_Forecast_Varying_All.csv'
+df = pd.read_csv(PROJECT_DIR + '/Nature_Comms_Analysis_Plotting/Varying_Forecast/XGB_Forecast_Varying_All.csv')
+
+# rf filepath from iclr: $LANDSLIDE_PROJECT_DIR/Nature_Comms_Analysis_Plotting/Varying_Forecast/VaryingForecast_RFrf_varying_forecast_iclr.csv
+# gb filepath: $LANDSLIDE_PROJECT_DIR/Nature_Comms_Analysis_Plotting/Varying_Forecast/VaryingForecast_GB/GB_Forecast_Varying_All.csv'
+# xgb file: '$LANDSLIDE_PROJECT_DIR/Nature_Comms_Analysis_Plotting/Varying_Forecast/XGB_Forecast_Varying_All.csv'
 
 forecast_unique = df['Name'].unique()
 

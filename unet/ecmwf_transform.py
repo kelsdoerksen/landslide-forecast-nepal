@@ -15,6 +15,9 @@ from pathlib import Path
 from collections import defaultdict
 import torch.nn as nn
 from dataset import *
+import os
+
+PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
 
 
 def get_args():
@@ -28,7 +31,7 @@ if __name__ == '__main__':
 
     print('Setting up directories...')
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    root_dir = '<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep'
+    root_dir = PROJECT_DIR + '/Monsoon2024_Prep'
 
     # Grabbing data to generate embeddings for
     if n_channels == 10:

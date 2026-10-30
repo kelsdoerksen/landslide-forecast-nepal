@@ -8,6 +8,9 @@ import numpy as np
 import geemap
 import time
 import argparse
+import os
+
+PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
 
 
 # argparse arguments
@@ -17,10 +20,10 @@ parser = argparse.ArgumentParser(description='Google Earth Engine MODIS Processi
 parser.add_argument("--year",
                     help='Year to query data for')
 
-root_dir = '<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep/MODIS_Pixelwise'
+root_dir = PROJECT_DIR + '/Monsoon2024_Prep/MODIS_Pixelwise'
 
 # Initialize ee
-ee.Initialize(project='<EE_PROJECT>',opt_url='https://earthengine-highvolume.googleapis.com')
+ee.Initialize(project=os.environ.get('EE_PROJECT'),opt_url='https://earthengine-highvolume.googleapis.com')
 
 
 def generate_data(year):

@@ -7,8 +7,10 @@ import pandas as pd
 import os
 import matplotlib.pyplot as plt
 
-root_dir = '<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep/2024_Season_Retro/Predictions_vs_BiPad'
-save_dir = '<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep/2024_Season_Retro/'
+PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
+
+root_dir = PROJECT_DIR + '/Monsoon2024_Prep/2024_Season_Retro/Predictions_vs_BiPad'
+save_dir = PROJECT_DIR + '/Monsoon2024_Prep/2024_Season_Retro/'
 
 
 def generate_f1_tpr_fig(df, save_dir):

@@ -10,6 +10,9 @@ import numpy as np
 import geemap
 import time
 import argparse
+import os
+
+PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
 
 
 # argparse arguments
@@ -21,10 +24,10 @@ parser.add_argument("--gee_data",
 parser.add_argument("--query_year",
                     help='Yeah to query data for')
 
-root_dir = '<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep'
+root_dir = PROJECT_DIR + '/Monsoon2024_Prep'
 
 # Initialize ee
-ee.Initialize(project='<EE_PROJECT>')
+ee.Initialize(project=os.environ.get('EE_PROJECT'))
 #ee.Initialize(opt_url='https://earthengine-highvolume.googleapis.com')
 
 

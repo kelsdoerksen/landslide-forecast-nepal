@@ -12,6 +12,8 @@ import argparse
 import re
 import numpy as np
 
+PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
+
 
 def get_args():
     parser = argparse.ArgumentParser(description='Generating Confusion Matrix')
@@ -241,7 +243,7 @@ if __name__ == '__main__':
     year = args.test_year
 
     # Hard coding because this is what I will always use
-    landslide_records = pd.read_csv('<LANDSLIDE_PROJECT_DIR>/'
+    landslide_records = pd.read_csv(PROJECT_DIR + '/'
                                     'Monsoon2024_Prep/bipad_records_2016-2024_july172025download.csv')
     landslide_counts = landslide_count_per_day(landslide_records)
 

@@ -1,5 +1,8 @@
 import numpy as np
 from PIL import Image
+import os
+
+PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
 
 
 def generate_district_masks(file_name):
@@ -68,7 +71,7 @@ def landslide_record_gen(y_true, d_masks):
     return true_landsliding_districts
 
 
-root_dir = '<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep'
+root_dir = PROJECT_DIR + '/Monsoon2024_Prep'
 
 # Generating district masks to use for the precision, recall
 district_masks = generate_district_masks('{}/District_Labels.tif'.format(root_dir))

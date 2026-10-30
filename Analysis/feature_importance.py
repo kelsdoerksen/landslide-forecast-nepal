@@ -5,6 +5,9 @@ Aggregating RF runs and generating feature importance plots/csvs for Nature Comm
 import pandas as pd
 import matplotlib.pyplot as plt
 import argparse
+import os
+
+PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
 
 def get_args():
     parser = argparse.ArgumentParser(description='Feature Importance Plotting')
@@ -19,8 +22,8 @@ rf_list_2023 = ["restful-yogurt-1841", "fearless-frog-1840", "glorious-hill-1839
 rf_list_2024 = ["hearty-resonance-1836", "effortless-disco-1835", "charmed-energy-1834", "kind-sponge-1833",
                 "usual-snowball-1832"]
 
-root_dir = '<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep/Results/GPMv07'
-save_dir = '~/Desktop/Nature_Comms_Analysis_Plotting/RF_FI'
+root_dir = PROJECT_DIR + '/Monsoon2024_Prep/Results/GPMv07'
+save_dir = PROJECT_DIR + '/Nature_Comms_Analysis_Plotting/RF_FI'
 
 
 def agg_fi(year):

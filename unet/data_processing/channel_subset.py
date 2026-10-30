@@ -17,6 +17,8 @@ from pickle import PicklingError, UnpicklingError
 import numpy as np
 import os
 
+PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
+
 
 def aggregate_features(arr):
     """
@@ -53,9 +55,9 @@ def aggregate_features(arr):
 
 if __name__ == "__main__":
     # Hardcoding sample dir for now
-    sample_dir = ('<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep/'
+    sample_dir = (PROJECT_DIR + '/Monsoon2024_Prep/'
                   'UNet_Samples_14Day_GPMv07/UKMO/ensemble_0')
-    save_dir = ('<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep/'
+    save_dir = (PROJECT_DIR + '/Monsoon2024_Prep/'
                 'UNet_Samples_14Day_GPMv07/UKMO/ensemble_0_agg')
 
     for f in os.listdir(sample_dir):

@@ -10,6 +10,8 @@ from PIL import Image
 import re
 import argparse
 
+PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
+
 
 def get_args():
     parser = argparse.ArgumentParser(description='Processing Precipitation Data to Tabular format')
@@ -19,8 +21,8 @@ def get_args():
     return parser.parse_args()
 
 
-root_dir = '<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep'
-# root_dir = '<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep/2024_Season_Retro'
+root_dir = PROJECT_DIR + '/Monsoon2024_Prep'
+# root_dir = '$LANDSLIDE_PROJECT_DIR/Monsoon2024_Prep/2024_Season_Retro'
 
 district_dict = {
     'Bhojpur': 1, 'Dhankuta': 2, 'Ilam': 3, 'Jhapa': 4, 'Khotang': 5, 'Morang': 6, 'Okhaldhunga': 7,

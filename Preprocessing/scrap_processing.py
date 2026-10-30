@@ -4,6 +4,9 @@ Will likely just incorporate all these functions into the generate samples
 """
 
 import pandas as pd
+import os
+
+PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
 
 def add_location_information(feature_df, centroids_df):
     '''
@@ -26,7 +29,7 @@ def add_location_information(feature_df, centroids_df):
 
     return combined
 
-data_directory = '<LANDSLIDE_PROJECT_DIR>/Monsoon2024_Prep'
+data_directory = PROJECT_DIR + '/Monsoon2024_Prep'
 years = ['2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023']
 
 location_df = pd.read_csv('{}/District_Centroid_Locations.csv'.format(data_directory))

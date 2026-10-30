@@ -1,0 +1,5 @@
+# Extra dependencies for the LandslideNet UNet pipeline (unet/), on top of ../requirements.txt.
+# Originally developed in a separate Python 3.10 environment; versions not pinned.
+# GDAL is easiest to install with conda: conda install -c conda-forge gdal
+torchvision
+torchmetrics

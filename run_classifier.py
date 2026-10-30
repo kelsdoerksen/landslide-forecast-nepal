@@ -33,6 +33,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+PROJECT_DIR = os.environ.get('LANDSLIDE_PROJECT_DIR', 'data')  # see README > Data
+
 
 def get_args():
     parser = argparse.ArgumentParser(description='Running ML Pipeline for Landslide Prediction')
@@ -1493,7 +1495,7 @@ def run_rf_monsoon_tool_training(ukmo_dir, ecmwf_dir):
 
     forest.fit(X_train, y_train)
     print('Saving trained rf model for monsoon tool...')
-    filename = '<LANDSLIDE_PROJECT_DIR>/rf_model.pkl'
+    filename = PROJECT_DIR + '/rf_model.pkl'
     pickle.dump(forest, open(filename, 'wb'))
 
 
