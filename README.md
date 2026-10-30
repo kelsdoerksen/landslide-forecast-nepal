@@ -18,7 +18,7 @@
 This repository contains the code required for dataset curation, processing, model training, testing and analysis for the purposes of predicting landslide impacts on a 14-day temporal scale in Nepal that cause impact to infrastructure and/or loss of life. We present our methodology to utilize statistical summary information over a district's boundary in-combination with satellite embeddings extracted from our LandslideNet model as inputs into a final ML classifier.
 
 ## 💧 Dataset
-Both the tabular-ML dataset and array dataset are composed of precipitation hindcast features, precipitation forecast featueres, and topographical feature extracted from the ALOS 30 meter resolution Digital Elevation model of Nepal. A subset of pre-processed sample data to run experiments is included in the `Sample` folder.
+Both the tabular-ML dataset and array dataset are composed of precipitation hindcast features, precipitation forecast featueres, and topographical features extracted from the ALOS 30 meter resolution Digital Elevation model of Nepal. A subset of pre-processed sample data to run experiments is included in the `Sample` folder.
 
 ## 👩‍🔬 Data Processing
 `/Preprocessing` folder contains the code to pre-process data for the tabular dataset.
