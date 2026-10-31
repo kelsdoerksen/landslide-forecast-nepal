@@ -144,8 +144,11 @@ Run `python run_pipeline.py --help` for the remaining options (augmentation, cha
 If you use this code or data, please cite:
 <!-- TODO: add BibTeX for the paper -->
 ```bibtex
-Citation for corresponding paper coming soon :) 
+Doerksen, K., Li, S., Dunant, A. et al. AI-powered sub-seasonal forecasting of monsoon-triggered landslide impacts in Nepal. npj Nat. Hazards (2026). https://doi.org/10.1038/s44304-026-00282-9
 ```
 
 ## ⚖️ License
 Code is released under the [MIT License](LICENSE). Data from third-party sources (BIPAD, NASA, JAXA, S2S) remains subject to the original providers' terms.
+
+## ⚙️ Operational Model Demo
+An example of the operational demo hosted on Google Colab can be found: [Operational Demo](https://colab.research.google.com/drive/1vBtqaSwEa8aSpxFIXuMS7m7sXKsuW6pX?usp=sharing)
