@@ -82,7 +82,7 @@ To regenerate the dataset from scratch, you need:
 | Landslide incidents (labels) | Nepal [BIPAD portal](https://bipadportal.gov.np) |
 
 ## 👩‍🔬 Data Processing Pipeline
-The preprocessing scripts read from and write to a project data folder, set with the `LANDSLIDE_PROJECT_DIR` environment variable (default `./data`, which is git-ignored). Most scripts work under `$LANDSLIDE_PROJECT_DIR/Monsoon2024_Prep/`. The Earth Engine scripts use your own GEE Cloud project:
+The preprocessing scripts read from and write to a project data folder, set with the `LANDSLIDE_PROJECT_DIR` environment variable. The Earth Engine scripts use your own GEE Cloud project:
 ```bash
 export LANDSLIDE_PROJECT_DIR=/path/to/your/data
 export EE_PROJECT=your-gee-cloud-project
