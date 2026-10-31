@@ -41,8 +41,8 @@ root_dir = PROJECT_DIR + '/Monsoon2024_Prep'
 # Read in incidents records
 #incidents_df = pd.read_csv('{}/Wards_with_Bipad_events_one_to_many_landslides_only.csv'.format(root_dir))
 #incidents_df = pd.read_csv(root_dir + 'incidents_April_October_2024.csv')
-# Combined, de-duplicated landslide labels 2016-2026 (built by build_incident_labels.py:
-# merges the 3 Bipad downloads, ISO dates, canonical district names, Hazard==Landslide).
+# Combined, de-duplicated landslide labels 2016-2026 (the 3 Bipad downloads merged,
+# ISO dates, canonical district names, Hazard==Landslide).
 incidents_df = pd.read_csv('{}/combined_landslide_incidents_2016-2026.csv'.format(root_dir))
 
 # Grab District Names -> Harcoded to match Bipad Portal records
