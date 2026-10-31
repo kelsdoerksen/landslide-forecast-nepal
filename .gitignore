@@ -25,3 +25,8 @@ data/
 # Personal analysis scripts, not part of the paper (kept local)
 Analysis/monsoon_full_retro_2024.py
 Analysis/monsoon_retro_2024.py
+baseline_threshold.py
+calibrate_threshold.py
+calibrate_threshold_crossfit.py
+score_deployed_model.py
+tune_and_export.py

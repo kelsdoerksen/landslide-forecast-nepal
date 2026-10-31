@@ -97,12 +97,9 @@ Tabular dataset, in order (scripts in `Preprocessing/`):
 
 Array (UNet) dataset: `unet/data_processing/` (`gee_processing_unet.py`, `label_generation.py`, `data_generation.py`). Satellite embeddings for the classifier are generated with `unet/embedding_extraction.py`.
 
-`baseline_threshold.py` computes the rainfall-threshold baseline (any day above 140 mm is labelled a landslide).
-
 ## 📚 Code Organization
 ```
 ├── run_classifier.py     # ML classifier pipeline: train / val / test
-├── baseline_threshold.py # Rainfall threshold baseline
 ├── Preprocessing/        # Tabular dataset generation
 ├── Analysis/             # Plotting and result aggregation (F1, PR curves, feature importance, maps)
 ├── unet/                 # LandslideNet (UNet) training, prediction and embedding extraction
