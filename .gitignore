@@ -17,3 +17,7 @@ data/
 # Notebook merge leftovers and checkpoints
 *.orig
 .ipynb_checkpoints/
+
+# Private operational notebooks (kept local, not published)
+2026_MonsoonSeason_Landslide_Forecast_Model_ML.ipynb
+2026_Monsoon_Retrospective_Weekly_Forecasts.ipynb
