@@ -18,6 +18,12 @@ def get_args():
     parser.add_argument("--hindcast_source", help='Hindcast precipitation source. Must be one of GPM or GSMaP')
     parser.add_argument("--forecast_source", help='Forecast precipitation source. Must be one of UKMO, NCEP, KMA.')
     parser.add_argument('--ens_member', help='Ensemble member to use precipitation data from.')
+    parser.add_argument('--incidents_file', required=True,
+                        help="CSV of landslide incidents used for labels, e.g. a Bipad Portal download. "
+                             "Needs 'District' and 'Incident on' columns.")
+    parser.add_argument('--incident_date_format', default='%Y-%m-%d',
+                        help="strptime format of the 'Incident on' column. Older Bipad downloads use "
+                             "'%%m/%%d/%%y' (2024) or '%%d/%%m/%%Y' (2016-2023).")
     parser.add_argument('--forecast_district_suffix', default='',
                         help="Suffix on the forecast DistrictLevel input dir, e.g. '_latfix'.")
     parser.add_argument('--labelled_suffix', default='',
@@ -30,20 +36,11 @@ def get_args():
                         help="Filename suffix inside --modis_dir. The 2011-2023 folder uses "
                              "'_Modis_2011-2023.csv'; the 2011-2026 folder uses '_Modis.csv'.")
     parser.add_argument('--modis_max_year', default='2023',
-                        help='Latest land-cover year available. Sample years after this are '
-                             'clamped to it. Raise it when a folder with newer layers is used.')
+                        help='Latest land-cover year available.')
     return parser.parse_args()
 
 # Set data path
-root_dir = PROJECT_DIR + '/Monsoon2024_Prep'
-#root_dir = '$LANDSLIDE_PROJECT_DIR/Monsoon2024_Prep/2024_Season_Retro/'
-
-# Read in incidents records
-#incidents_df = pd.read_csv('{}/Wards_with_Bipad_events_one_to_many_landslides_only.csv'.format(root_dir))
-#incidents_df = pd.read_csv(root_dir + 'incidents_April_October_2024.csv')
-# Combined, de-duplicated landslide labels 2016-2026 (the 3 Bipad downloads merged,
-# ISO dates, canonical district names, Hazard==Landslide).
-incidents_df = pd.read_csv('{}/combined_landslide_incidents_2016-2026.csv'.format(root_dir))
+root_dir = PROJECT_DIR
 
 # Grab District Names -> Harcoded to match Bipad Portal records
 districts = ['Achham', 'Arghakhanchi', 'Baglung', 'Baitadi', 'Bajhang', 'Bajura', 'Banke', 'Bara', 'Bardiya',
@@ -58,8 +55,6 @@ districts = ['Achham', 'Arghakhanchi', 'Baglung', 'Baitadi', 'Bajhang', 'Bajura'
              'Sindhupalchok', 'Siraha', 'Solukhumbu', 'Sunsari', 'Surkhet', 'Syangja', 'Tanahu',
              'Taplejung', 'Terhathum', 'Udayapur']
 
-print('The number of landslides on the District-level in Nepal is {}'.format(len(incidents_df)))
-
 def daterange(date1, date2):
   date_list = []
   for n in range(int ((date2 - date1).days)+1):
@@ -68,10 +63,11 @@ def daterange(date1, date2):
   return date_list
 
 
-def generate_labelled_district(df, district, dates_list):
+def generate_labelled_district(df, district, dates_list, date_format='%Y-%m-%d'):
     '''
     Generates a dataframe for a district specified with labelled
     landslide occurrences 0,1 respectively
+    :param date_format: strptime format of the incidents' 'Incident on' column
     '''
     landslide_events = df[df.District == district]
     # Filter to remove any duplicates, can't differentiate between
@@ -79,9 +75,7 @@ def generate_labelled_district(df, district, dates_list):
     landslide_events = landslide_events.rename(columns={'Incident on': 'Date'})
     landslide_events_filt = landslide_events.drop_duplicates(subset=['Date'], keep='first')
     landslide_events_list = landslide_events_filt['Date'].tolist()
-    landslide_events_list_formatted = [datetime.strptime(sub, "%Y-%m-%d").strftime('%Y-%m-%d') for sub in landslide_events_list] # 2025-2026 Bipad list (ISO dates)
-    #landslide_events_list_formatted = [datetime.strptime(sub, "%m/%d/%y").strftime('%Y-%m-%d') for sub in landslide_events_list] # 2024 list
-    #landslide_events_list_formatted = [datetime.strptime(sub, "%d/%m/%Y").strftime('%Y-%m-%d') for sub in landslide_events_list] # 2016-2023 list
+    landslide_events_list_formatted = [datetime.strptime(sub, date_format).strftime('%Y-%m-%d') for sub in landslide_events_list]
     # Generate list of labelled events for the AOI specified
     label_list = []
     for doy in dates_list:
@@ -142,10 +136,7 @@ def add_landcover_features(modis_df, day, max_year='2023'):
     '''
     Generate and add landcover features per district
 
-    Sample years beyond the last available land-cover layer are clamped to it.
-    max_year must match the folder actually being read - training and inference
-    have to agree on which layer a given year gets, or lc_mode/lc_var mean
-    different things at fit time and at score time.
+    Sample years beyond the last available land-cover layer are set to max year available
     '''
     year = day[0:4]
     if int(year) > int(max_year):
@@ -163,10 +154,6 @@ def add_landcover_features(modis_df, day, max_year='2023'):
 def add_precip_lookahead(day, precip_forecast, window_size, model_name, ensemble_num):
     '''
     Add precipitation lookahead from model forecast data
-
-    precip_forecast is a {doy: avg_precip} dict (see to_series). This used to scan
-    the whole dataframe per lookup, which dominated the runtime; the values are
-    identical.
     '''
     format = '%Y-%m-%d'
     day = str(day)
@@ -254,10 +241,7 @@ def generate_labelled_xdays_sample(filepath, label_df, district, day, window_siz
                                    hindcast_name, static, modis_max_year='2023'):
     '''
     For each unique date in date range of study, create feature space
-
-    static is (dem_df, aspect_df, slope_df, modis) for this district, read once by
-    the caller. These four CSVs used to be re-read from disk for every single
-    district-day, which was most of the runtime; the values are identical.
+    static is (dem_df, aspect_df, slope_df, modis)
     '''
 
     # Grab Lookback
@@ -296,7 +280,6 @@ def check_if_date_valid(query_date, precip_days, direction):
     has lookahead and lookback data, returns
     True or False
 
-    precip_days is a set of available doy strings.
     """
     format = '%Y-%m-%d'
     day = str(query_date)
@@ -315,10 +298,13 @@ def check_if_date_valid(query_date, precip_days, direction):
 
 
 def run_generate_data(root_dir, year, start_date, end_date, window_size, forecast_model, forecast_ensemble,
-                      hindcast_data, forecast_district_suffix='', labelled_suffix='',
+                      hindcast_data, incidents_df, incident_date_format='%Y-%m-%d',
+                      forecast_district_suffix='', labelled_suffix='',
                       modis_dir='MODIS_District_2011-2023',
                       modis_file_suffix='_Modis_2011-2023.csv', modis_max_year='2023'):
     '''
+    :param incidents_df: landslide incident records used for labels
+    :param incident_date_format: strptime format of incidents_df's 'Incident on' column
     :param year: year of data gathered
     :param start_date: format date(YYYY,MM,DD)
     :param end_date: format date(YYYY,MM,DD)
@@ -352,7 +338,7 @@ def run_generate_data(root_dir, year, start_date, end_date, window_size, forecas
     for district in districts:
         print('Generating samples for district {}'.format(district))
         # Generate labels
-        labelled_df = generate_labelled_district(incidents_df, district, daily_dates)
+        labelled_df = generate_labelled_district(incidents_df, district, daily_dates, incident_date_format)
 
         # Grab Precipitation data for LOOKBACK
         precip_lookback_df = pd.read_csv('{}/{}_Mean_Pixelwise/Subseasonal/DistrictLevel/{}_{}.csv'.format(root_dir,
@@ -404,8 +390,13 @@ if __name__ == "__main__":
     forecast = args.forecast_source
     ens_num = args.ens_member
 
+    # Read in incidents records
+    incidents_df = pd.read_csv(args.incidents_file)
+    print('The number of landslides on the District-level in Nepal is {}'.format(len(incidents_df)))
+
     #run_generate_data(root_dir, year, date(int(year), 1, 1), date(int(year)+1, 1, 14), 14, forecast, ens_num, hindcast)
     run_generate_data(root_dir, year, date(int(year), 1, 1), date(int(year), 12, 31), 14, forecast, ens_num, hindcast,
+                      incidents_df, incident_date_format=args.incident_date_format,
                       forecast_district_suffix=args.forecast_district_suffix,
                       labelled_suffix=args.labelled_suffix,
                       modis_dir=args.modis_dir, modis_file_suffix=args.modis_file_suffix,

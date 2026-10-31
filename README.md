@@ -93,7 +93,9 @@ Tabular dataset, in order (scripts in `Preprocessing/`):
 1. `gee_processing.py --gee_data <collection> --query_year <year>`: download daily hindcast precipitation from Earth Engine.
 2. `nc_to_npy.py` (UKMO/NCEP/KMA) and `ecmwf_processing.py` (ECMWF): convert forecast NetCDF files to per-day arrays.
 3. `forecast_precip_model_prep.py --precip_source <model> --ens_member <n>` and `npy_precip_to_csv.py`: aggregate gridded precipitation to district level using `District_Labels.tif`.
-4. `generate_samples_hindcast_forecast.py --year <year> --hindcast_source <src> --forecast_source <model> --ens_member <n>`: join hindcast, forecast, terrain, land cover and BIPAD labels into `{year}_windowsize14_district.csv`.
+4. `generate_samples_hindcast_forecast.py --year <year> --hindcast_source <src> --forecast_source <model> --ens_member <n> --incidents_file <incidents.csv>`: join hindcast, forecast, terrain, land cover and landslide labels into `$LANDSLIDE_PROJECT_DIR/LabelledData_<src>/<model>/ensemble_<n>/{year}_windowsize14_district.csv`.
+   - `--incidents_file` is a landslide incident CSV with `District` and `Incident on` columns, such as a BIPAD portal download (e.g. `Sample/bipad_records_2016-2024_july172025download.csv`). Set `--incident_date_format` if its dates aren't `YYYY-MM-DD`.
+   - It reads its inputs directly from `$LANDSLIDE_PROJECT_DIR`: `DEM-Derived_District/`, `<src>_Mean_Pixelwise/Subseasonal/DistrictLevel/`, `PrecipitationModel_Forecast_Data/Subseasonal/<model>/DistrictLevel/` and the MODIS folder (`--modis_dir`).
 
 Array (UNet) dataset: `unet/data_processing/` (`gee_processing_unet.py`, `label_generation.py`, `data_generation.py`). Satellite embeddings for the classifier are generated with `unet/embedding_extraction.py`.
 
