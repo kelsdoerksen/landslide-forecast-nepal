@@ -21,3 +21,7 @@ data/
 # Private operational notebooks (kept local, not published)
 2026_MonsoonSeason_Landslide_Forecast_Model_ML.ipynb
 2026_Monsoon_Retrospective_Weekly_Forecasts.ipynb
+
+# Personal analysis scripts, not part of the paper (kept local)
+Analysis/monsoon_full_retro_2024.py
+Analysis/monsoon_retro_2024.py
